@@ -26,7 +26,7 @@ const RegisterForm = () => {
     console.log("Form: ", values);
     const payload = { values };
     try {
-      const response = await fetch(`http://localhost:5005/auth/register`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -1,10 +1,12 @@
 import { Button, PasswordInput, TextInput } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
+import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { SessionContext } from "../contexts/SessionContext";
 
 const LoginForm = () => {
+  const { setToken, setCurrentUser } = useContext(SessionContext);
   const navigate = useNavigate();
-
   const form = useForm({
     mode: "uncontrolled",
     initialValues: {
@@ -13,36 +15,40 @@ const LoginForm = () => {
     },
 
     validate: {
-        username: isNotEmpty("Username is required"),
-        password: isNotEmpty("Password is required"),
-    }
+      username: isNotEmpty("Username is required"),
+      password: isNotEmpty("Password is required"),
+    },
   });
 
   const handleSubmit = async (values) => {
     console.log("Form: ", values);
     const payload = { values };
     try {
-      const response = await fetch(`http://localhost:5005/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/auth/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
       if (response.status === 200 || response.status === 403) {
         const data = await response.json();
         console.log(data);
         if (response.status === 403) {
-            const errorMessage = data.message;
+          const errorMessage = data.message;
 
-            form.setErrors({
-                username: errorMessage,
-                password: errorMessage,
-            });
-            return;
+          form.setErrors({
+            username: errorMessage,
+            password: errorMessage,
+          });
+          return;
         }
-
+        setToken(data.token);
+        setCurrentUser(values.username);
         navigate("/");
       } else {
         throw new Error("Something went wrong");
