@@ -24,7 +24,8 @@ const RegisterForm = () => {
 
   const handleSubmit = async (values) => {
     console.log("Form: ", values);
-    const payload = { values };
+    const {username, email, password} = values;
+    const payload = { username, email, password };
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/register`, {
         method: "POST",

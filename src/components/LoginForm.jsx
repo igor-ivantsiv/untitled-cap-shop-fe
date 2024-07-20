@@ -22,7 +22,9 @@ const LoginForm = () => {
 
   const handleSubmit = async (values) => {
     console.log("Form: ", values);
-    const payload = { values };
+    const {password, username} = values
+    const payload = { password, username};
+    console.log("payload: ", payload)
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/auth/login`,
@@ -48,7 +50,6 @@ const LoginForm = () => {
           return;
         }
         setToken(data.token);
-        setCurrentUser(values.username);
         navigate("/");
       } else {
         throw new Error("Something went wrong");

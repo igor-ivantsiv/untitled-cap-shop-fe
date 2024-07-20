@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { SessionContext } from "../contexts/SessionContext";
 
-const User = () => {
+const TestProfile = () => {
 
     const {currentUser} = useContext(SessionContext)
     return (
@@ -12,4 +12,4 @@ const User = () => {
     )
 }
 
-export default User;
+export default TestProfile;

@@ -46,7 +46,11 @@ const SessionContextProvider = ({ children }) => {
         setIsAuthenticated(true);
         const data = await response.json();
         console.log("verified token: ", data)
-        verifyAdmin(tokenToVerify);
+        setCurrentUser(data.username)
+        if (data.role === "admin") {
+          setIsAdmin(true);
+        }
+        setIsLoading(false);
       } else {
         setIsLoading(false);
         removeToken();
@@ -70,7 +74,7 @@ const SessionContextProvider = ({ children }) => {
   useEffect(() => {
     if (token) {
       window.localStorage.setItem("authToken", token);
-      setIsAuthenticated(true);
+      verifyToken(token)
     }
   }, [token]);
 
@@ -102,6 +106,7 @@ const SessionContextProvider = ({ children }) => {
     setToken();
     setIsAuthenticated(false);
     setCurrentUser("");
+    setIsAdmin(false);
   };
 
   return (
