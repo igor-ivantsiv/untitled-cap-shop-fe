@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 const RegisterForm = () => {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm({
     mode: "uncontrolled",
@@ -26,17 +26,20 @@ const RegisterForm = () => {
 
   const handleSubmit = async (values) => {
     console.log("Form: ", values);
-    setIsLoading(true)
-    const {username, email, password} = values;
+    setIsLoading(true);
+    const { username, email, password } = values;
     const payload = { username, email, password };
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/auth/register`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
       if (response.status !== 201) {
         throw new Error("Something went wrong");
@@ -47,8 +50,13 @@ const RegisterForm = () => {
 
       navigate("/login");
     } catch (error) {
-      setIsLoading(false)
+      setIsLoading(false);
       console.log(error);
+      form.setErrors({
+        username: "Something went wrong, please try again",
+        password: "Something went wrong, please try again",
+        email: "Something went wrong, please try again",
+      });
     }
   };
 
@@ -75,7 +83,13 @@ const RegisterForm = () => {
           {...form.getInputProps("confirmPassword")}
           key={form.key("confirmPassword")}
         />
-        <Button type="submit" loading={isLoading} loaderProps={{type: "dots"}}>Register</Button>
+        <Button
+          type="submit"
+          loading={isLoading}
+          loaderProps={{ type: "dots" }}
+        >
+          Register
+        </Button>
       </form>
     </>
   );

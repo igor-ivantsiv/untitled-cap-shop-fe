@@ -9,7 +9,6 @@ const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-
   const form = useForm({
     mode: "uncontrolled",
     initialValues: {
@@ -25,7 +24,7 @@ const LoginForm = () => {
 
   const handleSubmit = async (values) => {
     console.log("Form: ", values);
-    setIsLoading(true)
+    setIsLoading(true);
     const { password, username } = values;
     const payload = { password, username };
     console.log("payload: ", payload);
@@ -43,17 +42,16 @@ const LoginForm = () => {
 
       if (response.status === 200 || response.status === 403) {
         const data = await response.json();
-        setIsLoading(false)
+        setIsLoading(false);
         console.log(data);
         if (response.status === 403) {
-          
           const errorMessage = data.message;
 
           form.setErrors({
             username: errorMessage,
             password: errorMessage,
           });
-          
+
           return;
         }
         setToken(data.token);
@@ -63,6 +61,10 @@ const LoginForm = () => {
       }
     } catch (error) {
       console.error(error);
+      form.setErrors({
+        username: "Something went wrong, please try again",
+        password: "Something went wrong, please try again",
+      });
     }
   };
 
@@ -79,7 +81,13 @@ const LoginForm = () => {
           {...form.getInputProps("password")}
           key={form.key("password")}
         />
-        <Button type="submit" loading={isLoading} loaderProps={{type: "dots"}}>Login</Button>
+        <Button
+          type="submit"
+          loading={isLoading}
+          loaderProps={{ type: "dots" }}
+        >
+          Login
+        </Button>
       </form>
     </>
   );

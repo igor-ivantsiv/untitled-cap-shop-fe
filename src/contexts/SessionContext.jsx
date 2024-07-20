@@ -14,34 +14,40 @@ const SessionContextProvider = ({ children }) => {
     window.localStorage.removeItem("authToken");
   };
 
+  // (!)route to verify admin, might not be necessary
   const verifyAdmin = async (tokenToVerify) => {
     try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/verify/admin`, {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/auth/verify/admin`,
+        {
           headers: {
             Authorization: `Bearer ${tokenToVerify}`,
           },
-        });
-  
-        if (response.status === 200) {
-          setIsAdmin(true);
-          const data = await response.json();
-          console.log("verified admin: ", data)
-          setIsLoading(false);
         }
+      );
+
+      if (response.status === 200) {
+        setIsAdmin(true);
+        const data = await response.json();
+        console.log("verified admin: ", data);
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.log(error);
     }
-    catch(error) {
-        console.log(error)
-    }
-  }
+  };
 
   // verify token on backend
   const verifyToken = async (tokenToVerify) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/verify`, {
-        headers: {
-          Authorization: `Bearer ${tokenToVerify}`,
-        },
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/auth/verify`,
+        {
+          headers: {
+            Authorization: `Bearer ${tokenToVerify}`,
+          },
+        }
+      );
 
       // if response ok -> set token and authenticate
       // get username and role of current user
@@ -50,20 +56,20 @@ const SessionContextProvider = ({ children }) => {
         setToken(tokenToVerify);
         setIsAuthenticated(true);
         const data = await response.json();
-        //console.log("verified token: ", data)
-        setCurrentUser(data.username)
+        console.log("verified token: ", data);
+        setCurrentUser(data.userId);
         if (data.role === "admin") {
           setIsAdmin(true);
         }
         setIsLoading(false);
-      
-      // if token is not verified -> remove token, turn off loading state
+
+        // if token is not verified -> remove token, turn off loading state
       } else {
         setIsLoading(false);
         removeToken();
       }
 
-    // in case of error -> remove token, turn off loading state
+      // in case of error -> remove token, turn off loading state
     } catch (error) {
       console.log(error);
       setIsLoading(false);
@@ -81,13 +87,16 @@ const SessionContextProvider = ({ children }) => {
     }
   }, []);
 
+  // if token created (on login) -> save token in local storage
+  // verify to get name and role
   useEffect(() => {
     if (token) {
       window.localStorage.setItem("authToken", token);
-      verifyToken(token)
+      verifyToken(token);
     }
   }, [token]);
 
+  // make requests with token
   const fetchWithToken = async (endpoint, method = "GET", payload) => {
     try {
       const response = await fetch(
@@ -124,13 +133,12 @@ const SessionContextProvider = ({ children }) => {
       value={{
         isAuthenticated,
         isLoading,
-        token,
         setToken,
         fetchWithToken,
         handleLogout,
         currentUser,
         isAdmin,
-        setIsLoading
+        setIsLoading,
       }}
     >
       {children}
@@ -138,4 +146,4 @@ const SessionContextProvider = ({ children }) => {
   );
 };
 
-export default SessionContextProvider
+export default SessionContextProvider;

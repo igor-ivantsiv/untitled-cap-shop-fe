@@ -7,7 +7,7 @@ import PrivateRoute from "./components/PrivateRoute"
 import TestProfile from "./pages/TestProfile"
 import AdminRoute from "./components/AdminRoute"
 import TestAdminPage from "./pages/TestAdminPage"
-//import User from "./pages/TestUser"
+import NotFoundPage from "./pages/NotFoundPage"
 
 function App() {
   return (
@@ -17,7 +17,7 @@ function App() {
         <Route path="/" element={<Homepage />}/>
         <Route path="/register" element={<RegisterPage />}/>
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/user" element={
+        <Route path="/users/:userId" element={
           <PrivateRoute>
             <TestProfile />
           </PrivateRoute>
@@ -27,6 +27,7 @@ function App() {
             <TestAdminPage />
           </AdminRoute>
         }/>
+        <Route path="*" element={<NotFoundPage />}/>
       </Routes>
     </>
   )

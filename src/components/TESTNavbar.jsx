@@ -4,7 +4,7 @@ import { SessionContext } from "../contexts/SessionContext";
 import { Button } from "@mantine/core";
 
 const Navbar = () => {
-  const { isAuthenticated, handleLogout, isAdmin } = useContext(SessionContext);
+  const { isAuthenticated, handleLogout, isAdmin, currentUser } = useContext(SessionContext);
   return (
     <>
       <nav>
@@ -17,7 +17,7 @@ const Navbar = () => {
         )}
         {(isAuthenticated && !isAdmin) && (
           <>
-            <Link to="/user">User</Link>
+            <Link to={`users/${currentUser}`}>User</Link>
           </>
         )}
         {isAdmin && <Link to="/admin">Admin</Link>}
