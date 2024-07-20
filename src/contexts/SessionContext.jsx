@@ -118,7 +118,6 @@ const SessionContextProvider = ({ children }) => {
         setToken,
         fetchWithToken,
         handleLogout,
-        setCurrentUser,
         currentUser,
         isAdmin
       }}

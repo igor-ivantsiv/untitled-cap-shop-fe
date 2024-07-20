@@ -5,6 +5,8 @@ import RegisterPage from "./pages/RegisterPage"
 import LoginPage from "./pages/LoginPage"
 import PrivateRoute from "./components/PrivateRoute"
 import TestProfile from "./pages/TestProfile"
+import AdminRoute from "./components/AdminRoute"
+import TestAdminPage from "./pages/TestAdminPage"
 //import User from "./pages/TestUser"
 
 function App() {
@@ -15,8 +17,16 @@ function App() {
         <Route path="/" element={<Homepage />}/>
         <Route path="/register" element={<RegisterPage />}/>
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/user" element={<TestProfile />} />
-        <Route path="/admin" />
+        <Route path="/user" element={
+          <PrivateRoute>
+            <TestProfile />
+          </PrivateRoute>
+          } />
+        <Route path="/admin" element={
+          <AdminRoute>
+            <TestAdminPage />
+          </AdminRoute>
+        }/>
       </Routes>
     </>
   )

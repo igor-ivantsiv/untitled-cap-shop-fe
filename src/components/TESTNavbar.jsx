@@ -15,13 +15,13 @@ const Navbar = () => {
             <Link to="/login">Login</Link>
           </>
         )}
-        {isAuthenticated && (
+        {(isAuthenticated && !isAdmin) && (
           <>
             <Link to="/user">User</Link>
-            <Button onClick={handleLogout}>Log out</Button>
           </>
         )}
         {isAdmin && <Link to="/admin">Admin</Link>}
+        {isAuthenticated && <Button onClick={handleLogout}>Log out</Button>}
         
       </nav>
     </>
