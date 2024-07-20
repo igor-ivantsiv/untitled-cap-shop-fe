@@ -1,12 +1,15 @@
 import { Button, PasswordInput, TextInput } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SessionContext } from "../contexts/SessionContext";
 
 const LoginForm = () => {
-  const { setToken, setCurrentUser } = useContext(SessionContext);
+  const { setToken } = useContext(SessionContext);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
+
   const form = useForm({
     mode: "uncontrolled",
     initialValues: {
@@ -22,9 +25,10 @@ const LoginForm = () => {
 
   const handleSubmit = async (values) => {
     console.log("Form: ", values);
-    const {password, username} = values
-    const payload = { password, username};
-    console.log("payload: ", payload)
+    setIsLoading(true)
+    const { password, username } = values;
+    const payload = { password, username };
+    console.log("payload: ", payload);
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/auth/login`,
@@ -39,14 +43,17 @@ const LoginForm = () => {
 
       if (response.status === 200 || response.status === 403) {
         const data = await response.json();
+        setIsLoading(false)
         console.log(data);
         if (response.status === 403) {
+          
           const errorMessage = data.message;
 
           form.setErrors({
             username: errorMessage,
             password: errorMessage,
           });
+          
           return;
         }
         setToken(data.token);
@@ -72,7 +79,7 @@ const LoginForm = () => {
           {...form.getInputProps("password")}
           key={form.key("password")}
         />
-        <Button type="submit">Login</Button>
+        <Button type="submit" loading={isLoading} loaderProps={{type: "dots"}}>Login</Button>
       </form>
     </>
   );

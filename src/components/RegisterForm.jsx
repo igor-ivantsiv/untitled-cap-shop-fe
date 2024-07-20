@@ -1,9 +1,11 @@
 import { Button, PasswordInput, TextInput } from "@mantine/core";
 import { hasLength, isEmail, matchesField, useForm } from "@mantine/form";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const RegisterForm = () => {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false)
 
   const form = useForm({
     mode: "uncontrolled",
@@ -24,6 +26,7 @@ const RegisterForm = () => {
 
   const handleSubmit = async (values) => {
     console.log("Form: ", values);
+    setIsLoading(true)
     const {username, email, password} = values;
     const payload = { username, email, password };
     try {
@@ -42,8 +45,9 @@ const RegisterForm = () => {
       const data = await response.json();
       console.log(data);
 
-      navigate("/");
+      navigate("/login");
     } catch (error) {
+      setIsLoading(false)
       console.log(error);
     }
   };
@@ -71,7 +75,7 @@ const RegisterForm = () => {
           {...form.getInputProps("confirmPassword")}
           key={form.key("confirmPassword")}
         />
-        <Button type="submit">Register</Button>
+        <Button type="submit" loading={isLoading} loaderProps={{type: "dots"}}>Register</Button>
       </form>
     </>
   );

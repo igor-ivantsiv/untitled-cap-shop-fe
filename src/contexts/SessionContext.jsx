@@ -9,6 +9,7 @@ const SessionContextProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState("");
 
+  // remove token from local storage
   const removeToken = () => {
     window.localStorage.removeItem("authToken");
   };
@@ -33,6 +34,7 @@ const SessionContextProvider = ({ children }) => {
     }
   }
 
+  // verify token on backend
   const verifyToken = async (tokenToVerify) => {
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/verify`, {
@@ -41,20 +43,27 @@ const SessionContextProvider = ({ children }) => {
         },
       });
 
+      // if response ok -> set token and authenticate
+      // get username and role of current user
+      // turn off loading state
       if (response.status === 200) {
         setToken(tokenToVerify);
         setIsAuthenticated(true);
         const data = await response.json();
-        console.log("verified token: ", data)
+        //console.log("verified token: ", data)
         setCurrentUser(data.username)
         if (data.role === "admin") {
           setIsAdmin(true);
         }
         setIsLoading(false);
+      
+      // if token is not verified -> remove token, turn off loading state
       } else {
         setIsLoading(false);
         removeToken();
       }
+
+    // in case of error -> remove token, turn off loading state
     } catch (error) {
       console.log(error);
       setIsLoading(false);
@@ -62,6 +71,7 @@ const SessionContextProvider = ({ children }) => {
     }
   };
 
+  // check local storage for token, verify token
   useEffect(() => {
     const localToken = window.localStorage.getItem("authToken");
     if (localToken) {
@@ -119,7 +129,8 @@ const SessionContextProvider = ({ children }) => {
         fetchWithToken,
         handleLogout,
         currentUser,
-        isAdmin
+        isAdmin,
+        setIsLoading
       }}
     >
       {children}
