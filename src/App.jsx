@@ -1,36 +1,87 @@
-import { Route, Routes } from "react-router-dom"
-import Navbar from "./components/TESTNavbar"
-import Homepage from "./pages/Homepage"
-import RegisterPage from "./pages/RegisterPage"
-import LoginPage from "./pages/LoginPage"
-import PrivateRoute from "./components/PrivateRoute"
-import TestProfile from "./pages/TestProfile"
-import AdminRoute from "./components/AdminRoute"
-import TestAdminPage from "./pages/TestAdminPage"
-import NotFoundPage from "./pages/NotFoundPage"
+import { Route, Routes } from "react-router-dom";
+import Homepage from "./pages/Homepage";
+import RegisterPage from "./pages/auth/RegisterPage";
+import LoginPage from "./pages/auth/LoginPage";
+import PrivateRoute from "./components/PrivateRoute";
+import TestProfile from "./pages/TestProfile";
+import AdminRoute from "./components/AdminRoute";
+import TestAdminPage from "./pages/TestAdminPage";
+import NotFoundPage from "./pages/NotFoundPage";
+import ProductsPage from "./pages/user/ProductsPage";
+import CheckoutPage from "./pages/user/CheckoutPage";
+import UserProfilePage from "./pages/user/UserProfilePage";
+import ManageOrdersPage from "./pages/admin/ManageOrdersPage";
+import ManageProductsPage from "./pages/admin/ManageProductsPage";
 
 function App() {
   return (
     <>
-    
       <Routes>
-        <Route path="/" element={<Homepage />}/>
-        <Route path="/register" element={<RegisterPage />}/>
+        <Route path="/" element={<Homepage />} />
+
+        {/* auth routes */}
+        <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/users/:userId" element={
-          <PrivateRoute>
-            <TestProfile />
-          </PrivateRoute>
-          } />
-        <Route path="/admin" element={
-          <AdminRoute>
-            <TestAdminPage />
-          </AdminRoute>
-        }/>
-        <Route path="*" element={<NotFoundPage />}/>
+
+        {/* store/user routes */}
+        <Route path="/products" element={<ProductsPage />} />
+        <Route
+          path="/checkout"
+          element={
+            <PrivateRoute>
+              <CheckoutPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="profile/:userId"
+          element={
+            <PrivateRoute>
+              <UserProfilePage />
+            </PrivateRoute>
+          }
+        />
+
+        {/* admin routes */}
+        <Route
+          path="admin/orders"
+          element={
+            <AdminRoute>
+              <ManageOrdersPage />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="admin/products"
+          element={
+            <AdminRoute>
+              <ManageProductsPage />
+            </AdminRoute>
+          }
+        />
+
+        {/* TEST ROUTES */}
+        <Route
+          path="/users/:userId"
+          element={
+            <PrivateRoute>
+              <TestProfile />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <TestAdminPage />
+            </AdminRoute>
+          }
+        />
+
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
