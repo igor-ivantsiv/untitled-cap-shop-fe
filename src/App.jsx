@@ -12,7 +12,7 @@ import NotFoundPage from "./pages/NotFoundPage"
 function App() {
   return (
     <>
-    <Navbar />
+    
       <Routes>
         <Route path="/" element={<Homepage />}/>
         <Route path="/register" element={<RegisterPage />}/>

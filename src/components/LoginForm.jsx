@@ -45,11 +45,9 @@ const LoginForm = () => {
         setIsLoading(false);
         console.log(data);
         if (response.status === 403) {
-          const errorMessage = data.message;
-
           form.setErrors({
-            username: errorMessage,
-            password: errorMessage,
+            username: data.message,
+            password: data.message,
           });
 
           return;
@@ -60,6 +58,7 @@ const LoginForm = () => {
         throw new Error("Something went wrong");
       }
     } catch (error) {
+      setIsLoading(false)
       console.error(error);
       form.setErrors({
         username: "Something went wrong, please try again",

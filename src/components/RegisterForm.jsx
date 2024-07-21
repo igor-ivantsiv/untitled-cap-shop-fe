@@ -41,14 +41,19 @@ const RegisterForm = () => {
         }
       );
 
-      if (response.status !== 201) {
+      // check for response status
+      if (response.status === 201 || response.status === 409) {
+        const data = await response.json();
+        console.log(data);
+
+        // display message if username not available
+        response.status === 409
+          ? form.setErrors({ username: data.message })
+          : navigate("/login");
+        setIsLoading(false);
+      } else {
         throw new Error("Something went wrong");
       }
-
-      const data = await response.json();
-      console.log(data);
-
-      navigate("/login");
     } catch (error) {
       setIsLoading(false);
       console.log(error);

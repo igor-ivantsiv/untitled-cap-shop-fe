@@ -7,12 +7,19 @@ const TestAdminPage = () => {
 
   const [users, setUsers] = useState([]);
 
-  // test admin rights
-  const getAllUsers = async() => {
-    const data = await fetchWithToken("/users");
-    console.log("fetched users: ", data);
-    setUsers(data);
-  }
+  // test for admin rights
+  const getAllUsers = async () => {
+    try {
+      const data = await fetchWithToken("/users");
+      console.log("fetched users: ", data);
+      if (!data) {
+        throw new Error("forbidden");
+      }
+      setUsers(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <>
@@ -20,16 +27,12 @@ const TestAdminPage = () => {
       {currentUser && (
         <>
           <h2>Current user: {currentUser}</h2>
-          <Button
-            onClick={getAllUsers}
-          >
-            Fetch users
-        </Button>
-        <ul>
-        {users.map(user => (
-            <li key={user._id}>{user.username}</li>
-        ))}
-        </ul>
+          <Button onClick={getAllUsers}>Fetch users</Button>
+          <ul>
+            {users.map((user) => (
+              <li key={user._id}>{user.username}</li>
+            ))}
+          </ul>
         </>
       )}
     </>
