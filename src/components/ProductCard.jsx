@@ -2,18 +2,13 @@ import { Card, Group, Image, NumberFormatter, Text } from "@mantine/core";
 import { Link } from "react-router-dom";
 
 const ProductCard = ({ image, name, price, productId }) => {
-  // temporary placeholder
-  /*
-  const placeholderImg =
-    "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
+  /* temporary placeholder
 
-  const imgUrl = image ? image : placeholderImg;
+    "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
 */
   return (
     <>
-    <Link to={`/products/${productId}`}>
-    
-      <Card>
+      <Card component={Link} to={`/products/${productId}`}>
         <Card.Section>
           <Image
             src={image}
@@ -26,7 +21,6 @@ const ProductCard = ({ image, name, price, productId }) => {
           <NumberFormatter prefix="$" value={price / 100} decimalScale={2} />
         </Group>
       </Card>
-      </Link>
     </>
   );
 };

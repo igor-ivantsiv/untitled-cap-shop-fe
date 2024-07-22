@@ -2,9 +2,12 @@ import { useEffect, useState } from "react";
 import ProductCard from "./ProductCard";
 import { SimpleGrid, Skeleton } from "@mantine/core";
 
+// (!) add loading state for page
 const ProductsList = () => {
   const [products, setProducts] = useState([]);
+  const [pageLoading, setPageLoading] = useState(true);
 
+  // fetch all products
   useEffect(() => {
     const fetchProducts = async () => {
       console.log("fetching products...");
@@ -29,10 +32,24 @@ const ProductsList = () => {
     fetchProducts();
   }, []);
 
+  useEffect(() => {
+    if (products.length > 0) {
+      setPageLoading(false);
+    }
+  }, [products]);
+
   return (
     <>
       <SimpleGrid cols={{ base: 2, sm: 3, lg: 4 }}>
-        {products.length > 0 ? (
+        {pageLoading ? (
+          <>
+            {Array.from({ length: 10 }).map((_, index) => (
+              <div key={index} style={{ width: "100%", height: "100%" }}>
+                <Skeleton height={200} width="100%" />
+              </div>
+            ))}
+          </>
+        ) : (
           <>
             {products.map((product) => (
               <ProductCard
@@ -42,12 +59,6 @@ const ProductsList = () => {
                 price={product.price}
                 productId={product._id}
               />
-            ))}
-          </>
-        ) : (
-          <>
-            {Array.from({length: 10}).map((_, index) => (
-                <div key={index} style={{width: "100%", height: "100%"}}><Skeleton height={200} width="100%" /></div>
             ))}
           </>
         )}

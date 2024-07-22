@@ -26,7 +26,7 @@ function App() {
 
         {/* store/user routes */}
         <Route path="/products" element={<ProductsPage />} />
-        <Route path="/products/:productId" element={<ProductDetailsPage />}/>
+        <Route path="/products/:variantId" element={<ProductDetailsPage />}/>
         <Route
           path="/checkout"
           element={
