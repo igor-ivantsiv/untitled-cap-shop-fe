@@ -12,6 +12,7 @@ import CheckoutPage from "./pages/user/CheckoutPage";
 import UserProfilePage from "./pages/user/UserProfilePage";
 import ManageOrdersPage from "./pages/admin/ManageOrdersPage";
 import ManageProductsPage from "./pages/admin/ManageProductsPage";
+import ProductDetailsPage from "./pages/user/ProductDetailsPage";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
 
         {/* store/user routes */}
         <Route path="/products" element={<ProductsPage />} />
+        <Route path="/products/:variantId" element={<ProductDetailsPage />}/>
         <Route
           path="/checkout"
           element={
