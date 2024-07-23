@@ -1,13 +1,13 @@
-import { createContext, useReducer } from "react";
+import { createContext, useEffect, useReducer } from "react";
 
 export const CartContext = createContext();
 /*
 // {
-items: [{item: id, quantity: 1, totalPrice: item.price * quantity }], 
-totalCartPrice: totalPrice,}
+items: [{item: id, quantity: 1}]
 */
-const initialCart = [];
+const initialCart = JSON.parse(sessionStorage.getItem("cartItems")) || [];
 
+// add requests to increase/decrease stock
 const cartReducer = (state, action) => {
   switch (action.type) {
     case "add_item": {
@@ -16,42 +16,33 @@ const cartReducer = (state, action) => {
       return updatedItems;
     }
     case "change_quantity": {
-        
       const updatedItems = state.map((element) => {
         if (element.item === action.payload.item) {
-            const updatedQuantity = action.payload.quantity;
-            console.log(`updated ${action.payload.item} quantity: ${updatedQuantity}`)
-            return {...element, quantity: updatedQuantity};
+          const updatedQuantity = action.payload.quantity;
+          console.log(
+            `updated ${action.payload.item} quantity: ${updatedQuantity}`
+          );
+          return { ...element, quantity: updatedQuantity };
         }
-        return element
+        return element;
       });
-      return updatedItems
+      return updatedItems;
+    }
+    case "remove_item": {
+      const updatedItems = state.filter(
+        (element) => element.item !== action.payload
+      );
+      return updatedItems;
     }
   }
 };
 
-// update prices
-
 const CartContextProvider = ({ children }) => {
   const [cartState, cartDispatch] = useReducer(cartReducer, initialCart);
 
-  const addToCart = (variantId) => {
-    // check if item is already in cart
-    // reduce virtual stock
-    // save id: 0 in cart
-    // open cart
-  };
-
-  const changeQuantity = (variantId) => {
-    // check virtual stock
-    // reduce virtual stock
-    // increase quantity
-  };
-
-  const removeFromCart = (variantId) => {
-    // remove from cart
-    // increase virtual stock
-  };
+  useEffect(() => {
+    sessionStorage.setItem("cartItems", JSON.stringify(cartState));
+  }, [cartState]);
 
   return (
     <CartContext.Provider value={{ cartDispatch, cartState }}>

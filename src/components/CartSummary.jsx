@@ -1,6 +1,9 @@
 import { useContext, useEffect, useState } from "react";
 import { CartContext } from "../contexts/CartContext";
 import {
+  Button,
+  CloseButton,
+  Grid,
   Group,
   Image,
   NumberFormatter,
@@ -12,19 +15,16 @@ const CartSummary = () => {
   const { cartState, cartDispatch } = useContext(CartContext);
   const [products, setProducts] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
-  const [quantity, setQuantity] = useState({});
 
+  // get total price based on products list
   useEffect(() => {
-    if (products.length > 0) {
-      products.forEach((item) => {
-        setQuantity((prevState) => ({
-          ...prevState,
-          [item._id]: item.quantity,
-        }));
-      });
-    }
+    console.log("cart: ", cartState);
+    const sum = products.reduce((acc, value) => acc + value.itemTotal, 0);
+    setTotalPrice(sum);
+    console.log("total sum: ", sum);
   }, [products]);
 
+  // fetch products in cart
   useEffect(() => {
     const fetchProduct = async (variantId, quantity) => {
       try {
@@ -38,8 +38,15 @@ const CartSummary = () => {
 
         const data = await response.json();
         console.log("product data: ", data);
-        const shoppingData = { ...data, quantity };
 
+        // get item total price
+        const itemTotal = quantity * data.price;
+        console.log("item total: ", itemTotal);
+
+        // create new object with quantity and total prop
+        const shoppingData = { ...data, quantity, itemTotal };
+
+        // add to list of products
         setProducts((prevState) => [...prevState, shoppingData]);
       } catch (error) {
         console.error(error);
@@ -53,46 +60,70 @@ const CartSummary = () => {
     }
   }, []);
 
+  // update quantity in shopping cart
   const updateQuantity = (event, itemId) => {
+    console.log("products: ", products);
     console.log(`event: ${event}, id: ${itemId}`);
-    //setQuantity(event)
     cartDispatch({
       type: "change_quantity",
       payload: { item: itemId, quantity: event },
     });
-    setQuantity((prevState) => ({
-      ...prevState,
-      [itemId]: event,
-    }));
+    const updatedProducts = products.map((item) => {
+      if (item._id === itemId) {
+        const updatedItemTotal = item.price * event;
+        const updatedItem = {
+          ...item,
+          quantity: event,
+          itemTotal: updatedItemTotal,
+        };
+        return updatedItem;
+      }
+      return item;
+    });
+
+    setProducts(updatedProducts);
   };
 
-  useEffect(() => {
-    console.log("cart: ", cartState);
-    const sum = products.reduce((acc, value) => acc + value.price, 0);
-    setTotalPrice(sum);
-  }, [products, cartState]);
+  // remove item from shopping cart
+  const removeItem = (itemId) => {
+    const updatedProducts = products.filter((item) => item._id !== itemId);
+    cartDispatch({ type: "remove_item", payload: itemId });
+    setProducts(updatedProducts);
+  };
 
   return (
     <>
-      {products.length > 0 &&
-        products.map((item) => (
-          <>
-            <Group key={item._id}>
-              <Image src={item.imageUrl} maw={100} />
-              <Text>{item.productId.name}</Text>
-              <NumberInput
-                label="Amount"
-                value={quantity[`${item._id}`]}
-                onChange={(event) => updateQuantity(event, item._id)}
-              />
-              <NumberFormatter
-                prefix="$"
-                value={item.price / 100}
-                decimalScale={2}
-              />
-            </Group>
-          </>
-        ))}
+      {products.map((item) => (
+        <Grid key={item._id} align="flex-start" justify="center">
+          <Grid.Col span={3}>
+            <Image src={item.imageUrl}  />
+          </Grid.Col>
+          <Grid.Col span={3}>
+            <Text>{item.productId.name}</Text>
+          </Grid.Col>
+          <Grid.Col span={3}>
+            <NumberInput
+  
+              label="Amount"
+              value={item.quantity}
+              onChange={(event) => updateQuantity(event, item._id)}
+              min={1}
+            />
+          </Grid.Col>
+          <Grid.Col span={2}>
+            <NumberFormatter
+              prefix="$"
+              value={(item.price / 100) * item.quantity}
+              decimalScale={2}
+            />
+          </Grid.Col>
+          <Grid.Col span={1}>
+            <Button size="compact-xs" onClick={() => removeItem(item._id)}>
+              X
+            </Button>
+          </Grid.Col>
+        </Grid>
+      ))}
       <div>Total price: {totalPrice}</div>
     </>
   );
