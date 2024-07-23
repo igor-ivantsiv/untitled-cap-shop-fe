@@ -22,9 +22,11 @@ import {
 import { useContext, useState } from "react";
 import { Form, useForm } from "@mantine/form";
 import { SessionContext } from "../contexts/SessionContext"
+import { useRefetchContext } from "../contexts/RefetchContext";
 
 const TableRowItem = ({ order }) => {
     const { fetchWithToken } = useContext(SessionContext)
+    const { setShouldRefetch } = useRefetchContext();
 
   const [shipModalOpen, setShipModalOpen] = useState(false);
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
@@ -55,6 +57,7 @@ const handleShipSubmit = async (values, orderId) => {
         
         console.log("Updated Order:", updatedOrder); // Debugging log
         setShipModalOpen(false);
+        setShouldRefetch((prevState) => !prevState);
     } catch (error) {
         console.log(error);
     }
@@ -70,6 +73,7 @@ const handleShipSubmit = async (values, orderId) => {
       );
       console.log(updatedOrder);
       setCancelModalOpen(false);
+      setShouldRefetch((prevState) => !prevState);
     } catch (error) {
       console.log(error);
     }

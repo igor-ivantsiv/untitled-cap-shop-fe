@@ -28,7 +28,7 @@ const ProductDetailsPage = () => {
       console.log("fetching product...");
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/products/varients/${variantId}`
+          `${import.meta.env.VITE_API_URL}/api/products/variants/${variantId}`
         );
 
         if (!response.ok) {

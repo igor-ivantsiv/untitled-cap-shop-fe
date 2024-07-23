@@ -13,7 +13,7 @@ const ProductsList = () => {
       console.log("fetching products...");
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/products/varients`
+          `${import.meta.env.VITE_API_URL}/api/products/variants`
         );
 
         if (!response.ok) {
