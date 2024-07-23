@@ -32,6 +32,7 @@ const ManageOrdersPage = () => {
           <Table.Th>Status</Table.Th>
           <Table.Th>Name</Table.Th>
           <Table.Th>Total paid</Table.Th>
+          <Table.Th>Created at</Table.Th>
           <Table.Th>Shipped at</Table.Th>
           <Table.Th>Tracking Id</Table.Th>
           <Table.Th>Cancelled at</Table.Th>
