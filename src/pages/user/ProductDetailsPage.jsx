@@ -9,13 +9,16 @@ import {
   Stack,
   Text,
 } from "@mantine/core";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import VariantsList from "../../components/VariantsList";
 import DetailsSkeleton from "../../components/DetailsSkeleton";
+import { CartContext } from "../../contexts/CartContext";
 
 const ProductDetailsPage = () => {
   const { variantId } = useParams();
+
+  const { cartDispatch } = useContext(CartContext);
 
   const [product, setProduct] = useState({});
   const [variants, setVariants] = useState([]);
@@ -77,11 +80,18 @@ const ProductDetailsPage = () => {
   // check if page is still loading
   useEffect(() => {
     if (product.productId && variants.length > 1) {
-        setTimeout(() => {
-            setPageLoading(false);
-        }, 1000)
+      setTimeout(() => {
+        setPageLoading(false);
+      }, 1000);
     }
   }, [product, variants]);
+
+  const addToCart = () => {
+    cartDispatch({
+      type: "add_item",
+      payload: { item: product._id, quantity: 1},
+    });
+  };
 
   return (
     <>
@@ -123,7 +133,7 @@ const ProductDetailsPage = () => {
         <Button component={Link} to={"/products"}>
           Back
         </Button>
-        <Button>Add to cart</Button>
+        <Button onClick={addToCart}>Add to cart</Button>
       </Group>
     </>
   );
