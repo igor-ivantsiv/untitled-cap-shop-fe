@@ -96,14 +96,13 @@ const CartSummary = () => {
       {products.map((item) => (
         <Grid key={item._id} align="flex-start" justify="center">
           <Grid.Col span={3}>
-            <Image src={item.imageUrl}  />
+            <Image src={item.imageUrl} />
           </Grid.Col>
           <Grid.Col span={3}>
             <Text>{item.productId.name}</Text>
           </Grid.Col>
           <Grid.Col span={3}>
             <NumberInput
-  
               label="Amount"
               value={item.quantity}
               onChange={(event) => updateQuantity(event, item._id)}

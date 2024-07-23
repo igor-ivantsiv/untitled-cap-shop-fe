@@ -18,10 +18,10 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       <MantineProvider defaultColorScheme="dark" theme={theme}>
         <SessionContextProvider>
-        <RefetchProvider>
-          <CartContextProvider>
-          <AppShellComp />
-          </CartContextProvider>
+          <RefetchProvider>
+            <CartContextProvider>
+              <AppShellComp />
+            </CartContextProvider>
           </RefetchProvider>
         </SessionContextProvider>
       </MantineProvider>
