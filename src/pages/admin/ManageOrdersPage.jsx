@@ -3,11 +3,14 @@ import { useContext, useEffect, useState } from "react";
 import { Table } from '@mantine/core';
 import { SessionContext } from "../../contexts/SessionContext";
 import TableRowItem from "../../components/TableRowItem";
+import { useRefetchContext } from "../../contexts/RefetchContext";
 
 const ManageOrdersPage = () => {
   const [orders, setOrders] = useState([]);
 
   const { fetchWithToken } = useContext(SessionContext)
+
+  const { shouldRefetch } = useRefetchContext();
 
   const getOrders = async () => {
     try {
@@ -16,8 +19,11 @@ const ManageOrdersPage = () => {
     } catch (error) {
       console.log(error) 
     }
-   
   }
+
+  useEffect(() => {
+    getOrders();
+  }, [shouldRefetch]);
 
   useEffect(() => {
     getOrders();
