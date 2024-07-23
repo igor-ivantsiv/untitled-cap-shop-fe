@@ -21,11 +21,10 @@ const cartReducer = (state, action) => {
         if (element.item === action.payload.item) {
             const updatedQuantity = action.payload.quantity;
             console.log(`updated ${action.payload.item} quantity: ${updatedQuantity}`)
-            element.quantity = updatedQuantity;
+            return {...element, quantity: updatedQuantity};
         }
-        return element;
+        return element
       });
-      console.log("updated arr: ", updatedItems)
       return updatedItems
     }
   }
