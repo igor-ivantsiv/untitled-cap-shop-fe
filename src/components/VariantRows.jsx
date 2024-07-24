@@ -109,7 +109,7 @@ const VariantRows = ({ variant }) => {
         stockFormData
       );
       setShowContent(true)
-      setShouldRefetch(true)
+      setShouldRefetch((prevState) => !prevState);
     } catch (error) {
       console.log(error);
     }
@@ -130,7 +130,6 @@ const VariantRows = ({ variant }) => {
     getStock();
     setVariantFormData({
       productId: variant.productId._id,
-      category: variant.productId.category,
       price: variant.price,
       color: variant.color,
       size: variant.size,
@@ -148,7 +147,6 @@ const VariantRows = ({ variant }) => {
     setChecked(variant.active);
     setVariantFormData({
       productId: variant.productId._id,
-      category: variant.productId.category,
       price: variant.price,
       color: variant.color,
       size: variant.size,
@@ -197,7 +195,8 @@ const VariantRows = ({ variant }) => {
                   <h4>Product data</h4>
                   <p>Product Id: {variant.productId._id}</p>
                   <p>Name: {variant.productId.name}</p>
-                  <p>Category: {variant.productId.descriptionm}</p>
+                  <p>Category: {variant.productId.category}</p>
+                  <p>Description: {variant.productId.description}</p>
                   <p>Material: {variant.productId.material}</p>
                 </div>
                 <div>
@@ -256,6 +255,12 @@ const VariantRows = ({ variant }) => {
                       label="Category"
                       name="category"
                       value={productFormData.category}
+                      onChange={handleInput}
+                    />
+                                        <TextInput
+                      label="Description"
+                      name="description"
+                      value={productFormData.description}
                       onChange={handleInput}
                     />
                     <TextInput
