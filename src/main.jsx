@@ -16,16 +16,18 @@ import CartContextProvider from "./contexts/CartContext.jsx";
 import { Notifications } from "@mantine/notifications";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <BrowserRouter>
-    <MantineProvider defaultColorScheme="dark" theme={theme}>
-      <SessionContextProvider>
-        <RefetchProvider>
-          <CartContextProvider>
-            <Notifications />
-            <AppShellComp />
-          </CartContextProvider>
-        </RefetchProvider>
-      </SessionContextProvider>
-    </MantineProvider>
-  </BrowserRouter>
+  <React.StrictMode>
+    <BrowserRouter>
+      <MantineProvider defaultColorScheme="dark" theme={theme}>
+        <SessionContextProvider>
+          <RefetchProvider>
+            <CartContextProvider>
+              <Notifications />
+              <AppShellComp />
+            </CartContextProvider>
+          </RefetchProvider>
+        </SessionContextProvider>
+      </MantineProvider>
+    </BrowserRouter>
+  </React.StrictMode>
 );

@@ -7,7 +7,7 @@ import {
   Text,
 } from "@mantine/core";
 import { IconArrowDown, IconArrowUp } from "@tabler/icons-react";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { CartContext } from "../contexts/CartContext";
 import { useRefetchContext } from "../contexts/RefetchContext";
 
@@ -21,6 +21,30 @@ const CartItem = ({ product }) => {
 
   const { cartState, cartDispatch, updateVirtualStock } =
     useContext(CartContext);
+
+  // get stock still available, disable button accordingly
+  useEffect(() => {
+    const fetchStock = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/stocks/${product._id}`
+        );
+
+        if (!response.ok) {
+          throw new Error("server response not ok");
+        }
+
+        const data = await response.json();
+
+        data.virtualStock <= 0
+          ? setIncreaseBtnDisabled(true)
+          : setIncreaseBtnDisabled(false);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchStock();
+  }, [buttonsLoading]);
 
   // disable decrease button when quantity reaches 1
   useState(() => {
@@ -81,7 +105,14 @@ const CartItem = ({ product }) => {
       console.log("cart after increase: ", cartState);
 
       // disable increase btn if virtual stock is out
+      // (!) UPDATE -> unavailable means the final item is now reserved,
+      // (!) still add to cart but disable btn after
     } else if (response === "unavailable") {
+      cartDispatch({
+        type: "add_item",
+        payload: { item: itemId, quantity: quantity + 1 },
+      });
+      setCurrentQuantity(quantity + 1);
       setIncreaseBtnDisabled(true);
     } else {
       console.error("problem updating virtual stock on cart item component");

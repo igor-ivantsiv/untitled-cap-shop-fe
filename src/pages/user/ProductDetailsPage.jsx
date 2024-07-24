@@ -117,8 +117,8 @@ const ProductDetailsPage = () => {
     if (!isAuthenticated) {
       notifications.show({
         title: "Hold up!",
-        message: "Please login or register to continue shopping!"
-      })
+        message: "Please login or register to continue shopping!",
+      });
       return navigate("/login");
     }
     setButtonLoading(true);
@@ -129,13 +129,18 @@ const ProductDetailsPage = () => {
     setTimeout(() => {
       setButtonLoading(false);
     }, 500);
-
+    console.log("response on details page: ", response);
     // on success -> update cart (btn will be disabled when stock reaches 0)
-    if (response === "success") {
+    // (!) UPDATE: unavailable means last item has now been reserver ->
+    // still add to cart, disable button after
+    if (response === "success" || response === "unavailable") {
       cartDispatch({
         type: "add_item",
         payload: { item: product._id, quantity: 1 },
       });
+      if (response === "unavailable") {
+        setStockUnavailable(true);
+      }
     } else {
       console.log("problem updating virtual stock on details page");
     }

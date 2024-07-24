@@ -59,6 +59,37 @@ const CartContextProvider = ({ children }) => {
 
   const { fetchWithToken } = useContext(SessionContext);
 
+  // dereserve all items when session ends
+  const dereserveItems = async () => {
+    try {
+      await Promise.all(
+        cartState.map((element) => {
+          fetchWithToken(`/stocks/dereservation/${element.item}`, "PUT", {
+            variantId: element.item,
+            quantity: element.quantity,
+          });
+        })
+      );
+    } catch (error) {
+      console.error("error dereserving all: ", error);
+    }
+  };
+
+  // add event listener to window -> dereserve items on session end
+  useEffect(() => {
+    const handleBeforeUnload = async () => {
+      await dereserveItems();
+      sessionStorage.removeItem("cartItems");
+    };
+    console.log("event listener added");
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      console.log("event listener removed");
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [cartState]);
+
   // update virtual stock, return response based on stock availability
   const updateVirtualStock = async (endpoint, method = "GET", payload) => {
     try {

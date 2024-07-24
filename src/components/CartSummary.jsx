@@ -15,35 +15,6 @@ const CartSummary = () => {
 
   const { shouldRefetch } = useRefetchContext();
 
-  /*
-  const dereserveItems = async () => {
-    try {
-      await Promise.all(
-        cartState.map((element) => {
-          fetchWithToken(`/stocks/dereservation/${element.item}`)
-          
-        })
-      )
-    }
-    catch (error) {
-      console.error("error dereserving all: ", error)
-    }
-  }
-
-  useEffect(() => {
-    const handleBeforeUnload = async () => {
-      await dereserveItems();
-      sessionStorage.removeItem("cartItems");
-    }
-
-    window.addEventListener("beforeunload", handleBeforeUnload)
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    }
-  }, [cartState])
-  */
-
   // calculate total price
   useEffect(() => {
     const fetchPrice = async (variantId, quantity) => {
