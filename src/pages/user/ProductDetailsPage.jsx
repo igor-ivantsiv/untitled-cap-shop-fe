@@ -31,7 +31,7 @@ const ProductDetailsPage = () => {
       console.log("fetching product...");
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/products/varients/${variantId}`
+          `${import.meta.env.VITE_API_URL}/api/products/variants/${variantId}`
         );
 
         if (!response.ok) {
@@ -80,16 +80,14 @@ const ProductDetailsPage = () => {
   // check if page is still loading
   useEffect(() => {
     if (product.productId && variants.length > 1) {
-      setTimeout(() => {
-        setPageLoading(false);
-      }, 1000);
+      setPageLoading(false);
     }
   }, [product, variants]);
 
   const addToCart = () => {
     cartDispatch({
       type: "add_item",
-      payload: { item: product._id, quantity: 1},
+      payload: { item: product._id, quantity: 1 },
     });
   };
 
