@@ -1,4 +1,5 @@
-import { createContext, useEffect, useReducer } from "react";
+import { createContext, useContext, useEffect, useReducer } from "react";
+import { SessionContext } from "./SessionContext";
 
 export const CartContext = createContext();
 /*
@@ -11,9 +12,26 @@ const initialCart = JSON.parse(sessionStorage.getItem("cartItems")) || [];
 const cartReducer = (state, action) => {
   switch (action.type) {
     case "add_item": {
+      const existingItemIndex = state.findIndex(
+        (element) => element.item === action.payload.item
+      );
+      if (existingItemIndex >= 0) {
+        const existingItem = state[existingItemIndex];
+
+        const updatedItem = {
+          item: action.payload.item,
+          quantity: existingItem.quantity + 1,
+        };
+        const updatedState = state.toSpliced(existingItemIndex, 1, updatedItem);
+        return updatedState;
+      } else {
+        return [...state, action.payload];
+      }
+      /*
       const updatedItems = [...state, action.payload];
       console.log("added to cart: ", updatedItems);
       return updatedItems;
+      */
     }
     case "change_quantity": {
       const updatedItems = state.map((element) => {
@@ -40,12 +58,53 @@ const cartReducer = (state, action) => {
 const CartContextProvider = ({ children }) => {
   const [cartState, cartDispatch] = useReducer(cartReducer, initialCart);
 
+  const { fetchWithToken } = useContext(SessionContext);
+
+  const updateVirtualStock = async (endpoint, method = "GET", payload) => {
+
+    try {
+      const data = await fetchWithToken(endpoint, method, payload);
+      console.log("virtual stock response: ", data);
+      if (!data) {
+        throw new Error("error updating stock")
+      }
+      if (data.virtualStock <= 0) {
+        return "unavailable";
+      }
+      return "success";
+    } catch (error) {
+      console.error(error);
+      return "error"
+    }
+    /*
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/stocks${endpoint}`
+      );
+      if (response.status !== 200) {
+        throw new Error("server response error: ", response);
+      }
+      const data = await response.json();
+      console.log("succes updating stock: ", data);
+      if (data.virtualStock <= 0) {
+        return "unavailable";
+      }
+      return "success";
+    } catch (error) {
+      console.log("error updating stock: ", error);
+      return "error";
+    }
+      */
+  };
+
   useEffect(() => {
     sessionStorage.setItem("cartItems", JSON.stringify(cartState));
   }, [cartState]);
 
   return (
-    <CartContext.Provider value={{ cartDispatch, cartState }}>
+    <CartContext.Provider
+      value={{ cartDispatch, cartState, updateVirtualStock }}
+    >
       {children}
     </CartContext.Provider>
   );

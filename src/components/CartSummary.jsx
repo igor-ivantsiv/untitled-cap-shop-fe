@@ -10,11 +10,18 @@ import {
   NumberInput,
   Text,
 } from "@mantine/core";
+import { IconArrowDown, IconArrowUp } from "@tabler/icons-react";
+import CartItem from "./CartItem";
 
 const CartSummary = () => {
-  const { cartState, cartDispatch } = useContext(CartContext);
+  const { cartState, cartDispatch, updateVirtualStock } =
+    useContext(CartContext);
   const [products, setProducts] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [buttonsLoading, setButtonsLoading] = useState({});
+  const [increaseBtnDisabled, setIncreaseBtnDisabled] = useState();
+  const [decreaseBtnDisabled, setDecreaseBtnDisabled] = useState();
+  const [buttons, setButtons] = useState([]);
 
   // get total price based on products list
   useEffect(() => {
@@ -23,7 +30,18 @@ const CartSummary = () => {
     setTotalPrice(sum);
     console.log("total sum: ", sum);
   }, [products]);
-
+  /*
+  useEffect(() => {
+    const buttonArr = products.map((item) => ({
+      product: item._id,
+      loading: false,
+      increase: false,
+      decrease: false,
+    }));
+    setButtons(buttonArr);
+    console.log("button arr: ", buttons)
+  }, [products]);
+*/
   // fetch products in cart
   useEffect(() => {
     const fetchProduct = async (variantId, quantity) => {
@@ -48,6 +66,7 @@ const CartSummary = () => {
 
         // add to list of products
         setProducts((prevState) => [...prevState, shoppingData]);
+        
       } catch (error) {
         console.error(error);
       }
@@ -61,6 +80,7 @@ const CartSummary = () => {
   }, []);
 
   // update quantity in shopping cart
+  /*
   const updateQuantity = (event, itemId) => {
     console.log("products: ", products);
     console.log(`event: ${event}, id: ${itemId}`);
@@ -83,9 +103,36 @@ const CartSummary = () => {
 
     setProducts(updatedProducts);
   };
+*/
+
+  const increaseQuantity = async (itemId) => {};
+
+  const changeQuantity = (itemId, increase) => {
+    const updatedProducts = products.map((item) => {
+      if (item._id === itemId) {
+        const updatedQuantity = increase
+          ? item.quantity + 1
+          : item.quantity - 1;
+        const updatedItemTotal = item.price * updatedQuantity;
+        const updatedItem = {
+          ...item,
+          quantity: updatedQuantity,
+          itemTotal: updatedItemTotal,
+        };
+        cartDispatch({
+          type: "change_quantity",
+          payload: { item: itemId, quantity: updatedQuantity },
+        });
+        return updatedItem;
+      }
+      return item;
+    });
+    setProducts(updatedProducts);
+  };
 
   // remove item from shopping cart
-  const removeItem = (itemId) => {
+  const removeItem = async (itemId, quantity) => {
+    const response = await updateVirtualStock(`/dereservation/${itemId}`);
     const updatedProducts = products.filter((item) => item._id !== itemId);
     cartDispatch({ type: "remove_item", payload: itemId });
     setProducts(updatedProducts);
@@ -94,34 +141,7 @@ const CartSummary = () => {
   return (
     <>
       {products.map((item) => (
-        <Grid key={item._id} align="flex-start" justify="center">
-          <Grid.Col span={3}>
-            <Image src={item.imageUrl} />
-          </Grid.Col>
-          <Grid.Col span={3}>
-            <Text>{item.productId.name}</Text>
-          </Grid.Col>
-          <Grid.Col span={3}>
-            <NumberInput
-              label="Amount"
-              value={item.quantity}
-              onChange={(event) => updateQuantity(event, item._id)}
-              min={1}
-            />
-          </Grid.Col>
-          <Grid.Col span={2}>
-            <NumberFormatter
-              prefix="$"
-              value={(item.price / 100) * item.quantity}
-              decimalScale={2}
-            />
-          </Grid.Col>
-          <Grid.Col span={1}>
-            <Button size="compact-xs" onClick={() => removeItem(item._id)}>
-              X
-            </Button>
-          </Grid.Col>
-        </Grid>
+          <CartItem product={item} key={item._id}/>
       ))}
       <div>Total price: {totalPrice}</div>
     </>

@@ -18,12 +18,15 @@ import { CartContext } from "../../contexts/CartContext";
 const ProductDetailsPage = () => {
   const { variantId } = useParams();
 
-  const { cartDispatch } = useContext(CartContext);
+  const { cartDispatch, updateVirtualStock } = useContext(CartContext);
 
   const [product, setProduct] = useState({});
   const [variants, setVariants] = useState([]);
 
   const [pageLoading, setPageLoading] = useState(true);
+  const [buttonLoading, setButtonLoading] = useState(false);
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [stockUnavailable, setStockUnavailable] = useState(false);
 
   // fetch current product variant
   useEffect(() => {
@@ -48,6 +51,31 @@ const ProductDetailsPage = () => {
     };
     fetchProduct();
   }, [variantId]);
+
+  useEffect(() => {
+    const fetchStock = async () => {
+      console.log("fetching stock...");
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/stocks/${variantId}`
+        );
+
+        if (!response.ok) {
+          throw new Error("server response not ok");
+        }
+
+        const data = await response.json();
+        console.log("stocks data: ", data);
+
+        data.virtualStock <= 0
+          ? setStockUnavailable(true)
+          : setStockUnavailable(false);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchStock();
+  }, [variantId, buttonLoading]);
 
   // fetch other variants of current product
   useEffect(() => {
@@ -84,11 +112,24 @@ const ProductDetailsPage = () => {
     }
   }, [product, variants]);
 
-  const addToCart = () => {
-    cartDispatch({
-      type: "add_item",
-      payload: { item: product._id, quantity: 1 },
-    });
+  useEffect(() => {});
+
+  const addToCart = async () => {
+    setButtonLoading(true);
+    const response = await updateVirtualStock(`/stocks/reservation/${product._id}`);
+    console.log("reservation response: ", response);
+    setTimeout(() => {
+      setButtonLoading(false);
+    }, 500);
+
+    if (response === "success") {
+      cartDispatch({
+        type: "add_item",
+        payload: { item: product._id, quantity: 1 },
+      });
+    } else {
+      console.log("problem updating virtual stock on details page");
+    }
   };
 
   return (
@@ -131,7 +172,14 @@ const ProductDetailsPage = () => {
         <Button component={Link} to={"/products"}>
           Back
         </Button>
-        <Button onClick={addToCart}>Add to cart</Button>
+        <Button
+          onClick={addToCart}
+          loading={buttonLoading}
+          loaderProps={{ type: "dots" }}
+          disabled={stockUnavailable}
+        >
+          {stockUnavailable ? <Text>Unavailable</Text> : <Text>Add to cart</Text>}
+        </Button>
       </Group>
     </>
   );
