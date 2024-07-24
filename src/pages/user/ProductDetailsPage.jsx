@@ -10,28 +10,31 @@ import {
   Text,
 } from "@mantine/core";
 import { useContext, useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import VariantsList from "../../components/VariantsList";
 import DetailsSkeleton from "../../components/DetailsSkeleton";
 import { CartContext } from "../../contexts/CartContext";
+import { SessionContext } from "../../contexts/SessionContext";
+import { notifications } from "@mantine/notifications";
 
 const ProductDetailsPage = () => {
   const { variantId } = useParams();
 
   const { cartDispatch, updateVirtualStock } = useContext(CartContext);
+  const { isAuthenticated } = useContext(SessionContext);
 
   const [product, setProduct] = useState({});
   const [variants, setVariants] = useState([]);
 
   const [pageLoading, setPageLoading] = useState(true);
   const [buttonLoading, setButtonLoading] = useState(false);
-  const [buttonDisabled, setButtonDisabled] = useState(false);
   const [stockUnavailable, setStockUnavailable] = useState(false);
+
+  const navigate = useNavigate();
 
   // fetch current product variant
   useEffect(() => {
     const fetchProduct = async () => {
-      console.log("fetching product...");
       try {
         const response = await fetch(
           `${import.meta.env.VITE_API_URL}/api/products/variants/${variantId}`
@@ -42,7 +45,6 @@ const ProductDetailsPage = () => {
         }
 
         const data = await response.json();
-        console.log("product data: ", data);
 
         setProduct(data);
       } catch (error) {
@@ -52,9 +54,9 @@ const ProductDetailsPage = () => {
     fetchProduct();
   }, [variantId]);
 
+  // get the virtual stock for current item
   useEffect(() => {
     const fetchStock = async () => {
-      console.log("fetching stock...");
       try {
         const response = await fetch(
           `${import.meta.env.VITE_API_URL}/api/stocks/${variantId}`
@@ -65,7 +67,6 @@ const ProductDetailsPage = () => {
         }
 
         const data = await response.json();
-        console.log("stocks data: ", data);
 
         data.virtualStock <= 0
           ? setStockUnavailable(true)
@@ -80,7 +81,6 @@ const ProductDetailsPage = () => {
   // fetch other variants of current product
   useEffect(() => {
     const fetchVariants = async () => {
-      console.log("fetching variants..");
       try {
         const response = await fetch(
           `${import.meta.env.VITE_API_URL}/api/products/${
@@ -93,7 +93,6 @@ const ProductDetailsPage = () => {
         }
 
         const data = await response.json();
-        console.log("variants fetched: ", data);
 
         setVariants(data);
       } catch (error) {
@@ -112,16 +111,26 @@ const ProductDetailsPage = () => {
     }
   }, [product, variants]);
 
-  useEffect(() => {});
-
+  // on click -> set btn loading state, await api response
   const addToCart = async () => {
+    // if not authenticated, redirect
+    if (!isAuthenticated) {
+      notifications.show({
+        title: "Hold up!",
+        message: "Please login or register to continue shopping!"
+      })
+      return navigate("/login");
+    }
     setButtonLoading(true);
-    const response = await updateVirtualStock(`/stocks/reservation/${product._id}`);
-    console.log("reservation response: ", response);
+    const response = await updateVirtualStock(
+      `/stocks/reservation/${product._id}`
+    );
+
     setTimeout(() => {
       setButtonLoading(false);
     }, 500);
 
+    // on success -> update cart (btn will be disabled when stock reaches 0)
     if (response === "success") {
       cartDispatch({
         type: "add_item",
@@ -178,7 +187,11 @@ const ProductDetailsPage = () => {
           loaderProps={{ type: "dots" }}
           disabled={stockUnavailable}
         >
-          {stockUnavailable ? <Text>Unavailable</Text> : <Text>Add to cart</Text>}
+          {stockUnavailable ? (
+            <Text>Unavailable</Text>
+          ) : (
+            <Text>Add to cart</Text>
+          )}
         </Button>
       </Group>
     </>

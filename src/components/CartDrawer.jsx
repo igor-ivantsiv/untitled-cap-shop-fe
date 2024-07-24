@@ -4,14 +4,24 @@ import { useDisclosure } from "@mantine/hooks";
 import CartSummary from "./CartSummary";
 import classes from "../styles/Cart.module.css";
 import { IconShoppingBag } from "@tabler/icons-react";
+import { useContext } from "react";
+import { SessionContext } from "../contexts/SessionContext";
+import LoginForm from "./LoginForm";
 
 const CartDrawer = () => {
   const [cartOpened, cartHandler] = useDisclosure(false);
+  const { isAuthenticated } = useContext(SessionContext);
   return (
     <>
       <Drawer position="right" opened={cartOpened} onClose={cartHandler.close}>
-        <h1>Shopping cart</h1>
-        <CartSummary />
+        {isAuthenticated ? (
+          <>
+            <h1>Shopping cart</h1>
+            <CartSummary />
+          </>
+        ) : (
+          <LoginForm />
+        )}
       </Drawer>
 
       <Button className={classes.button} onClick={cartHandler.open}>

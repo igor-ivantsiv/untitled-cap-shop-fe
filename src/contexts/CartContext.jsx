@@ -1,20 +1,21 @@
-import { createContext, useContext, useEffect, useReducer} from "react";
+import { createContext, useContext, useEffect, useReducer } from "react";
 import { SessionContext } from "./SessionContext";
 
 export const CartContext = createContext();
 /*
-// {
-items: [{item: id, quantity: 1, priceTotal: p * q}]
+cartState = [{item: _id, quantity: 1}]
 */
 const initialCart = JSON.parse(sessionStorage.getItem("cartItems")) || [];
 
-// add requests to increase/decrease stock
+// perform all operations on cart state
 const cartReducer = (state, action) => {
   switch (action.type) {
     case "add_item": {
+      // check if item already in cart
       const existingItemIndex = state.findIndex(
         (element) => element.item === action.payload.item
       );
+      // if item found, add 1 to quantity
       if (existingItemIndex >= 0) {
         const existingItem = state[existingItemIndex];
 
@@ -22,24 +23,21 @@ const cartReducer = (state, action) => {
           item: action.payload.item,
           quantity: existingItem.quantity + 1,
         };
+        // return array with new object replacing updated item
         const updatedState = state.toSpliced(existingItemIndex, 1, updatedItem);
         return updatedState;
+        // if no item was found -> add new item to cart
       } else {
         return [...state, action.payload];
       }
-      /*
-      const updatedItems = [...state, action.payload];
-      console.log("added to cart: ", updatedItems);
-      return updatedItems;
-      */
     }
+
+    // decrease quantity
     case "change_quantity": {
+      // create new array from state, match id to provided id, update quantity
       const updatedItems = state.map((element) => {
         if (element.item === action.payload.item) {
           const updatedQuantity = action.payload.quantity;
-          console.log(
-            `updated ${action.payload.item} quantity: ${updatedQuantity}`
-          );
           return { ...element, quantity: updatedQuantity };
         }
         return element;
@@ -47,6 +45,7 @@ const cartReducer = (state, action) => {
       return updatedItems;
     }
     case "remove_item": {
+      // filter out element by provided id
       const updatedItems = state.filter(
         (element) => element.item !== action.payload
       );
@@ -60,13 +59,13 @@ const CartContextProvider = ({ children }) => {
 
   const { fetchWithToken } = useContext(SessionContext);
 
+  // update virtual stock, return response based on stock availability
   const updateVirtualStock = async (endpoint, method = "GET", payload) => {
-
     try {
       const data = await fetchWithToken(endpoint, method, payload);
       console.log("virtual stock response: ", data);
       if (!data) {
-        throw new Error("error updating stock")
+        throw new Error("error updating stock");
       }
       if (data.virtualStock <= 0) {
         return "unavailable";
@@ -74,17 +73,18 @@ const CartContextProvider = ({ children }) => {
       return "success";
     } catch (error) {
       console.error(error);
-      return "error"
+      return "error";
     }
   };
 
+  // store cart in session storage
   useEffect(() => {
     sessionStorage.setItem("cartItems", JSON.stringify(cartState));
   }, [cartState]);
 
   return (
     <CartContext.Provider
-      value={{ cartDispatch, cartState, updateVirtualStock}}
+      value={{ cartDispatch, cartState, updateVirtualStock }}
     >
       {children}
     </CartContext.Provider>

@@ -22,12 +22,15 @@ const CartItem = ({ product }) => {
   const { cartState, cartDispatch, updateVirtualStock } =
     useContext(CartContext);
 
+  // disable decrease button when quantity reaches 1
   useState(() => {
     currentQuantity <= 1
       ? setDecreaseBtnDisabled(true)
       : setDecreaseBtnDisabled(false);
   }, [currentQuantity]);
 
+  // decrease 1 from quantity
+  // set loading state on btn, await api response
   const decreaseQuantity = async (itemId, quantity) => {
     setButtonsLoading(true);
     const response = await updateVirtualStock(
@@ -40,20 +43,25 @@ const CartItem = ({ product }) => {
       setButtonsLoading(false);
     }, 500);
 
+    // update cart content and current quantity of product
     if (response === "success") {
       cartDispatch({
         type: "change_quantity",
         payload: { item: itemId, quantity: quantity - 1 },
       });
       setCurrentQuantity(quantity - 1);
+
+      // disable decrease btn if quantity is 1
       if (quantity - 1 === 1) {
         setDecreaseBtnDisabled(true);
       }
     } else {
-      console.log("problem updating virtual stock on cart summary page");
+      console.error("problem updating virtual stock on cart item component");
     }
   };
 
+  // increase quantity by 1
+  // set loading on btn, await api response
   const increaseQuantity = async (itemId, quantity) => {
     setButtonsLoading(true);
     const response = await updateVirtualStock(`/stocks/reservation/${itemId}`);
@@ -62,6 +70,7 @@ const CartItem = ({ product }) => {
       setButtonsLoading(false);
     }, 500);
 
+    // on success -> update cart content, set current quantity, enable decrease btn
     if (response === "success") {
       cartDispatch({
         type: "add_item",
@@ -70,13 +79,17 @@ const CartItem = ({ product }) => {
       setCurrentQuantity(quantity + 1);
       setDecreaseBtnDisabled(false);
       console.log("cart after increase: ", cartState);
+
+      // disable increase btn if virtual stock is out
     } else if (response === "unavailable") {
       setIncreaseBtnDisabled(true);
     } else {
-      console.log("problem updating virtual stock on details page");
+      console.error("problem updating virtual stock on cart item component");
     }
   };
 
+  // remove item + quantity from cart
+  // set loading state on btns, await api response
   const removeItem = async (itemId, quantity) => {
     setButtonsLoading(true);
     const response = await updateVirtualStock(
@@ -89,6 +102,7 @@ const CartItem = ({ product }) => {
       setButtonsLoading(false);
     }, 500);
 
+    // on success, refetch list in cart summary
     if (response === "success") {
       cartDispatch({
         type: "remove_item",
@@ -96,7 +110,7 @@ const CartItem = ({ product }) => {
       });
       setShouldRefetch((prevState) => !prevState);
     } else {
-      console.log("problem updating virtual stock on cart summary page");
+      console.log("problem updating virtual stock on cart item component");
     }
   };
 
