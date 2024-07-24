@@ -7,8 +7,62 @@ import {
   Text,
 } from "@mantine/core";
 import { IconArrowDown, IconArrowUp } from "@tabler/icons-react";
+import { useContext, useState } from "react";
+import { CartContext } from "../contexts/CartContext";
 
 const CartItem = ({ product }) => {
+  const [buttonsLoading, setButtonsLoading] = useState();
+  const [increaseBtnDisabled, setIncreaseBtnDisabled] = useState();
+  const [decreaseBtnDisabled, setDecreaseBtnDisabled] = useState();
+  const [currentQuantity, setCurrentQuantity] = useState(product.quantity);
+
+  const { cartState, cartDispatch, updateVirtualStock } =
+    useContext(CartContext);
+
+  const decreaseQuantity = async (itemId, quantity) => {
+    setButtonsLoading(true);
+    const response = await updateVirtualStock(`/stocks/dereservation/${itemId}`, "PUT", {quantity: 1});
+    console.log("dereservation response: ", response);
+    setTimeout(() => {
+      setButtonsLoading(false);
+    }, 500);
+
+    if (response === "success") {
+      cartDispatch({
+        type: "change_quantity",
+        payload: { item: itemId, quantity: quantity - 1 },
+      });
+      setCurrentQuantity(quantity - 1);
+      if (quantity - 1 === 0) {
+        setDecreaseBtnDisabled(true)
+      }
+    } else {
+      console.log("problem updating virtual stock on cart summary page");
+    }
+  };
+
+  const increaseQuantity = async (itemId, quantity) => {
+    setButtonsLoading(true);
+    const response = await updateVirtualStock(`/stocks/reservation/${itemId}`);
+    console.log("reservation response: ", response);
+    setTimeout(() => {
+      setButtonsLoading(false);
+    }, 500);
+
+    if (response === "success") {
+      cartDispatch({
+        type: "add_item",
+        payload: { item: itemId, quantity: quantity + 1 },
+      });
+      setCurrentQuantity(quantity + 1);
+    } else if (response === "unavailable") {
+      setIncreaseBtnDisabled(true);
+    } else {
+      console.log("problem updating virtual stock on details page");
+    }
+  };
+
+
   return (
     <Grid align="flex-start" justify="center">
       <Grid.Col span={3}>
@@ -20,15 +74,16 @@ const CartItem = ({ product }) => {
       <Grid.Col span={3}>
         <Group>
           <Text fw={500} size="sm">
-            {product.quantity}
+            {currentQuantity}
           </Text>
           <Button.Group orientation="vertical">
             <Button
               loading={buttonsLoading}
+              disabled={increaseBtnDisabled}
               loaderProps={{ type: "dots" }}
               size="compact-xs"
               variant="outline"
-              onClick={() => changeQuantity(product._id, true)}
+              onClick={() => increaseQuantity(product._id, currentQuantity)}
             >
               <IconArrowUp />
             </Button>
@@ -37,7 +92,7 @@ const CartItem = ({ product }) => {
               loaderProps={{ type: "dots" }}
               size="compact-xs"
               variant="outline"
-              onClick={() => changeQuantity(product._id, false)}
+              onClick={() => decreaseQuantity(product._id, currentQuantity)}
             >
               <IconArrowDown />
             </Button>
@@ -47,14 +102,14 @@ const CartItem = ({ product }) => {
       <Grid.Col span={2}>
         <NumberFormatter
           prefix="$"
-          value={(product.price / 100) * product.quantity}
+          value={(product.price / 100) * currentQuantity}
           decimalScale={2}
         />
       </Grid.Col>
       <Grid.Col span={1}>
         <Button
           size="compact-xs"
-          onClick={() => removeproduct(product._id, product.quantity)}
+          onClick={() => removeproduct(product._id, currentQuantity)}
         >
           X
         </Button>
@@ -63,4 +118,4 @@ const CartItem = ({ product }) => {
   );
 };
 
-export default CartItem
+export default CartItem;

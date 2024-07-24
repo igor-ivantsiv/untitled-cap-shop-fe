@@ -11,6 +11,7 @@ import {
   Text,
 } from "@mantine/core";
 import { IconArrowDown, IconArrowUp } from "@tabler/icons-react";
+import CartItem from "./CartItem";
 
 const CartSummary = () => {
   const { cartState, cartDispatch, updateVirtualStock } =
@@ -131,7 +132,7 @@ const CartSummary = () => {
 
   // remove item from shopping cart
   const removeItem = async (itemId, quantity) => {
-    const response = await updateVirtualStock(`/reservation/${itemId}`);
+    const response = await updateVirtualStock(`/dereservation/${itemId}`);
     const updatedProducts = products.filter((item) => item._id !== itemId);
     cartDispatch({ type: "remove_item", payload: itemId });
     setProducts(updatedProducts);
@@ -140,56 +141,7 @@ const CartSummary = () => {
   return (
     <>
       {products.map((item) => (
-        <Grid key={item._id} align="flex-start" justify="center">
-          <Grid.Col span={3}>
-            <Image src={item.imageUrl} />
-          </Grid.Col>
-          <Grid.Col span={3}>
-            <Text>{item.productId.name}</Text>
-          </Grid.Col>
-          <Grid.Col span={3}>
-            <Group>
-              <Text fw={500} size="sm">
-                {item.quantity}
-              </Text>
-              <Button.Group orientation="vertical">
-                <Button
-                  loading={buttonsLoading}
-                  loaderProps={{ type: "dots" }}
-                  size="compact-xs"
-                  variant="outline"
-                  onClick={() => changeQuantity(item._id, true)}
-                >
-                  <IconArrowUp />
-                </Button>
-                <Button
-                  loading={buttonsLoading}
-                  loaderProps={{ type: "dots" }}
-                  size="compact-xs"
-                  variant="outline"
-                  onClick={() => changeQuantity(item._id, false)}
-                >
-                  <IconArrowDown />
-                </Button>
-              </Button.Group>
-            </Group>
-          </Grid.Col>
-          <Grid.Col span={2}>
-            <NumberFormatter
-              prefix="$"
-              value={(item.price / 100) * item.quantity}
-              decimalScale={2}
-            />
-          </Grid.Col>
-          <Grid.Col span={1}>
-            <Button
-              size="compact-xs"
-              onClick={() => removeItem(item._id, item.quantity)}
-            >
-              X
-            </Button>
-          </Grid.Col>
-        </Grid>
+          <CartItem product={item} key={item._id}/>
       ))}
       <div>Total price: {totalPrice}</div>
     </>
