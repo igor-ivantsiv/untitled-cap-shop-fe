@@ -9,19 +9,32 @@ import {
 import { IconArrowDown, IconArrowUp } from "@tabler/icons-react";
 import { useContext, useState } from "react";
 import { CartContext } from "../contexts/CartContext";
+import { useRefetchContext } from "../contexts/RefetchContext";
 
 const CartItem = ({ product }) => {
-  const [buttonsLoading, setButtonsLoading] = useState();
-  const [increaseBtnDisabled, setIncreaseBtnDisabled] = useState();
-  const [decreaseBtnDisabled, setDecreaseBtnDisabled] = useState();
+  const [buttonsLoading, setButtonsLoading] = useState(false);
+  const [increaseBtnDisabled, setIncreaseBtnDisabled] = useState(false);
+  const [decreaseBtnDisabled, setDecreaseBtnDisabled] = useState(false);
   const [currentQuantity, setCurrentQuantity] = useState(product.quantity);
+
+  const { setShouldRefetch } = useRefetchContext();
 
   const { cartState, cartDispatch, updateVirtualStock } =
     useContext(CartContext);
 
+  useState(() => {
+    currentQuantity <= 1
+      ? setDecreaseBtnDisabled(true)
+      : setDecreaseBtnDisabled(false);
+  }, [currentQuantity]);
+
   const decreaseQuantity = async (itemId, quantity) => {
     setButtonsLoading(true);
-    const response = await updateVirtualStock(`/stocks/dereservation/${itemId}`, "PUT", {quantity: 1});
+    const response = await updateVirtualStock(
+      `/stocks/dereservation/${itemId}`,
+      "PUT",
+      { quantity: 1 }
+    );
     console.log("dereservation response: ", response);
     setTimeout(() => {
       setButtonsLoading(false);
@@ -33,8 +46,8 @@ const CartItem = ({ product }) => {
         payload: { item: itemId, quantity: quantity - 1 },
       });
       setCurrentQuantity(quantity - 1);
-      if (quantity - 1 === 0) {
-        setDecreaseBtnDisabled(true)
+      if (quantity - 1 === 1) {
+        setDecreaseBtnDisabled(true);
       }
     } else {
       console.log("problem updating virtual stock on cart summary page");
@@ -55,6 +68,8 @@ const CartItem = ({ product }) => {
         payload: { item: itemId, quantity: quantity + 1 },
       });
       setCurrentQuantity(quantity + 1);
+      setDecreaseBtnDisabled(false);
+      console.log("cart after increase: ", cartState);
     } else if (response === "unavailable") {
       setIncreaseBtnDisabled(true);
     } else {
@@ -62,6 +77,28 @@ const CartItem = ({ product }) => {
     }
   };
 
+  const removeItem = async (itemId, quantity) => {
+    setButtonsLoading(true);
+    const response = await updateVirtualStock(
+      `/stocks/dereservation/${itemId}`,
+      "PUT",
+      { quantity: quantity }
+    );
+    console.log("dereservation response: ", response);
+    setTimeout(() => {
+      setButtonsLoading(false);
+    }, 500);
+
+    if (response === "success") {
+      cartDispatch({
+        type: "remove_item",
+        payload: itemId,
+      });
+      setShouldRefetch((prevState) => !prevState);
+    } else {
+      console.log("problem updating virtual stock on cart summary page");
+    }
+  };
 
   return (
     <Grid align="flex-start" justify="center">
@@ -90,6 +127,7 @@ const CartItem = ({ product }) => {
             <Button
               loading={buttonsLoading}
               loaderProps={{ type: "dots" }}
+              disabled={decreaseBtnDisabled}
               size="compact-xs"
               variant="outline"
               onClick={() => decreaseQuantity(product._id, currentQuantity)}
@@ -102,14 +140,16 @@ const CartItem = ({ product }) => {
       <Grid.Col span={2}>
         <NumberFormatter
           prefix="$"
-          value={(product.price / 100) * currentQuantity}
+          value={(product.price * currentQuantity) / 100}
           decimalScale={2}
         />
       </Grid.Col>
       <Grid.Col span={1}>
         <Button
+          loading={buttonsLoading}
+          loaderProps={{ type: "dots" }}
           size="compact-xs"
-          onClick={() => removeproduct(product._id, currentQuantity)}
+          onClick={() => removeItem(product._id, currentQuantity)}
         >
           X
         </Button>

@@ -1,10 +1,10 @@
-import { createContext, useContext, useEffect, useReducer } from "react";
+import { createContext, useContext, useEffect, useReducer} from "react";
 import { SessionContext } from "./SessionContext";
 
 export const CartContext = createContext();
 /*
 // {
-items: [{item: id, quantity: 1}]
+items: [{item: id, quantity: 1, priceTotal: p * q}]
 */
 const initialCart = JSON.parse(sessionStorage.getItem("cartItems")) || [];
 
@@ -76,25 +76,6 @@ const CartContextProvider = ({ children }) => {
       console.error(error);
       return "error"
     }
-    /*
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/stocks${endpoint}`
-      );
-      if (response.status !== 200) {
-        throw new Error("server response error: ", response);
-      }
-      const data = await response.json();
-      console.log("succes updating stock: ", data);
-      if (data.virtualStock <= 0) {
-        return "unavailable";
-      }
-      return "success";
-    } catch (error) {
-      console.log("error updating stock: ", error);
-      return "error";
-    }
-      */
   };
 
   useEffect(() => {
@@ -103,7 +84,7 @@ const CartContextProvider = ({ children }) => {
 
   return (
     <CartContext.Provider
-      value={{ cartDispatch, cartState, updateVirtualStock }}
+      value={{ cartDispatch, cartState, updateVirtualStock}}
     >
       {children}
     </CartContext.Provider>
