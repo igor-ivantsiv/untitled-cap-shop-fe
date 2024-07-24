@@ -5,13 +5,14 @@ import {
   Button,
   Collapse,
   Image,
+  Modal,
   NumberInput,
   Switch,
   Table,
   TextInput,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { IconArrowBack, IconEdit } from "@tabler/icons-react";
+import { IconArrowBack, IconEdit, IconTrash } from "@tabler/icons-react";
 import { Form } from "@mantine/form";
 
 const VariantRows = ({ variant }) => {
@@ -26,6 +27,7 @@ const VariantRows = ({ variant }) => {
   const [checked, setChecked] = useState(false);
   const [showContent, setShowContent] = useState(true);
   const [opened, { toggle }] = useDisclosure(false);
+  const [openedWarn, { open, close }] = useDisclosure(false);
   const [variantFormData, setVariantFormData] = useState({});
   const [productFormData, setProductFormData] = useState({});
   const [stockFormData, setStockFormData] = useState({});
@@ -109,6 +111,20 @@ const VariantRows = ({ variant }) => {
         stockFormData
       );
       setShowContent(true)
+      setShouldRefetch((prevState) => !prevState);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      const deletedVariant = await fetchWithToken(
+        `/products/variants/${variant._id}`,
+        "DELETE",
+     {}
+      );
+      close();
       setShouldRefetch((prevState) => !prevState);
     } catch (error) {
       console.log(error);
@@ -334,9 +350,41 @@ const VariantRows = ({ variant }) => {
                     >
                       Update
                     </Button>
+                    <Button
+                  color="red"
+                  size="compact-md"
+                  radius="sm"
+                  rightSection={<IconTrash size={20} />}
+                  onClick={open}
+                >
+                  Delete
+                </Button>
                   </div>
                 </div>
               </form>
+              <Modal opened={openedWarn} onClose={close} title = ""withCloseButton={false}>
+              <h3>Are you sure you want to delete this variant?</h3>
+              <div className="warnButtons">
+              <Button
+                color="yellow"
+                size="compact-sm"
+                radius="sm"
+                rightSection={<IconArrowBack size={20} />}
+                onClick={close}
+              >
+                Back
+              </Button>
+              <Button
+                color="red"
+                size="compact-sm"
+                radius="sm"
+                rightSection={<IconTrash size={20} />}
+                onClick={() => handleDelete()}
+              >
+                Delete
+              </Button>
+              </div>
+            </Modal>
             </Collapse>
           </Table.Td>
         </Table.Tr>
