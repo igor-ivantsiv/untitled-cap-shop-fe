@@ -13,6 +13,7 @@ import UserProfilePage from "./pages/user/UserProfilePage";
 import ManageOrdersPage from "./pages/admin/ManageOrdersPage";
 import ManageProductsPage from "./pages/admin/ManageProductsPage";
 import ProductDetailsPage from "./pages/user/ProductDetailsPage";
+import OrderSuccess from "./pages/user/OrderSuccess";
 
 function App() {
   return (
@@ -40,6 +41,14 @@ function App() {
           element={
             <PrivateRoute>
               <UserProfilePage />
+            </PrivateRoute>
+          }
+        />
+               <Route
+          path="/checkout/success"
+          element={
+            <PrivateRoute>
+              <OrderSuccess />
             </PrivateRoute>
           }
         />

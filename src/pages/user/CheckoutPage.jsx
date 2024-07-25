@@ -212,7 +212,7 @@ const CheckoutPage = () => {
               <div className="App">
                 {clientSecret && (
                   <Elements options={options} stripe={stripePromise}>
-                    <PaymentDetails setShowPaymentForm={setShowPaymentForm} />
+                    <PaymentDetails setShowPaymentForm={setShowPaymentForm} shippingData={shippingData}/>
                   </Elements>
                 )}
               </div>
