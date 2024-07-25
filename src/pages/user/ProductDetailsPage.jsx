@@ -20,7 +20,8 @@ import { notifications } from "@mantine/notifications";
 const ProductDetailsPage = () => {
   const { variantId } = useParams();
 
-  const { cartDispatch, updateVirtualStock } = useContext(CartContext);
+  const { cartDispatch, updateVirtualStock, cartState } =
+    useContext(CartContext);
   const { isAuthenticated } = useContext(SessionContext);
 
   const [product, setProduct] = useState({});
@@ -45,6 +46,7 @@ const ProductDetailsPage = () => {
         }
 
         const data = await response.json();
+        console.log("CURRENT PRODUCT: ", data);
 
         setProduct(data);
       } catch (error) {
@@ -76,7 +78,7 @@ const ProductDetailsPage = () => {
       }
     };
     fetchStock();
-  }, [variantId, buttonLoading]);
+  }, [variantId, buttonLoading, cartState]);
 
   // fetch other variants of current product
   useEffect(() => {
@@ -136,7 +138,12 @@ const ProductDetailsPage = () => {
     if (response === "success" || response === "unavailable") {
       cartDispatch({
         type: "add_item",
-        payload: { item: product._id, quantity: 1 },
+        payload: {
+          id: product._id,
+          quantity: 1,
+          salesPrice: product.price,
+          productId: product.productId._id,
+        },
       });
       if (response === "unavailable") {
         setStockUnavailable(true);

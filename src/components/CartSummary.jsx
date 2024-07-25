@@ -9,7 +9,7 @@ import { IconCashRegister } from "@tabler/icons-react";
 import { Link } from "react-router-dom";
 
 const CartSummary = () => {
-  const { cartState } = useContext(CartContext);
+  const { cartState, cartDispatch } = useContext(CartContext);
   const [products, setProducts] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const { fetchWithToken } = useContext(SessionContext);
@@ -28,6 +28,10 @@ const CartSummary = () => {
 
         const itemTotal = quantity * data.price;
         setTotalPrice((prevState) => prevState + itemTotal);
+        cartDispatch({
+          type: "update_price",
+          payload: {id: variantId, salesPrice: data.price},
+        });
       } catch (error) {
         console.error(error);
       }
@@ -38,11 +42,11 @@ const CartSummary = () => {
     setTotalPrice(0);
     if (cartState.length > 0) {
       cartState.forEach((element) => {
-        fetchPrice(element.item, element.quantity);
+        fetchPrice(element.id, element.quantity);
       });
     }
     // update every time cart changes
-  }, [cartState]);
+  }, []);
 
   // fetch one product by id
   const fetchProduct = async (variantId, quantity) => {
@@ -72,14 +76,14 @@ const CartSummary = () => {
       // loop over elements (products) in cart
       for (const element of cartState) {
         // check if id not already in ids Set
-        if (!fetchedProductIds.has(element.item)) {
+        if (!fetchedProductIds.has(element.id)) {
           const productData = await fetchProduct(
-            element.item,
+            element.id,
             element.quantity
           );
           // if fetch went through, add id to set, add item to array
           if (productData) {
-            fetchedProductIds.add(element.item);
+            fetchedProductIds.add(element.id);
             fetchedProducts.push(productData);
           }
         }
