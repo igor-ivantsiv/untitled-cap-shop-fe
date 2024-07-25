@@ -6,6 +6,7 @@ import { useRefetchContext } from "../contexts/RefetchContext";
 import { SessionContext } from "../contexts/SessionContext";
 import { Button, Group, NumberFormatter, Stack, Text } from "@mantine/core";
 import { IconCashRegister } from "@tabler/icons-react";
+import { Link } from "react-router-dom";
 
 const CartSummary = () => {
   const { cartState } = useContext(CartContext);
@@ -87,7 +88,9 @@ const CartSummary = () => {
               decimalScale={2}
             />
           </Group>
+          <Link to ="/checkout">
           <Button rightSection={<IconCashRegister />}>Checkout</Button>
+          </Link>
         </Stack>
       ) : (
         <Text fs="italic">Nothing here yet...</Text>

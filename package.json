@@ -14,6 +14,8 @@
     "@mantine/form": "^7.11.2",
     "@mantine/hooks": "^7.7.1",
     "@mantine/notifications": "^7.11.2",
+    "@stripe/react-stripe-js": "^2.7.3",
+    "@stripe/stripe-js": "^4.1.0",
     "@tabler/icons-react": "^3.11.0",
     "clsx": "^2.1.1",
     "mantine-datatable": "^7.11.2",
