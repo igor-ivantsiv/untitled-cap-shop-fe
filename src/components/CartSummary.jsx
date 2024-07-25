@@ -43,31 +43,51 @@ const CartSummary = () => {
     // update every time cart changes
   }, [cartState]);
 
+  // fetch one product by id
+  const fetchProduct = async (variantId, quantity) => {
+    try {
+      const data = await fetchWithToken(`/products/variants/${variantId}`);
+
+      if (!data) {
+        throw new Error("error fetching products in cart summary");
+      }
+      // return new object with quantity prop
+      return { ...data, quantity };
+    } catch (error) {
+      // return null if something went wrong fetching
+      console.error(error);
+      return null;
+    }
+  };
+
   // fetch products in cart
   useEffect(() => {
-    const fetchProduct = async (variantId, quantity) => {
-      try {
-        const data = await fetchWithToken(`/products/variants/${variantId}`);
+    // ensure only unique ids
+    const fetchedProductIds = new Set();
 
-        if (!data) {
-          throw new Error("error fetching products in cart summary");
+    // fetch products and add to array
+    const fetchProducts = async () => {
+      const fetchedProducts = [];
+      // loop over elements (products) in cart
+      for (const element of cartState) {
+        // check if id not already in ids Set
+        if (!fetchedProductIds.has(element.item)) {
+          const productData = await fetchProduct(
+            element.item,
+            element.quantity
+          );
+          // if fetch went through, add id to set, add item to array
+          if (productData) {
+            fetchedProductIds.add(element.item);
+            fetchedProducts.push(productData);
+          }
         }
-
-        // create new object with quantity prop
-        const shoppingData = { ...data, quantity };
-
-        // add to list of products
-        setProducts((prevState) => [...prevState, shoppingData]);
-      } catch (error) {
-        console.error(error);
       }
+      // set product state
+      setProducts(fetchedProducts);
     };
 
-    // start with empty array, then fetch each product based on id stored in cart
-    setProducts([]);
-    cartState.forEach((product) => {
-      fetchProduct(product.item, product.quantity);
-    });
+    fetchProducts();
 
     // refetch on delete of item
   }, [shouldRefetch]);
