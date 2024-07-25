@@ -117,6 +117,7 @@ const CartContextProvider = ({ children }) => {
           });
         })
       );
+      console.log("ITEMS DERESERVED");
     } catch (error) {
       console.error("error dereserving all: ", error);
     }
@@ -132,6 +133,7 @@ const CartContextProvider = ({ children }) => {
           });
         })
       );
+      console.log("ITEMS RESERVED");
     } catch (error) {
       console.error("error reserving all: ", error);
     }
@@ -162,57 +164,51 @@ const CartContextProvider = ({ children }) => {
       await dereserveItems();
     };
 
-    // if a cart is present -> first dereserve, then re-reserve all items
+    // might have to check which items need re-reservation
     const handleLoad = async () => {
       if (cartState && cartState.length > 0) {
         const currentSession = sessionStorage.getItem("CurrentSession");
         console.log("CURRENT SESSION: ", currentSession);
-        if (currentSession) {
-          await reserveItems();
-        }
+
+        await reserveItems();
       }
     };
 
+    // works reliable for closing page and switching tabs
+    // not always reliable on reload
     const handleReload = async () => {
       console.log("VISIBILITY CHANGE: ", document.visibilityState);
       if (document.visibilityState === "visible") {
-        /*
+        
         if (cartState && cartState.length > 0) {
           const currentSession = sessionStorage.getItem("CurrentSession");
           console.log("SESSION: ", currentSession);
+
           await reserveItems();
         }
-          */
-      } else if (document.visibilityState === "hidden") {
-        sessionStorage.setItem("CurrentSession", "true");
-        await dereserveItems();
+      } else {
+        sessionStorage.setItem("hasReloaded", "true");
+        if (cartState && cartState.length > 0) {
+          await dereserveItems();
+        }
       }
     };
-    //console.log("event listener added -> beforeUnload");
-    //window.addEventListener("beforeunload", handleBeforeUnload);
-
-    //const pageVisibility = document.visibilityState;
 
     console.log("event listener -> visibility change");
     document.addEventListener("visibilitychange", handleReload);
     window.addEventListener("load", handleLoad);
 
-    //console.log("event listener added -> load");
-    //window.addEventListener("load", handleLoad);
-
     return () => {
       console.log("event listeners removed");
       //window.removeEventListener("beforeunload", handleBeforeUnload);
-      //window.removeEventListener("load", handleLoad);
+      window.removeEventListener("load", handleLoad);
       document.removeEventListener("visibilitychange", handleReload);
     };
-  }, []);
+  }, [cartState]);
 
   // store cart in session storage
   useEffect(() => {
     sessionStorage.setItem("cartItems", JSON.stringify(cartState));
-
-    console.log("VISIBILITY: ", document.visibilityState);
   }, [cartState]);
 
   return (
