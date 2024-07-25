@@ -48,6 +48,7 @@ const CartItem = ({ product }) => {
 
   // disable decrease button when quantity reaches 1
   useState(() => {
+    console.log("current q: ", currentQuantity);
     currentQuantity <= 1
       ? setDecreaseBtnDisabled(true)
       : setDecreaseBtnDisabled(false);
@@ -71,7 +72,7 @@ const CartItem = ({ product }) => {
     if (response === "success") {
       cartDispatch({
         type: "change_quantity",
-        payload: { item: itemId, quantity: quantity - 1 },
+        payload: { id: itemId, quantity: quantity - 1 },
       });
       setCurrentQuantity(quantity - 1);
 
@@ -95,10 +96,10 @@ const CartItem = ({ product }) => {
     }, 500);
 
     // on success -> update cart content, set current quantity, enable decrease btn
-    if (response === "success") {
+    if (response === "success" || response === "unavailable") {
       cartDispatch({
         type: "add_item",
-        payload: { item: itemId, quantity: quantity + 1 },
+        payload: { id: itemId, quantity: quantity + 1 },
       });
       setCurrentQuantity(quantity + 1);
       setDecreaseBtnDisabled(false);
@@ -107,13 +108,9 @@ const CartItem = ({ product }) => {
       // disable increase btn if virtual stock is out
       // (!) UPDATE -> unavailable means the final item is now reserved,
       // (!) still add to cart but disable btn after
-    } else if (response === "unavailable") {
-      cartDispatch({
-        type: "add_item",
-        payload: { item: itemId, quantity: quantity + 1 },
-      });
-      setCurrentQuantity(quantity + 1);
-      setIncreaseBtnDisabled(true);
+      if (response === "unavailable") {
+        setIncreaseBtnDisabled(true);
+      }
     } else {
       console.error("problem updating virtual stock on cart item component");
     }
@@ -137,7 +134,7 @@ const CartItem = ({ product }) => {
     if (response === "success") {
       cartDispatch({
         type: "remove_item",
-        payload: itemId,
+        payload: {id: itemId},
       });
       setShouldRefetch((prevState) => !prevState);
     } else {

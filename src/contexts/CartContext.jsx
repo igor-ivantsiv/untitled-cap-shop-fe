@@ -3,7 +3,7 @@ import { SessionContext } from "./SessionContext";
 
 export const CartContext = createContext();
 /*
-cartState = [{item: _id, quantity: 1}]
+cartState = [{id: _id, quantity: 1, salesPrice: 1, productId: productId}]
 */
 const initialCart = JSON.parse(sessionStorage.getItem("cartItems")) || [];
 
@@ -13,15 +13,17 @@ const cartReducer = (state, action) => {
     case "add_item": {
       // check if item already in cart
       const existingItemIndex = state.findIndex(
-        (element) => element.item === action.payload.item
+        (element) => element.id === action.payload.id
       );
       // if item found, add 1 to quantity
       if (existingItemIndex >= 0) {
         const existingItem = state[existingItemIndex];
 
         const updatedItem = {
-          item: action.payload.item,
+          id: existingItem.id,
           quantity: existingItem.quantity + 1,
+          salesPrice: existingItem.salesPrice,
+          productId: existingItem.productId,
         };
         // return array with new object replacing updated item
         const updatedState = state.toSpliced(existingItemIndex, 1, updatedItem);
@@ -35,6 +37,26 @@ const cartReducer = (state, action) => {
     // decrease quantity
     case "change_quantity": {
       // create new array from state, match id to provided id, update quantity
+      const existingItemIndex = state.findIndex(
+        (element) => element.id === action.payload.id
+      );
+      if (existingItemIndex >= 0) {
+        const existingItem = state[existingItemIndex];
+
+        const updatedItem = {
+          id: action.payload.item,
+          quantity: existingItem.quantity - 1,
+          salesPrice: existingItem.salesPrice,
+          productId: existingItem.productId,
+        };
+        // return array with new object replacing updated item
+        const updatedState = state.toSpliced(existingItemIndex, 1, updatedItem);
+        return updatedState;
+      }
+      else {
+        return state
+      }
+      /*
       const updatedItems = state.map((element) => {
         if (element.item === action.payload.item) {
           const updatedQuantity = action.payload.quantity;
@@ -43,14 +65,42 @@ const cartReducer = (state, action) => {
         return element;
       });
       return updatedItems;
+      */
     }
     case "remove_item": {
       // filter out element by provided id
       const updatedItems = state.filter(
-        (element) => element.item !== action.payload
+        (element) => element.id !== action.payload.id
       );
+      console.log("array after removing items: ", updatedItems)
       return updatedItems;
     }
+    case "update_price": {
+      const existingItemIndex = state.findIndex(
+        (element) => element.id === action.payload.id
+      );
+      if (existingItemIndex >= 0) {
+        const existingItem = state[existingItemIndex];
+
+        const updatedItem = {
+          id: existingItem.id,
+          quantity: existingItem.quantity,
+          salesPrice: action.payload.salesPrice,
+          productId: existingItem.productId,
+        };
+        // return array with new object replacing updated item
+        const updatedState = state.toSpliced(existingItemIndex, 1, updatedItem);
+        return updatedState;
+      }
+      else {
+        return state
+      }
+    }
+    /*
+    case "clear_cart": {
+
+    }
+    */
   }
 };
 
@@ -64,8 +114,8 @@ const CartContextProvider = ({ children }) => {
     try {
       await Promise.all(
         cartState.map((element) => {
-          fetchWithToken(`/stocks/dereservation/${element.item}`, "PUT", {
-            variantId: element.item,
+          fetchWithToken(`/stocks/dereservation/${element.id}`, "PUT", {
+            variantId: element.id,
             quantity: element.quantity,
           });
         })
@@ -74,22 +124,29 @@ const CartContextProvider = ({ children }) => {
       console.error("error dereserving all: ", error);
     }
   };
-
+  /*
   // add event listener to window -> dereserve items on session end
   useEffect(() => {
     const handleBeforeUnload = async () => {
-      await dereserveItems();
-      sessionStorage.removeItem("cartItems");
+      const isReloading = sessionStorage.getItem("isReloading");
+      if (!isReloading) {
+        await dereserveItems();
+        sessionStorage.removeItem("cartItems");
+      } else {
+        sessionStorage.removeItem("isReloading");
+      }
     };
     console.log("event listener added");
     window.addEventListener("beforeunload", handleBeforeUnload);
+
+    sessionStorage.setItem("isReloading", "true");
 
     return () => {
       console.log("event listener removed");
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [cartState]);
-
+*/
   // update virtual stock, return response based on stock availability
   const updateVirtualStock = async (endpoint, method = "GET", payload) => {
     try {
