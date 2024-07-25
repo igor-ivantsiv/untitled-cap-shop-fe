@@ -125,7 +125,9 @@ const ProductDetailsPage = () => {
     }
     setButtonLoading(true);
     const response = await updateVirtualStock(
-      `/stocks/reservation/${product._id}`
+      `/stocks/reservation/${product._id}`,
+      "PUT",
+      { quantity: 1 }
     );
 
     setTimeout(() => {

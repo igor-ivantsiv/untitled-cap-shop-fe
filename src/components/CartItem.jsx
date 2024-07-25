@@ -71,8 +71,8 @@ const CartItem = ({ product }) => {
     // update cart content and current quantity of product
     if (response === "success") {
       cartDispatch({
-        type: "change_quantity",
-        payload: { id: itemId, quantity: quantity - 1 },
+        type: "decrease_quantity",
+        payload: { id: itemId },
       });
       setCurrentQuantity(quantity - 1);
 
@@ -89,7 +89,11 @@ const CartItem = ({ product }) => {
   // set loading on btn, await api response
   const increaseQuantity = async (itemId, quantity) => {
     setButtonsLoading(true);
-    const response = await updateVirtualStock(`/stocks/reservation/${itemId}`);
+    const response = await updateVirtualStock(
+      `/stocks/reservation/${itemId}`,
+      "PUT",
+      { quantity: 1 }
+    );
     console.log("reservation response: ", response);
     setTimeout(() => {
       setButtonsLoading(false);
@@ -134,7 +138,7 @@ const CartItem = ({ product }) => {
     if (response === "success") {
       cartDispatch({
         type: "remove_item",
-        payload: {id: itemId},
+        payload: { id: itemId },
       });
       setShouldRefetch((prevState) => !prevState);
     } else {

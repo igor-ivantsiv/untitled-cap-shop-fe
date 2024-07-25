@@ -35,7 +35,7 @@ const cartReducer = (state, action) => {
     }
 
     // decrease quantity
-    case "change_quantity": {
+    case "decrease_quantity": {
       // create new array from state, match id to provided id, update quantity
       const existingItemIndex = state.findIndex(
         (element) => element.id === action.payload.id
@@ -44,7 +44,7 @@ const cartReducer = (state, action) => {
         const existingItem = state[existingItemIndex];
 
         const updatedItem = {
-          id: action.payload.item,
+          id: existingItem.id,
           quantity: existingItem.quantity - 1,
           salesPrice: existingItem.salesPrice,
           productId: existingItem.productId,
@@ -52,9 +52,8 @@ const cartReducer = (state, action) => {
         // return array with new object replacing updated item
         const updatedState = state.toSpliced(existingItemIndex, 1, updatedItem);
         return updatedState;
-      }
-      else {
-        return state
+      } else {
+        return state;
       }
       /*
       const updatedItems = state.map((element) => {
@@ -72,7 +71,7 @@ const cartReducer = (state, action) => {
       const updatedItems = state.filter(
         (element) => element.id !== action.payload.id
       );
-      console.log("array after removing items: ", updatedItems)
+      console.log("array after removing items: ", updatedItems);
       return updatedItems;
     }
     case "update_price": {
@@ -91,16 +90,15 @@ const cartReducer = (state, action) => {
         // return array with new object replacing updated item
         const updatedState = state.toSpliced(existingItemIndex, 1, updatedItem);
         return updatedState;
-      }
-      else {
-        return state
+      } else {
+        return state;
       }
     }
-    /*
     case "clear_cart": {
-
+      const clearedCart = [];
+      sessionStorage.removeItem("cartItems");
+      return clearedCart;
     }
-    */
   }
 };
 
@@ -115,7 +113,6 @@ const CartContextProvider = ({ children }) => {
       await Promise.all(
         cartState.map((element) => {
           fetchWithToken(`/stocks/dereservation/${element.id}`, "PUT", {
-            variantId: element.id,
             quantity: element.quantity,
           });
         })
@@ -124,29 +121,22 @@ const CartContextProvider = ({ children }) => {
       console.error("error dereserving all: ", error);
     }
   };
-  /*
-  // add event listener to window -> dereserve items on session end
-  useEffect(() => {
-    const handleBeforeUnload = async () => {
-      const isReloading = sessionStorage.getItem("isReloading");
-      if (!isReloading) {
-        await dereserveItems();
-        sessionStorage.removeItem("cartItems");
-      } else {
-        sessionStorage.removeItem("isReloading");
-      }
-    };
-    console.log("event listener added");
-    window.addEventListener("beforeunload", handleBeforeUnload);
 
-    sessionStorage.setItem("isReloading", "true");
+  // reserve items if page was reloaded and cart still has content
+  const reserveItems = async () => {
+    try {
+      await Promise.all(
+        cartState.map((element) => {
+          fetchWithToken(`/stocks/reservation/${element.id}`, "PUT", {
+            quantity: element.quantity,
+          });
+        })
+      );
+    } catch (error) {
+      console.error("error reserving all: ", error);
+    }
+  };
 
-    return () => {
-      console.log("event listener removed");
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, [cartState]);
-*/
   // update virtual stock, return response based on stock availability
   const updateVirtualStock = async (endpoint, method = "GET", payload) => {
     try {
@@ -164,6 +154,34 @@ const CartContextProvider = ({ children }) => {
       return "error";
     }
   };
+
+  // add event listener to window -> dereserve items on session end
+  useEffect(() => {
+
+    // dereserve all items in cart (if user leaves page)
+    const handleBeforeUnload = async () => {
+      await dereserveItems();
+    };
+
+    // if a cart is present -> first dereserve, then re-reserve all items
+    const handleLoad = async () => {
+      if (cartState && cartState.length > 0) {
+        await dereserveItems();
+        await reserveItems();
+      }
+    };
+    console.log("event listener added -> beforeUnload");
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    console.log("event listener added -> load");
+    window.addEventListener("load", handleLoad);
+
+    return () => {
+      console.log("event listeners removed");
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("load", handleLoad);
+    };
+  }, []);
 
   // store cart in session storage
   useEffect(() => {
