@@ -157,7 +157,6 @@ const CartContextProvider = ({ children }) => {
 
   // add event listener to window -> dereserve items on session end
   useEffect(() => {
-
     // dereserve all items in cart (if user leaves page)
     const handleBeforeUnload = async () => {
       await dereserveItems();
@@ -166,26 +165,54 @@ const CartContextProvider = ({ children }) => {
     // if a cart is present -> first dereserve, then re-reserve all items
     const handleLoad = async () => {
       if (cartState && cartState.length > 0) {
-        await dereserveItems();
-        await reserveItems();
+        const currentSession = sessionStorage.getItem("CurrentSession");
+        console.log("CURRENT SESSION: ", currentSession);
+        if (currentSession) {
+          await reserveItems();
+        }
       }
     };
-    console.log("event listener added -> beforeUnload");
-    window.addEventListener("beforeunload", handleBeforeUnload);
 
-    console.log("event listener added -> load");
+    const handleReload = async () => {
+      console.log("VISIBILITY CHANGE: ", document.visibilityState);
+      if (document.visibilityState === "visible") {
+        /*
+        if (cartState && cartState.length > 0) {
+          const currentSession = sessionStorage.getItem("CurrentSession");
+          console.log("SESSION: ", currentSession);
+          await reserveItems();
+        }
+          */
+      } else if (document.visibilityState === "hidden") {
+        sessionStorage.setItem("CurrentSession", "true");
+        await dereserveItems();
+      }
+    };
+    //console.log("event listener added -> beforeUnload");
+    //window.addEventListener("beforeunload", handleBeforeUnload);
+
+    //const pageVisibility = document.visibilityState;
+
+    console.log("event listener -> visibility change");
+    document.addEventListener("visibilitychange", handleReload);
     window.addEventListener("load", handleLoad);
+
+    //console.log("event listener added -> load");
+    //window.addEventListener("load", handleLoad);
 
     return () => {
       console.log("event listeners removed");
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-      window.removeEventListener("load", handleLoad);
+      //window.removeEventListener("beforeunload", handleBeforeUnload);
+      //window.removeEventListener("load", handleLoad);
+      document.removeEventListener("visibilitychange", handleReload);
     };
   }, []);
 
   // store cart in session storage
   useEffect(() => {
     sessionStorage.setItem("cartItems", JSON.stringify(cartState));
+
+    console.log("VISIBILITY: ", document.visibilityState);
   }, [cartState]);
 
   return (

@@ -16,7 +16,7 @@ const CartSummary = () => {
 
   const { shouldRefetch } = useRefetchContext();
 
-  // calculate total price
+  // get current prices from db
   useEffect(() => {
     const fetchPrice = async (variantId, quantity) => {
       try {
@@ -26,27 +26,33 @@ const CartSummary = () => {
           throw new Error("error fetching products in cart summary");
         }
 
-        const itemTotal = quantity * data.price;
-        setTotalPrice((prevState) => prevState + itemTotal);
+        // update cart to reflect most current prices
         cartDispatch({
           type: "update_price",
-          payload: {id: variantId, salesPrice: data.price},
+          payload: { id: variantId, salesPrice: data.price },
         });
       } catch (error) {
         console.error(error);
       }
     };
 
-    // first set total price to 0
-    // calc total price by fetching price for each item in cart
-    setTotalPrice(0);
+    // update prices for each item in cart
     if (cartState.length > 0) {
       cartState.forEach((element) => {
         fetchPrice(element.id, element.quantity);
       });
     }
-    // update every time cart changes
   }, []);
+
+  // calculate total price for items in cart
+  // update each time cart updates
+  useEffect(() => {
+    const totalCartPrice = cartState.reduce(
+      (acc, item) => acc + item.salesPrice * item.quantity,
+      0
+    );
+    setTotalPrice(totalCartPrice);
+  }, [cartState]);
 
   // fetch one product by id
   const fetchProduct = async (variantId, quantity) => {
@@ -77,10 +83,7 @@ const CartSummary = () => {
       for (const element of cartState) {
         // check if id not already in ids Set
         if (!fetchedProductIds.has(element.id)) {
-          const productData = await fetchProduct(
-            element.id,
-            element.quantity
-          );
+          const productData = await fetchProduct(element.id, element.quantity);
           // if fetch went through, add id to set, add item to array
           if (productData) {
             fetchedProductIds.add(element.id);
@@ -112,9 +115,14 @@ const CartSummary = () => {
               decimalScale={2}
             />
           </Group>
-          <Link to ="/checkout">
-          <Button rightSection={<IconCashRegister />}>Checkout</Button>
-          </Link>
+
+          <Button
+            component={Link}
+            to={"/checkout"}
+            rightSection={<IconCashRegister />}
+          >
+            Checkout
+          </Button>
         </Stack>
       ) : (
         <Text fs="italic">Nothing here yet...</Text>
