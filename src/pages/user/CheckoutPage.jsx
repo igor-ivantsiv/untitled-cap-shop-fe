@@ -26,8 +26,9 @@ const stripePromise = loadStripe(
 );
 
 const CheckoutPage = () => {
-  const { cartState } = useContext(CartContext);
+  const { cartState, cartDispatch } = useContext(CartContext);
   const [clientSecret, setClientSecret] = useState("");
+  const [paymentIntent, setPaymentIntent] = useState("");
   const [products, setProducts] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const { fetchWithToken, currentUser } = useContext(SessionContext);
@@ -66,9 +67,27 @@ const CheckoutPage = () => {
         "POST",
         { items: cartState }
       );
+      console.log(purchaseIntent)
+      setPaymentIntent(purchaseIntent.id)
       setClientSecret(purchaseIntent.clientSecret);
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const fetchProduct = async (variantId, quantity) => {
+    try {
+      const data = await fetchWithToken(`/products/variants/${variantId}`);
+
+      if (!data) {
+        throw new Error("error fetching products in cart summary");
+      }
+      // return new object with quantity prop
+      return { ...data, quantity };
+    } catch (error) {
+      // return null if something went wrong fetching
+      console.error(error);
+      return null;
     }
   };
 
@@ -94,8 +113,11 @@ const CheckoutPage = () => {
           throw new Error("error fetching products in cart summary");
         }
 
-        const itemTotal = quantity * data.price;
-        setTotalPrice((prevState) => prevState + itemTotal);
+        // update cart to reflect most current prices
+        cartDispatch({
+          type: "update_price",
+          payload: { id: variantId, salesPrice: data.price },
+        });
       } catch (error) {
         console.error(error);
       }
@@ -104,36 +126,39 @@ const CheckoutPage = () => {
     // calc total price by fetching price for each item in cart
     setTotalPrice(0);
     if (cartState.length > 0) {
-      cartState.forEach((element) => {
-        fetchPrice(element.item, element.quantity);
-      });
+      const totalCartPrice = cartState.reduce(
+        (acc, item) => acc + item.salesPrice * item.quantity,
+        0
+      );
+      setTotalPrice(totalCartPrice);
     }
     // update every time cart changes
   }, [cartState]);
 
   // fetch products in cart
   useEffect(() => {
-    const fetchProduct = async (variantId, quantity) => {
-      try {
-        const data = await fetchWithToken(`/products/variants/${variantId}`);
+    const fetchedProductIds = new Set();
 
-        if (!data) {
-          throw new Error("error fetching products in cart summary");
+    // fetch products and add to array
+    const fetchProducts = async () => {
+      const fetchedProducts = [];
+      // loop over elements (products) in cart
+      for (const element of cartState) {
+        // check if id not already in ids Set
+        if (!fetchedProductIds.has(element.id)) {
+          const productData = await fetchProduct(element.id, element.quantity);
+          // if fetch went through, add id to set, add item to array
+          if (productData) {
+            fetchedProductIds.add(element.id);
+            fetchedProducts.push(productData);
+          }
         }
-
-        // create new object with quantity prop
-        const shoppingData = { ...data, quantity };
-
-        // add to list of products
-        setProducts((prevState) => [...prevState, shoppingData]);
-      } catch (error) {
-        console.error(error);
       }
+      // set product state
+      setProducts(fetchedProducts);
     };
-    setProducts([]);
-    cartState.forEach((product) => {
-      fetchProduct(product.item, product.quantity);
-    });
+
+    fetchProducts();
 
     // refetch on delete of item
   }, [shouldRefetch]);
@@ -212,7 +237,7 @@ const CheckoutPage = () => {
               <div className="App">
                 {clientSecret && (
                   <Elements options={options} stripe={stripePromise}>
-                    <PaymentDetails setShowPaymentForm={setShowPaymentForm} shippingData={shippingData}/>
+                    <PaymentDetails setShowPaymentForm={setShowPaymentForm} shippingData={shippingData} paymentIntent={paymentIntent}/>
                   </Elements>
                 )}
               </div>
