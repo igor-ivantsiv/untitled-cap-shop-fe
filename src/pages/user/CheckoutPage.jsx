@@ -104,7 +104,6 @@ const CheckoutPage = () => {
   }, []);
 
   useEffect(() => {
-    declarePurchaseIntent();
     const fetchPrice = async (variantId, quantity) => {
       try {
         const data = await fetchWithToken(`/products/variants/${variantId}`);
@@ -237,7 +236,7 @@ const CheckoutPage = () => {
               <div className="App">
                 {clientSecret && (
                   <Elements options={options} stripe={stripePromise}>
-                    <PaymentDetails setShowPaymentForm={setShowPaymentForm} shippingData={shippingData} paymentIntent={paymentIntent}/>
+                    <PaymentDetails setShowPaymentForm={setShowPaymentForm} shippingData={shippingData} declarePurchaseIntent={declarePurchaseIntent} paymentIntent={paymentIntent}/>
                   </Elements>
                 )}
               </div>
