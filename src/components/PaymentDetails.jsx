@@ -10,8 +10,7 @@ import { SessionContext } from "../contexts/SessionContext";
 import { CartContext } from "../contexts/CartContext";
 import { useNavigate } from "react-router-dom";
 
-
-const PaymentDetails = ({ setShowPaymentForm, shippingData }) => {
+const PaymentDetails = ({ setShowPaymentForm, shippingData, paymentIntent }) => {
   const stripe = useStripe();
   const elements = useElements();
 
@@ -19,7 +18,7 @@ const PaymentDetails = ({ setShowPaymentForm, shippingData }) => {
   const [isLoading, setIsLoading] = useState(false);
   const { fetchWithToken } = useContext(SessionContext);
   const { cartState } = useContext(CartContext);
-const navigate = useNavigate()
+  const navigate = useNavigate();
   useEffect(() => {
     if (!stripe) {
       return;
@@ -51,6 +50,18 @@ const navigate = useNavigate()
     });
   }, [stripe]);
 
+  function renameKey(obj, oldKey, newKey) {
+    if (!obj.hasOwnProperty(oldKey)) {
+      return obj;
+    }
+
+    const newObj = { ...obj };
+    newObj[newKey] = newObj[oldKey];
+    delete newObj[oldKey];
+
+    return newObj;
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -62,44 +73,53 @@ const navigate = useNavigate()
 
     setIsLoading(true);
 
-    const { error } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        // Make sure to change this to your payment completion page
-        return_url: "http://localhost:5173/checkout/success",
-        
-        
-      },
-      redirect: "if_required"
-    });
     try {
-        const newOrder = await fetchWithToken("/orders", "POST", {
-          userId: shippingData.currentUser,
-          firstName: shippingData.firstName,
-          lastName: shippingData.lastName,
-          streetHouseNumber: shippingData.streetHouseNumber,
-          city: shippingData.city,
-          zipCode: shippingData.zipCode,
-          items: cartState,
-        });
-        console.log(newOrder);
-
-      } catch (error) {
-        console.log(error);
+      const modifiedCart = cartState.map((item) => {
+        return renameKey(item, "id", "variantId");
+      });
+      const newOrder = await fetchWithToken("/orders", "POST", {
+        userId: shippingData.userId,
+        firstName: shippingData.firstName,
+        lastName: shippingData.lastName,
+        streetHouseNumber: shippingData.streetHouseNumber,
+        city: shippingData.city,
+        zipCode: shippingData.zipCode,
+        items: modifiedCart,
+        paymentIntent: paymentIntent,
+      });
+      console.log(newOrder);
+      console.log(newOrder._id)
+      const { error } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          // Make sure to change this to your payment completion page
+          return_url: "http://localhost:5173/checkout/success",
+        },
+        redirect: "if_required",
+        // Add metadata containing the order ID
+        payment_intent_data: {
+          metadata: {
+            orderId: "test 1234",
+          },
+        },
+      });
+  
+      // This point will only be reached if there is an immediate error when
+      // confirming the payment. Otherwise, your customer will be redirected to
+      // your `return_url`. For some payment methods like iDEAL, your customer will
+      // be redirected to an intermediate site first to authorize the payment, then
+      // redirected to the `return_url`.
+      if (error.type === "card_error" || error.type === "validation_error") {
+        setMessage(error.message);
+      } else {
+        setMessage("An unexpected error occurred.");
       }
-    // This point will only be reached if there is an immediate error when
-    // confirming the payment. Otherwise, your customer will be redirected to
-    // your `return_url`. For some payment methods like iDEAL, your customer will
-    // be redirected to an intermediate site first to authorize the payment, then
-    // redirected to the `return_url`.
-    if (error.type === "card_error" || error.type === "validation_error") {
-      setMessage(error.message);
-    } else {
-      setMessage("An unexpected error occurred.");
+      setIsLoading(false);
+      navigate("/checkout/success");
+    } catch (error) {
+      console.log(error);
     }
-    setIsLoading(false);
-    navigate("/checkout/success")
-
+    
   };
 
   const paymentElementOptions = {
