@@ -197,29 +197,7 @@ const CartContextProvider = ({ children }) => {
     }
   };
 
-  const dereserveAndSetStorage = async () => {
-    sessionStorage.removeItem("StockIncrease");
-    sessionStorage.removeItem("StockDecrease");
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/stocks/dereservations/all`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ itemsArr: cartState }),
-        }
-      );
-      const data = await response.json();
-      if (data.message) {
-        sessionStorage.setItem("StockIncrease", "true");
-        console.log("SERVER RESPONSE: ", data.message);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  
 
   // add event listener to window -> dereserve items on session end
   useEffect(() => {
