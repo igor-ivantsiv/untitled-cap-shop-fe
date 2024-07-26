@@ -14,10 +14,12 @@ import ManageOrdersPage from "./pages/admin/ManageOrdersPage";
 import ManageProductsPage from "./pages/admin/ManageProductsPage";
 import ProductDetailsPage from "./pages/user/ProductDetailsPage";
 import OrderSuccess from "./pages/user/OrderSuccess";
+import WebSocketProvider from "./WebSocket/WebSocketProvider";
 
 function App() {
   return (
     <>
+    <WebSocketProvider />
       <Routes>
         <Route path="/" element={<Homepage />} />
 
