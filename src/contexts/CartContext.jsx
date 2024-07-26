@@ -157,6 +157,48 @@ const CartContextProvider = ({ children }) => {
     }
   };
 
+  const reserveAll = async () => {
+    sessionStorage.removeItem("StockDecrease");
+    sessionStorage.removeItem("StockIncrease");
+    try {
+      const data = await fetchWithToken(`/stocks/reservations/all`, "PUT", {
+        itemsArr: cartState,
+      });
+      if (data.message) {
+        sessionStorage.setItem("StockDecrease", "true");
+        console.log("SERVER RESPONSE: ", data.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const dereserveAll = async () => {
+    sessionStorage.removeItem("StockIncrease");
+    sessionStorage.removeItem("StockDecrease");
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/stocks/dereservations/all`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ itemsArr: cartState }),
+        }
+      );
+      const data = await response.json();
+      if (data.message) {
+        sessionStorage.setItem("StockIncrease", "true");
+        console.log("SERVER RESPONSE: ", data.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  
+
   // add event listener to window -> dereserve items on session end
   useEffect(() => {
     // dereserve all items in cart (if user leaves page)
@@ -167,10 +209,13 @@ const CartContextProvider = ({ children }) => {
     // might have to check which items need re-reservation
     const handleLoad = async () => {
       if (cartState && cartState.length > 0) {
-        const currentSession = sessionStorage.getItem("CurrentSession");
-        console.log("CURRENT SESSION: ", currentSession);
-
-        await reserveItems();
+        const stockIncreased = sessionStorage.getItem("StockIncrease");
+        console.log("LOAD -> stock increased: ", stockIncreased);
+        if (stockIncreased) {
+          await reserveAll();
+          sessionStorage.removeItem("StockIncrease")
+          sessionStorage.removeItem("StockDecrease")
+        }
       }
     };
 
@@ -179,17 +224,20 @@ const CartContextProvider = ({ children }) => {
     const handleReload = async () => {
       console.log("VISIBILITY CHANGE: ", document.visibilityState);
       if (document.visibilityState === "visible") {
-        
         if (cartState && cartState.length > 0) {
-          const currentSession = sessionStorage.getItem("CurrentSession");
-          console.log("SESSION: ", currentSession);
-
-          await reserveItems();
+          const itemsDereserved = sessionStorage.getItem("StockIncrease");
+          console.log("!!!! StockIncrease: ", itemsDereserved);
+          if (itemsDereserved) {
+            await reserveAll();
+          } else {
+            sessionStorage.removeItem("StockIncrease");
+          }
         }
       } else {
-        sessionStorage.setItem("hasReloaded", "true");
+        //sessionStorage.setItem("hasReloaded", "true");
         if (cartState && cartState.length > 0) {
-          await dereserveItems();
+          await dereserveAll();
+          sessionStorage.setItem("StockIncrease", "true");
         }
       }
     };
@@ -198,10 +246,14 @@ const CartContextProvider = ({ children }) => {
     document.addEventListener("visibilitychange", handleReload);
     window.addEventListener("load", handleLoad);
 
+    window.addEventListener("beforeunload", (event) => {
+      event.preventDefault()
+    })
+
     return () => {
       console.log("event listeners removed");
-      //window.removeEventListener("beforeunload", handleBeforeUnload);
-      window.removeEventListener("load", handleLoad);
+      //window.removeEventListener("beforeunload");
+      //window.removeEventListener("load", handleLoad);
       document.removeEventListener("visibilitychange", handleReload);
     };
   }, [cartState]);
