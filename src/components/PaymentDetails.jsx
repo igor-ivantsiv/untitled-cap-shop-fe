@@ -8,6 +8,7 @@ import { IconArrowBack, IconCashRegister } from "@tabler/icons-react";
 import { Button } from "@mantine/core";
 import { SessionContext } from "../contexts/SessionContext";
 import { CartContext } from "../contexts/CartContext";
+import { useNavigate } from "react-router-dom";
 
 
 const PaymentDetails = ({ setShowPaymentForm, shippingData }) => {
@@ -18,7 +19,7 @@ const PaymentDetails = ({ setShowPaymentForm, shippingData }) => {
   const [isLoading, setIsLoading] = useState(false);
   const { fetchWithToken } = useContext(SessionContext);
   const { cartState } = useContext(CartContext);
-
+const navigate = useNavigate()
   useEffect(() => {
     if (!stripe) {
       return;
@@ -65,10 +66,27 @@ const PaymentDetails = ({ setShowPaymentForm, shippingData }) => {
       elements,
       confirmParams: {
         // Make sure to change this to your payment completion page
-        return_url: "http://localhost:5005/checkout/success",
+        return_url: "http://localhost:5173/checkout/success",
+        
+        
       },
+      redirect: "if_required"
     });
+    try {
+        const newOrder = await fetchWithToken("/orders", "POST", {
+          userId: shippingData.currentUser,
+          firstName: shippingData.firstName,
+          lastName: shippingData.lastName,
+          streetHouseNumber: shippingData.streetHouseNumber,
+          city: shippingData.city,
+          zipCode: shippingData.zipCode,
+          items: cartState,
+        });
+        console.log(newOrder);
 
+      } catch (error) {
+        console.log(error);
+      }
     // This point will only be reached if there is an immediate error when
     // confirming the payment. Otherwise, your customer will be redirected to
     // your `return_url`. For some payment methods like iDEAL, your customer will
@@ -79,22 +97,9 @@ const PaymentDetails = ({ setShowPaymentForm, shippingData }) => {
     } else {
       setMessage("An unexpected error occurred.");
     }
-    try {
-      const newOrder = await fetchWithToken("/orders", "POST", {
-        userId: shippingData.currentUser,
-        firstName: shippingData.firstName,
-        lastName: shippingData.lastName,
-        streetHouseNumber: shippingData.streetHouseNumber,
-        city: shippingData.city,
-        zipCode: shippingData.zipCode,
-        items: cartState,
-      });
-      console.log(newOrder);
-    } catch (error) {
-      console.log(error);
-    }
-
     setIsLoading(false);
+    navigate("/checkout/success")
+
   };
 
   const paymentElementOptions = {
