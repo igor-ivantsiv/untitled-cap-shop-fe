@@ -9,7 +9,7 @@ const WebSocketProvider = () => {
       return;
     }
     console.log("CURRENT USER: ", currentUser)
-    const socket = new WebSocket(`ws://localhost:5005/ws?userId=${currentUser}`);
+    const socket = new WebSocket(`${import.meta.env.VITE_WS_URL}userId=${currentUser}`);
 
     socket.onopen = () => {
       console.log("CONNECTED TO WS");
