@@ -2,6 +2,7 @@ import { Button, PasswordInput, TextInput } from "@mantine/core";
 import { hasLength, isEmail, matchesField, useForm } from "@mantine/form";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { notifications } from "@mantine/notifications";
 
 const RegisterForm = () => {
   const navigate = useNavigate();
@@ -23,6 +24,32 @@ const RegisterForm = () => {
       confirmPassword: matchesField("password", "Password confirmation failed"),
     },
   });
+
+  // on register -> create a new cart for user
+  const createCart = async (userId) => {
+    try {
+      const cartResponse = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/cart/${userId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (cartResponse.status === 201 || cartResponse.status === 409) {
+        const cartData = await cartResponse.json();
+
+        // if user already has a cart -> log, but shouldn't be a problem
+        cartResponse.status === 409
+          ? console.log("CART CREATION FAILED: ", cartData.message)
+          : console.log("CART CREATION SUCCES: ", cartData);
+      }
+    } catch (error) {
+      console.error("CART CREATION FAILED: ", error);
+    }
+  };
 
   const handleSubmit = async (values) => {
     console.log("Form: ", values);
@@ -47,10 +74,20 @@ const RegisterForm = () => {
         console.log(data);
 
         // display message if username not available
-        response.status === 409
-          ? form.setErrors({ username: data.message })
-          : navigate("/login");
+        if (response.status === 409) {
+          form.setErrors({ username: data.message });
+          setIsLoading(false);
+          return;
+        }
+
+        // create cart for user, navigate to login
+        await createCart(data._id);
         setIsLoading(false);
+        notifications.show({
+          title: "Welcome!",
+          message: "Please login to start shopping!",
+        });
+        navigate("/login");
       } else {
         throw new Error("Something went wrong");
       }

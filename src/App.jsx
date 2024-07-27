@@ -19,7 +19,7 @@ import WebSocketProvider from "./ws/WebSocketProvider";
 function App() {
   return (
     <>
-    <WebSocketProvider />
+      <WebSocketProvider />
       <Routes>
         <Route path="/" element={<Homepage />} />
 
@@ -29,7 +29,7 @@ function App() {
 
         {/* store/user routes */}
         <Route path="/products" element={<ProductsPage />} />
-        <Route path="/products/:variantId" element={<ProductDetailsPage />}/>
+        <Route path="/products/:variantId" element={<ProductDetailsPage />} />
         <Route
           path="/checkout"
           element={
@@ -46,7 +46,7 @@ function App() {
             </PrivateRoute>
           }
         />
-               <Route
+        <Route
           path="/checkout/success"
           element={
             <PrivateRoute>
