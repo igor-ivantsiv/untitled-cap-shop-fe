@@ -126,6 +126,7 @@ const SessionContextProvider = ({ children }) => {
     setIsAuthenticated(false);
     setCurrentUser("");
     setIsAdmin(false);
+    sessionStorage.removeItem("cartContent")
   };
 
   return (

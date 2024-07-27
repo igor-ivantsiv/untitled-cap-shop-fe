@@ -7,6 +7,7 @@ import { IconShoppingBag } from "@tabler/icons-react";
 import { useContext } from "react";
 import { SessionContext } from "../contexts/SessionContext";
 import LoginForm from "./LoginForm";
+import CartOverview from "./cart/CartOverview";
 
 const CartDrawer = () => {
   const [cartOpened, cartHandler] = useDisclosure(false);
@@ -17,7 +18,7 @@ const CartDrawer = () => {
         {isAuthenticated ? (
           <>
             <h1>Shopping cart</h1>
-            <CartSummary />
+            <CartOverview />
           </>
         ) : (
           <LoginForm />

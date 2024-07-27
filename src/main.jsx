@@ -12,10 +12,11 @@ import "./styles/global.css";
 import theme from "./styles/theme.js";
 import SessionContextProvider from "./contexts/SessionContext.jsx";
 import AppShellComp from "./components/AppShellComp.jsx";
-import CartContextProvider from "./contexts/CartContext.jsx";
+import CartContextProvider from "./components/cart/CartContext.jsx";
 import { Notifications } from "@mantine/notifications";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
     <BrowserRouter>
       <MantineProvider defaultColorScheme="dark" theme={theme}>
         <SessionContextProvider>
@@ -28,4 +29,5 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         </SessionContextProvider>
       </MantineProvider>
     </BrowserRouter>
+  </React.StrictMode>
 );

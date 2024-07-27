@@ -16,13 +16,16 @@ import DetailsSkeleton from "../../components/DetailsSkeleton";
 import { CartContext } from "../../contexts/CartContext";
 import { SessionContext } from "../../contexts/SessionContext";
 import { notifications } from "@mantine/notifications";
+import useCartHelpers from "../../components/cart/cartHelpers";
 
 const ProductDetailsPage = () => {
   const { variantId } = useParams();
 
+  /*
   const { cartDispatch, updateVirtualStock, cartState } =
     useContext(CartContext);
-  const { isAuthenticated } = useContext(SessionContext);
+    */
+  const { isAuthenticated, currentUser } = useContext(SessionContext);
 
   const [product, setProduct] = useState({});
   const [variants, setVariants] = useState([]);
@@ -78,7 +81,7 @@ const ProductDetailsPage = () => {
       }
     };
     fetchStock();
-  }, [variantId, buttonLoading, cartState]);
+  }, [variantId, buttonLoading, /*cartState*/]);
 
   // fetch other variants of current product
   useEffect(() => {
@@ -113,6 +116,7 @@ const ProductDetailsPage = () => {
     }
   }, [product, variants]);
 
+  /*
   // on click -> set btn loading state, await api response
   const addToCart = async () => {
     // if not authenticated, redirect
@@ -154,6 +158,35 @@ const ProductDetailsPage = () => {
       console.log("problem updating virtual stock on details page");
     }
   };
+*/
+
+  const { addItem } = useCartHelpers();
+
+  const addToCart = async() => {
+    setButtonLoading(true)
+    const success = await addItem(currentUser, product._id);
+    if (success === 1) {
+      notifications.show({
+        title: "Success",
+        message: "Product added to cart",
+      });
+    }
+    else if (success === -1) {
+      notifications.show({
+        title: "Temporarily out of stock",
+        message: "We will resupply this item as soon as possible",
+      });
+    }
+    else {
+      notifications.show({
+        title: "Something went wrong",
+        message: "We apologize. Please try again later",
+      });
+    }
+    setTimeout(() => {
+      setButtonLoading(false);
+    }, 500);
+  }
 
   return (
     <>

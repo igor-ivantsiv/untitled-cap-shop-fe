@@ -15,6 +15,8 @@ import ManageProductsPage from "./pages/admin/ManageProductsPage";
 import ProductDetailsPage from "./pages/user/ProductDetailsPage";
 import OrderSuccess from "./pages/user/OrderSuccess";
 import WebSocketProvider from "./ws/WebSocketProvider";
+import { useContext, useEffect } from "react";
+import { SessionContext } from "./contexts/SessionContext";
 
 function App() {
   return (
