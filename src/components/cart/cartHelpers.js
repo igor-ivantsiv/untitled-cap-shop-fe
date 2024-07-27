@@ -2,14 +2,16 @@ import { useContext } from "react";
 import { SessionContext } from "../../contexts/SessionContext";
 import { CartContext } from "./CartContext";
 
+// each function will return 1: succces, 0: failure, or -1: stock issue
+// cart and stock will be adjusted on the backend
+// copy of cart on the front end will also be adjusted
+
 const useCartHelpers = () => {
   const { fetchWithToken } = useContext(SessionContext);
-  const { cartDispatch } = useContext(CartContext)
-
+  const { cartDispatch } = useContext(CartContext);
 
   // fetch the current user's cart
   const fetchCart = async (userId, setter) => {
-
     // ensure arguments
     if (!userId || !setter) {
       console.error("USER ID NOT PROVIDED -fetchCart");
@@ -62,9 +64,9 @@ const useCartHelpers = () => {
       if (cartData) {
         console.log("ADDED ITEM -useAddItem: ", cartData);
         cartDispatch({
-            type: "SET_CART",
-            cart: cartData
-        })
+          type: "SET_CART",
+          cart: cartData,
+        });
         return 1;
       }
       // return 0 if any request failed
@@ -99,9 +101,9 @@ const useCartHelpers = () => {
       if (data) {
         console.log("DECREASED ITEM -decreaseItem: ", data);
         cartDispatch({
-            type: "SET_CART",
-            cart: data
-        })
+          type: "SET_CART",
+          cart: data,
+        });
         return 1;
       }
       return 0;
@@ -130,9 +132,9 @@ const useCartHelpers = () => {
       if (data) {
         console.log("REMOVED ITEM -removeItem: ", data);
         cartDispatch({
-            type: "SET_CART",
-            cart: data
-        })
+          type: "SET_CART",
+          cart: data,
+        });
         return 1;
       }
       return 0;
@@ -142,7 +144,71 @@ const useCartHelpers = () => {
     }
   };
 
-  return { addItem, decreaseItem, removeItem, fetchCart };
+  // empty cart without restocking items
+  const emptyCartAfterSale = async (userId) => {
+    // ensure argument provided
+    if (!userId) {
+      console.error("ID NOT PROVIDED -emptyCartAfterSale");
+      return 0;
+    }
+    try {
+      // fetch correct cart for user
+      const data = await fetchWithToken(`/cart/${userId}/empty-cart/sale`);
+
+      // if success, set front end copy, return 1
+      if (data) {
+        console.log("CART EMPTY -emptyCartAfterSale", data);
+        cartDispatch({
+          type: "SET_CART",
+          cart: data,
+        });
+        return 1;
+      }
+
+      // return 0 in case of failure
+      return 0;
+    } catch (error) {
+      console.error("ERROR -emptyCartAfterSale: ", error);
+      return 0;
+    }
+  };
+
+  const emptyCart = async (userId) => {
+    // ensure argument provided
+    if (!userId) {
+      console.error("ID NOT PROVIDED -emptyCart");
+      return 0;
+    }
+    try {
+      // fetch correct cart for user
+      const data = await fetchWithToken(`/cart/${userId}/empty-cart`);
+
+      // if success, set front end copy, return 1
+      if (data) {
+        console.log("CART EMPTY -emptyCart", data);
+        cartDispatch({
+          type: "SET_CART",
+          cart: data,
+        });
+        return 1;
+      }
+
+      // return 0 in case of failure
+      return 0;
+    } catch (error) {
+      console.error("ERROR -emptyCart: ", error);
+      return 0;
+    }
+  };
+
+  return {
+    addItem,
+    decreaseItem,
+    removeItem,
+    fetchCart,
+    emptyCartAfterSale,
+    emptyCart,
+  };
 };
 
 export default useCartHelpers;
