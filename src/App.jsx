@@ -14,7 +14,7 @@ import ManageOrdersPage from "./pages/admin/ManageOrdersPage";
 import ManageProductsPage from "./pages/admin/ManageProductsPage";
 import ProductDetailsPage from "./pages/user/ProductDetailsPage";
 import OrderSuccess from "./pages/user/OrderSuccess";
-import WebSocketProvider from "./WebSocket/WebSocketProvider";
+import WebSocketProvider from "./ws/WebSocketProvider";
 
 function App() {
   return (
