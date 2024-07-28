@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { WebSocketContext } from "./WebSocketProvider";
 
+// work in progress
 const ChatBoxAdmin = ({ recipientId, messages }) => {
   const { ws } = useContext(WebSocketContext);
   const [input, setInput] = useState("");

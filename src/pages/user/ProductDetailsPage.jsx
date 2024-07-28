@@ -81,7 +81,7 @@ const ProductDetailsPage = () => {
       }
     };
     fetchStock();
-  }, [variantId, buttonLoading, /*cartState*/]);
+  }, [variantId, buttonLoading /*cartState*/]);
 
   // fetch other variants of current product
   useEffect(() => {
@@ -162,22 +162,28 @@ const ProductDetailsPage = () => {
 
   const { addItem } = useCartHelpers();
 
-  const addToCart = async() => {
-    setButtonLoading(true)
+  const addToCart = async () => {
+    if (!isAuthenticated) {
+      notifications.show({
+        title: "Hold up!",
+        message: "Please login or register to continue shopping!",
+      });
+      return navigate("/login");
+    }
+
+    setButtonLoading(true);
     const success = await addItem(currentUser, product._id);
     if (success === 1) {
       notifications.show({
         title: "Success",
         message: "Product added to cart",
       });
-    }
-    else if (success === -1) {
+    } else if (success === -1) {
       notifications.show({
         title: "Temporarily out of stock",
         message: "We will resupply this item as soon as possible",
       });
-    }
-    else {
+    } else {
       notifications.show({
         title: "Something went wrong",
         message: "We apologize. Please try again later",
@@ -186,7 +192,7 @@ const ProductDetailsPage = () => {
     setTimeout(() => {
       setButtonLoading(false);
     }, 500);
-  }
+  };
 
   return (
     <>

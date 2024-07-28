@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import { WebSocketContext } from "./WebSocketProvider";
 import ChatBoxAdmin from "./ChatBoxAdmin";
 
+// work in progress
 const ChatBoxWrapper = () => {
   const { ws, messages } = useContext(WebSocketContext);
 

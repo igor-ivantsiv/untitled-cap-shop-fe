@@ -33,14 +33,18 @@ const WebSocketProvider = ({ children }) => {
     socket.onopen = () => {
       console.log("CONNECTED TO WS");
 
+      // check session storage if there was a cart
       const userCartStr = sessionStorage.getItem("cartContent");
       const userCart = JSON.parse(userCartStr);
       console.log("WS STORED CART: ", userCart);
+
+      // set cart back in db if found in session storage (restoring cart)
       if (userCart && userCart.length > 0) {
         retrieveCart(currentUser, userCart);
       }
     };
 
+    // parse message, add to messages
     socket.onmessage = (event) => {
       console.log("WS MESSAGE: ", event.data);
       const message = JSON.parse(event.data);

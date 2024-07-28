@@ -5,6 +5,7 @@ const ChatBox = ({ recipientId }) => {
   const { ws, messages } = useContext(WebSocketContext);
   const [input, setInput] = useState("");
 
+  // send message to specified userId
   const sendMessage = () => {
     if (ws) {
       ws.send(JSON.stringify({ type: "CHAT", recipientId, content: input }));
