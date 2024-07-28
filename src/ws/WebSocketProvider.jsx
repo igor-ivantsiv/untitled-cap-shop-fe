@@ -13,6 +13,7 @@ const WebSocketProvider = () => {
         cartContent: storedCart,
       }
     );
+    console.log("WS CART RETRIEVED: ", retrievedUserCart);
   };
 
   useEffect(() => {
@@ -29,9 +30,8 @@ const WebSocketProvider = () => {
 
       const userCartStr = sessionStorage.getItem("cartContent");
       const userCart = JSON.parse(userCartStr);
-      console.log("STORED CART: ", userCart)
+      console.log("WS STORED CART: ", userCart);
       if (userCart && userCart.length > 0) {
-        console.log("STORED CART: ", userCart)
         retrieveCart(currentUser, userCart);
       }
     };

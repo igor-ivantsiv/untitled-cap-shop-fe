@@ -15,10 +15,52 @@ import ManageProductsPage from "./pages/admin/ManageProductsPage";
 import ProductDetailsPage from "./pages/user/ProductDetailsPage";
 import OrderSuccess from "./pages/user/OrderSuccess";
 import WebSocketProvider from "./ws/WebSocketProvider";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { SessionContext } from "./contexts/SessionContext";
+import { notifications } from "@mantine/notifications";
 
 function App() {
+  const { handleLogout, currentUser } = useContext(SessionContext);
+  const idleTimeoutRef = useRef(null);
+  const isLoggedOutRef = useRef(false);
+
+  useEffect(() => {
+    // if app is not visible for 20ms -> logout user to empty cart and free up items
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        // clear timeout id
+        clearTimeout(idleTimeoutRef.current);
+
+        // notify user if they were logged in before
+        if (isLoggedOutRef.current) {
+          notifications.show({
+            title: "Oh no!",
+            message: "You were logged out due to inactivity",
+          });
+
+          // set logged out ref back to false
+          isLoggedOutRef.current = false;
+        }
+      } else {
+        // set timeout, save id in reference
+        idleTimeoutRef.current = setTimeout(() => {
+          // if there was a user, set ref to true -> to display message when returning to page
+          if (currentUser) {
+            isLoggedOutRef.current = true;
+            // logout user to clear cart and free up items
+            handleLogout();
+          }
+        }, 20 * 60 * 1000);
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [currentUser]);
+
   return (
     <>
       <WebSocketProvider />
