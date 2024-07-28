@@ -12,7 +12,7 @@ import useCartHelpers from "./cartHelpers";
 import { SessionContext } from "../../contexts/SessionContext";
 import { notifications } from "@mantine/notifications";
 
-const CartProduct = ({ product, onDelete }) => {
+const CartProduct = ({ product, onDelete, onQuantityChange }) => {
   const [currentQuantity, setCurrentQuantity] = useState(product.quantity);
   const [buttonsLoading, setButtonsLoading] = useState(false);
   const [increaseBtnDisabled, setIncreaseBtnDisabled] = useState(false);
@@ -65,9 +65,12 @@ const CartProduct = ({ product, onDelete }) => {
         message: "We will resupply this item as soon as possible",
       });
       setIncreaseBtnDisabled(true);
-    }
-    else {
-        setCurrentQuantity((prevState) => (prevState + 1))
+    } else {
+      // call function to update total price in parent component
+      onQuantityChange(product._id, currentQuantity + 1);
+
+      // update displayed quantity in current component
+      setCurrentQuantity((prevState) => prevState + 1);
     }
     setTimeout(() => {
       setButtonsLoading(false);
@@ -82,12 +85,19 @@ const CartProduct = ({ product, onDelete }) => {
     }
     setButtonsLoading(true);
     const success = await decreaseItem(currentUser, product.variantId._id);
-    success === 0
-      ? notifications.show({
-          title: "Something went wrong",
-          message: "We apologize. Please try again later",
-        })
-      : setCurrentQuantity((prevState) => prevState - 1);
+    if (success === 0) {
+      notifications.show({
+        title: "Something went wrong",
+        message: "We apologize. Please try again later",
+      });
+    } else {
+      // call function to update total price in parent component
+      onQuantityChange(product._id, currentQuantity - 1);
+
+      // update current quantity in this component
+      setCurrentQuantity((prevState) => prevState - 1);
+    }
+
     setTimeout(() => {
       setButtonsLoading(false);
     }, 500);
@@ -96,12 +106,14 @@ const CartProduct = ({ product, onDelete }) => {
   const removeFromCart = async () => {
     setButtonsLoading(true);
 
+    // will return 1 if removal from cart was success
     const success = await removeItem(
       currentUser,
       product.variantId._id,
       currentQuantity
     );
 
+    // notify user
     success
       ? notifications.show({
           title: "Product removed",
@@ -111,6 +123,7 @@ const CartProduct = ({ product, onDelete }) => {
           message: "We apologize. Please try again later",
         });
 
+    // call function to remove item from list in parent component
     onDelete(product._id);
     setTimeout(() => {
       setButtonsLoading(false);
