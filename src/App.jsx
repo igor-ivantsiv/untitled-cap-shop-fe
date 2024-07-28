@@ -50,7 +50,7 @@ function App() {
             // logout user to clear cart and free up items
             handleLogout();
           }
-        }, 20 * 60 * 1000);
+        }, 60 * 60 * 1000);
       }
     };
 

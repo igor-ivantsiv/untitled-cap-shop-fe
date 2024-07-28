@@ -1,9 +1,14 @@
-import { useContext, useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { SessionContext } from "../contexts/SessionContext";
 
-const WebSocketProvider = () => {
+export const WebSocketContext = createContext();
+
+const WebSocketProvider = ({ children }) => {
   const { isAuthenticated, currentUser, fetchWithToken } =
     useContext(SessionContext);
+
+  const [ws, setWs] = useState(null);
+  const [messages, setMessages] = useState([]);
 
   const retrieveCart = async (userId, storedCart) => {
     const retrievedUserCart = await fetchWithToken(
@@ -38,18 +43,26 @@ const WebSocketProvider = () => {
 
     socket.onmessage = (event) => {
       console.log("WS MESSAGE: ", event.data);
+      const message = JSON.parse(event.data);
+      setMessages((prevState) => [...prevState, message]);
     };
 
     socket.onclose = () => {
       console.log("DISCONNECTED FROM WS");
     };
 
+    setWs(socket);
+
     return () => {
       socket.close();
     };
   }, [currentUser, isAuthenticated]);
 
-  return null;
+  return (
+    <WebSocketContext.Provider value={{ ws, messages }}>
+      {children}
+    </WebSocketContext.Provider>
+  );
 };
 
 export default WebSocketProvider;

@@ -14,20 +14,23 @@ import SessionContextProvider from "./contexts/SessionContext.jsx";
 import AppShellComp from "./components/AppShellComp.jsx";
 import CartContextProvider from "./components/cart/CartContext.jsx";
 import { Notifications } from "@mantine/notifications";
+import WebSocketProvider from "./ws/WebSocketProvider.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
+  
     <BrowserRouter>
       <MantineProvider defaultColorScheme="dark" theme={theme}>
         <SessionContextProvider>
           <RefetchProvider>
             <CartContextProvider>
-              <Notifications />
-              <AppShellComp />
+              <WebSocketProvider>
+                <Notifications />
+                <AppShellComp />
+              </WebSocketProvider>
             </CartContextProvider>
           </RefetchProvider>
         </SessionContextProvider>
       </MantineProvider>
     </BrowserRouter>
-  </React.StrictMode>
+  
 );
