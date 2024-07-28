@@ -1,5 +1,5 @@
-import CartDrawer from "../components/CartDrawer";
 import ChatBox from "../ws/ChatBox";
+import ChatBoxWrapper from "../ws/ChatBoxWrapper";
 
 const Homepage = () => {
   return (

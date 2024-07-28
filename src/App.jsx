@@ -63,7 +63,7 @@ function App() {
 
   return (
     <>
-      <WebSocketProvider />
+      
       <Routes>
         <Route path="/" element={<Homepage />} />
 

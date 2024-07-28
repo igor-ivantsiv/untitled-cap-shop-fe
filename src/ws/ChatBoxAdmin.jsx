@@ -1,8 +1,8 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { WebSocketContext } from "./WebSocketProvider";
 
-const ChatBox = ({ recipientId }) => {
-  const { ws, messages } = useContext(WebSocketContext);
+const ChatBoxAdmin = ({ recipientId, messages }) => {
+  const { ws } = useContext(WebSocketContext);
   const [input, setInput] = useState("");
 
   const sendMessage = () => {
@@ -11,6 +11,10 @@ const ChatBox = ({ recipientId }) => {
       setInput("");
     }
   };
+
+  useEffect(() => {
+    console.log("MESSAGES: ", messages)
+  }, [messages])
 
   return (
     <div>
@@ -25,4 +29,4 @@ const ChatBox = ({ recipientId }) => {
   );
 };
 
-export default ChatBox;
+export default ChatBoxAdmin;
