@@ -30,7 +30,7 @@ const ChatBox = () => {
   const handleSendMessage = (values) => {
     setButtonLoading(true);
     const { userMessage } = values;
-    const sent = sendMessage("66a5653d6610617aae550e8f", userMessage)
+    const sent = sendMessage(import.meta.env.VITE_SUPPORT_ID, userMessage)
     sent
       ? form.reset()
       : form.setErrors({
