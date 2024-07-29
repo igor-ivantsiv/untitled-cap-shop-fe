@@ -1,4 +1,10 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { SessionContext } from "../contexts/SessionContext";
 
 export const WebSocketContext = createContext();
@@ -10,6 +16,7 @@ const WebSocketProvider = ({ children }) => {
   const [ws, setWs] = useState(null);
   const [messages, setMessages] = useState([]);
 
+  // retrieve user cart if there was a disconnect (refill cart in db)
   const retrieveCart = async (userId, storedCart) => {
     const retrievedUserCart = await fetchWithToken(
       `/cart/${userId}/set`,
@@ -48,7 +55,17 @@ const WebSocketProvider = ({ children }) => {
     socket.onmessage = (event) => {
       console.log("WS MESSAGE: ", event.data);
       const message = JSON.parse(event.data);
-      setMessages((prevState) => [...prevState, message]);
+      console.log("SENDER ID: ", message["senderId"]);
+      const senderId = message["senderId"];
+
+      // if the current sender Id does not have a key yet, set key to empty array
+      setMessages((prevState) => {
+        if (!prevState[senderId]) {
+          prevState[senderId] = [];
+        }
+        // update the state by including current senders message to its array of messages
+        return { ...prevState, [senderId]: [...prevState[senderId], message] };
+      });
     };
 
     socket.onclose = () => {
@@ -62,8 +79,41 @@ const WebSocketProvider = ({ children }) => {
     };
   }, [currentUser, isAuthenticated]);
 
+  // send message to specified recipient
+  const sendMessage = useCallback(
+    (recipientId, content) => {
+      if (ws) {
+        const message = { type: "CHAT", recipientId, content };
+        ws.send(JSON.stringify(message));
+
+        // save the sent message to conversation
+        const sentMessage = { type: "CHAT", username: "You", content };
+        setMessages((prevState) => {
+          // if this user id does not yet have a prop, set to empty array
+          if (!prevState[recipientId]) {
+            prevState[recipientId] = [];
+          }
+          // update the state by including current senders message to its array of messages
+          return {
+            ...prevState,
+            [recipientId]: [...prevState[recipientId], sentMessage],
+          };
+        });
+        return 1;
+      }
+      return 0;
+    },
+    [ws]
+  );
+
+  useEffect(() => {
+    if (!currentUser) {
+      setMessages([]);
+    }
+  }, [currentUser]);
+
   return (
-    <WebSocketContext.Provider value={{ ws, messages }}>
+    <WebSocketContext.Provider value={{ ws, messages, sendMessage }}>
       {children}
     </WebSocketContext.Provider>
   );
