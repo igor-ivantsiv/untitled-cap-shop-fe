@@ -8,12 +8,15 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import PaymentDetails from "../../components/PaymentDetails";
 import CartOverview from "../../components/cart/CartOverview";
+import { useRef } from "react";
+
 
 const stripePromise = loadStripe(
   "pk_test_51PgOiCIwWVetEzYRbLWc0nfQhLQKKYtxdnmZKOuIaEs5t8Ew8fKnMoMeCe6WCakBPog5jWqioFwT0QCixw4OtgMi002kogRiFM"
 );
 
 const CheckoutPage = () => {
+  const paymentIntentRef = useRef(null);
   const [clientSecret, setClientSecret] = useState("");
   const [paymentIntent, setPaymentIntent] = useState("");
   const [cartPayload, setCartPayload] = useState({});
@@ -94,21 +97,27 @@ const CheckoutPage = () => {
 
   useEffect(() => {
     const declareIntent = async () => {
-      await declarePurchaseIntent();
+      const purchaseIntent = await declarePurchaseIntent();
+      paymentIntentRef.current = purchaseIntent.id;
     };
-
+  
     declareIntent();
-
+  
     return () => {
       const cleanup = async () => {
-        if (paymentIntent === "") {
+        const currentPaymentIntent = paymentIntentRef.current; 
+        if (!currentPaymentIntent) {
           console.log("No intent to cancel");
         } else {
-          await cancelPurchaseIntent();
-          console.log("intent canceled deue to umount");
+          const canceledIntent = await fetchWithToken(
+            "/payments/cancel-payment-intent",
+            "POST",
+            { paymentIntentId: currentPaymentIntent }
+          );
+          console.log("intent canceled due to unmount");
         }
       };
-
+  
       cleanup();
     };
   }, []);
