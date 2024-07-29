@@ -17,7 +17,6 @@ import { Notifications } from "@mantine/notifications";
 import WebSocketProvider from "./ws/WebSocketProvider.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
     <BrowserRouter>
       <MantineProvider defaultColorScheme="dark" theme={theme}>
         <SessionContextProvider>
@@ -32,5 +31,4 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         </SessionContextProvider>
       </MantineProvider>
     </BrowserRouter>
-  </React.StrictMode>
 );
