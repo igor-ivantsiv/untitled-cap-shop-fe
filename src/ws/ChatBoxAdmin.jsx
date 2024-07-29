@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { WebSocketContext } from "./WebSocketProvider";
 
 // work in progress
-const ChatBoxAdmin = ({ recipientId, messages }) => {
+const ChatBoxAdmin = ({ recipientId, messagesReceived }) => {
   const { ws } = useContext(WebSocketContext);
   const [input, setInput] = useState("");
 
@@ -14,12 +14,12 @@ const ChatBoxAdmin = ({ recipientId, messages }) => {
   };
 
   useEffect(() => {
-    console.log("MESSAGES: ", messages)
-  }, [messages])
+    console.log("MESSAGES: ", messagesReceived)
+  }, [messagesReceived])
 
   return (
     <div>
-      {messages.map((msg, index) => (
+      {messagesReceived.map((msg, index) => (
         <div key={index}>
           {msg.username}: {msg.content}
         </div>

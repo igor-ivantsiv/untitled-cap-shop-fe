@@ -48,7 +48,15 @@ const WebSocketProvider = ({ children }) => {
     socket.onmessage = (event) => {
       console.log("WS MESSAGE: ", event.data);
       const message = JSON.parse(event.data);
-      setMessages((prevState) => [...prevState, message]);
+      console.log("SENDER ID: ", message["senderId"])
+      const senderId = message["senderId"];
+      //setMessages((prevState) => [...prevState, message]);
+      setMessages((prevState) => {
+        if(!prevState[senderId]) {
+          prevState[senderId] = []
+        }
+        return {...prevState, [senderId]: [...prevState[senderId], message]}
+      })
     };
 
     socket.onclose = () => {
