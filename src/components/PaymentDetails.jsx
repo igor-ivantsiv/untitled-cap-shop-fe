@@ -14,36 +14,19 @@ const PaymentDetails = ({
   setShowPaymentForm,
   shippingData,
   declarePurchaseIntent,
-  paymentIntent
+  paymentIntent,
+  cartPayload,
+  cancelPurchaseIntent,
 }) => {
   const stripe = useStripe();
   const elements = useElements();
   const [message, setMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [oldIntentCancelled, setOldIntentCancelled] = useState(false);
+  const [newIntentCreated, setNewIntentCreated] = useState(false);
+
   const { fetchWithToken } = useContext(SessionContext);
-  const { cartState } = useContext(CartContext);
-  const navigate = useNavigate();
-
-  const cancelPurchaseIntent = async (paymentIntentId) => {
-    try {
-      const response = await fetchWithToken(
-        "/payments/cancel-payment-intent",
-        "POST",
-        { paymentIntentId }
-      );
-      
-      if (!response.ok) {
-        throw new Error('Failed to cancel PaymentIntent');
-      }
-
-      const canceledIntent = await response.json();
-      console.log('Canceled PaymentIntent:', canceledIntent);
-      return canceledIntent;
-    } catch (error) {
-      console.error('Error canceling PaymentIntent:', error);
-      throw error;
-    }
-  };
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (!stripe) {
@@ -76,18 +59,6 @@ const PaymentDetails = ({
     });
   }, [stripe]);
 
-  const renameKey = (obj, oldKey, newKey) => {
-    if (!obj.hasOwnProperty(oldKey)) {
-      return obj;
-    }
-
-    const newObj = { ...obj };
-    newObj[newKey] = newObj[oldKey];
-    delete newObj[oldKey];
-
-    return newObj;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -96,20 +67,37 @@ const PaymentDetails = ({
     }
 
     setIsLoading(true);
-    setMessage(null);
+
+    const {error: submitError} = await elements.submit();
+    if (submitError) {
+      handleError(submitError);
+      return;
+    }
 
     try {
-      const modifiedCart = cartState.map((item) => {
-        return renameKey(item, "id", "variantId");
-      });
+      // Cancel the old PaymentIntent and declare a new one
+      await cancelPurchaseIntent();
 
-      // Cancel the old PaymentIntent
-    
+      setMessage(null);
 
-      // Declare a new purchase intent and await its result
-      const prePayment = await declarePurchaseIntent();
+      const { content } = cartPayload;
+      const newCart = content.map((item) => ({
+        variantId: item.variantId._id,
+        productId: item.variantId.productId,
+        salesPrice: item.variantId.price,
+        quantity: item.quantity,
+      }));
 
-      // Proceed with the order creation
+      // Declare a new purchase intent and get the updated payment intent
+      const purchaseIntent = await declarePurchaseIntent();
+
+      if (!purchaseIntent || !purchaseIntent.id) {
+        throw new Error("Failed to declare new PaymentIntent.");
+      }
+      const newlyDeclaredPaymentIntent = purchaseIntent.id;
+      const newlyDeclaredClientSecret = purchaseIntent.clientSecret;
+
+      // Create a new order
       const newOrder = await fetchWithToken("/orders", "POST", {
         userId: shippingData.userId,
         firstName: shippingData.firstName,
@@ -117,24 +105,20 @@ const PaymentDetails = ({
         streetHouseNumber: shippingData.streetHouseNumber,
         city: shippingData.city,
         zipCode: shippingData.zipCode,
-        items: modifiedCart,
-        paymentIntent: paymentIntent, // Correctly use the new PaymentIntent ID
+        items: newCart,
+        paymentIntent: newlyDeclaredPaymentIntent, // Ensure this is updated correctly
       });
 
+      // Confirm the payment with Stripe
       const { error } = await stripe.confirmPayment({
         elements,
         confirmParams: {
           return_url: "http://localhost:5173/checkout/success",
         },
-        redirect: "if_required",
-        payment_intent_data: {
-          metadata: {
-            orderId: newOrder._id, // Use the order ID from the newly created order
-          },
-        },
+        clientSecret: newlyDeclaredClientSecret,
       });
 
-      // Handling errors
+      // Handle errors from Stripe
       if (error) {
         if (error.type === "card_error" || error.type === "validation_error") {
           setMessage(error.message);
@@ -144,17 +128,14 @@ const PaymentDetails = ({
       } else {
         setMessage("Payment processing...");
       }
-      
     } catch (error) {
-      console.error('Error in payment processing:', error);
+      console.error("Error in payment processing:", error);
       setMessage(`Error: ${error.message}`);
+    } finally {
+      setIsLoading(false);
+      navigate("/checkout/success")
     }
-
-    setIsLoading(false);
   };
-
-
-
 
   const paymentElementOptions = {
     layout: "tabs",

@@ -8,7 +8,7 @@ import AdminRoute from "./components/AdminRoute";
 import TestAdminPage from "./pages/TestAdminPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import ProductsPage from "./pages/user/ProductsPage";
-import CheckoutPage from "./pages/user/CheckoutPage";
+
 import UserProfilePage from "./pages/user/UserProfilePage";
 import ManageOrdersPage from "./pages/admin/ManageOrdersPage";
 import ManageProductsPage from "./pages/admin/ManageProductsPage";
@@ -18,6 +18,7 @@ import WebSocketProvider from "./ws/WebSocketProvider";
 import { useContext, useEffect, useRef, useState } from "react";
 import { SessionContext } from "./contexts/SessionContext";
 import { notifications } from "@mantine/notifications";
+import CheckoutPage from "./pages/user/CheckoutPage";
 
 function App() {
   const { handleLogout, currentUser } = useContext(SessionContext);

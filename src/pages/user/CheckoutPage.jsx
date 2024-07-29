@@ -1,38 +1,23 @@
-import {
-  Button,
-  Group,
-  NumberFormatter,
-  Stack,
-  Text,
-  TextInput,
-} from "@mantine/core";
-import {
-  IconArrowBack,
-  IconArrowForward,
-  IconCashRegister,
-} from "@tabler/icons-react";
+import { Button, TextInput } from "@mantine/core";
+import { IconArrowBack, IconArrowForward } from "@tabler/icons-react";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRefetchContext } from "../../contexts/RefetchContext";
-import { CartContext } from "../../contexts/CartContext";
 import { SessionContext } from "../../contexts/SessionContext";
-import CartItem from "../../components/CartItem";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import PaymentDetails from "../../components/PaymentDetails";
+import CartOverview from "../../components/cart/CartOverview";
 
 const stripePromise = loadStripe(
   "pk_test_51PgOiCIwWVetEzYRbLWc0nfQhLQKKYtxdnmZKOuIaEs5t8Ew8fKnMoMeCe6WCakBPog5jWqioFwT0QCixw4OtgMi002kogRiFM"
 );
 
 const CheckoutPage = () => {
-  const { cartState, cartDispatch } = useContext(CartContext);
   const [clientSecret, setClientSecret] = useState("");
   const [paymentIntent, setPaymentIntent] = useState("");
-  const [products, setProducts] = useState([]);
-  const [totalPrice, setTotalPrice] = useState(0);
+  const [cartPayload, setCartPayload] = useState({});
   const { fetchWithToken, currentUser } = useContext(SessionContext);
-  const { shouldRefetch } = useRefetchContext();
   const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [shippingData, setShippingData] = useState({
     userId: currentUser,
@@ -62,32 +47,40 @@ const CheckoutPage = () => {
 
   const declarePurchaseIntent = async () => {
     try {
+      // Fetch the cart data
+      const fetchCart = await fetchWithToken(`/cart/${currentUser}`);
+      console.log(fetchCart);
+
+      // Update cartPayload asynchronously
+      setCartPayload(fetchCart);
+
+      // Declare the purchase intent with the fetched cart data
       const purchaseIntent = await fetchWithToken(
         "/payments/create-payment-intent",
         "POST",
-        { items: cartState }
+        { cartPayload: fetchCart }
       );
-      console.log(purchaseIntent)
-      setPaymentIntent(purchaseIntent.id)
+      setPaymentIntent(purchaseIntent.id);
       setClientSecret(purchaseIntent.clientSecret);
+      return purchaseIntent;
     } catch (error) {
-      console.log(error);
+      console.error("Error fetching cart or creating payment intent:", error);
     }
   };
 
-  const fetchProduct = async (variantId, quantity) => {
+  const cancelPurchaseIntent = async () => {
     try {
-      const data = await fetchWithToken(`/products/variants/${variantId}`);
+      const canceledIntent = await fetchWithToken(
+        "/payments/cancel-payment-intent",
+        "POST",
+        { paymentIntentId: paymentIntent }
+      );
+      console.log("Canceled PaymentIntent:", canceledIntent);
 
-      if (!data) {
-        throw new Error("error fetching products in cart summary");
-      }
-      // return new object with quantity prop
-      return { ...data, quantity };
+      return canceledIntent;
     } catch (error) {
-      // return null if something went wrong fetching
-      console.error(error);
-      return null;
+      console.error("Error canceling PaymentIntent:", error);
+      throw error;
     }
   };
 
@@ -100,67 +93,25 @@ const CheckoutPage = () => {
   };
 
   useEffect(() => {
-    declarePurchaseIntent();
+    const declareIntent = async () => {
+      await declarePurchaseIntent();
+    };
+
+    declareIntent();
+
+    return () => {
+      const cleanup = async () => {
+        if (paymentIntent === "") {
+          console.log("No intent to cancel");
+        } else {
+          await cancelPurchaseIntent();
+          console.log("intent canceled deue to umount");
+        }
+      };
+
+      cleanup();
+    };
   }, []);
-
-  useEffect(() => {
-    const fetchPrice = async (variantId, quantity) => {
-      try {
-        const data = await fetchWithToken(`/products/variants/${variantId}`);
-
-        if (!data) {
-          throw new Error("error fetching products in cart summary");
-        }
-
-        // update cart to reflect most current prices
-        cartDispatch({
-          type: "update_price",
-          payload: { id: variantId, salesPrice: data.price },
-        });
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    // first set total price to 0
-    // calc total price by fetching price for each item in cart
-    setTotalPrice(0);
-    if (cartState.length > 0) {
-      const totalCartPrice = cartState.reduce(
-        (acc, item) => acc + item.salesPrice * item.quantity,
-        0
-      );
-      setTotalPrice(totalCartPrice);
-    }
-    // update every time cart changes
-  }, [cartState]);
-
-  // fetch products in cart
-  useEffect(() => {
-    const fetchedProductIds = new Set();
-
-    // fetch products and add to array
-    const fetchProducts = async () => {
-      const fetchedProducts = [];
-      // loop over elements (products) in cart
-      for (const element of cartState) {
-        // check if id not already in ids Set
-        if (!fetchedProductIds.has(element.id)) {
-          const productData = await fetchProduct(element.id, element.quantity);
-          // if fetch went through, add id to set, add item to array
-          if (productData) {
-            fetchedProductIds.add(element.id);
-            fetchedProducts.push(productData);
-          }
-        }
-      }
-      // set product state
-      setProducts(fetchedProducts);
-    };
-
-    fetchProducts();
-
-    // refetch on delete of item
-  }, [shouldRefetch]);
 
   return (
     <>
@@ -220,8 +171,7 @@ const CheckoutPage = () => {
                   size="compact-md"
                   radius="sm"
                   rightSection={<IconArrowForward size={20} />}
-                  onClick={(e) => {
-                    e.preventDefault();
+                  onClick={() => {
                     setShowPaymentForm(true);
                   }}
                 >
@@ -236,7 +186,14 @@ const CheckoutPage = () => {
               <div className="App">
                 {clientSecret && (
                   <Elements options={options} stripe={stripePromise}>
-                    <PaymentDetails setShowPaymentForm={setShowPaymentForm} shippingData={shippingData} declarePurchaseIntent={declarePurchaseIntent} paymentIntent={paymentIntent}/>
+                    <PaymentDetails
+                      setShowPaymentForm={setShowPaymentForm}
+                      shippingData={shippingData}
+                      declarePurchaseIntent={declarePurchaseIntent}
+                      paymentIntent={paymentIntent}
+                      cartPayload={cartPayload}
+                      cancelPurchaseIntent={cancelPurchaseIntent}
+                    />
                   </Elements>
                 )}
               </div>
@@ -245,19 +202,7 @@ const CheckoutPage = () => {
         </div>
         <div>
           <h2>Items</h2>
-          {products.map((item) => (
-            <CartItem product={item} key={item._id} />
-          ))}
-          <Stack>
-            <Group>
-              <Text>Total: </Text>
-              <NumberFormatter
-                prefix="$"
-                value={totalPrice / 100}
-                decimalScale={2}
-              />
-            </Group>
-          </Stack>
+          <CartOverview />
         </div>
       </div>
     </>
