@@ -3,6 +3,7 @@ import { useDisclosure } from "@mantine/hooks";
 import App from "../App";
 import Navbar from "./TESTNavbar";
 import CartDrawer from "./CartDrawer";
+import HeaderWrapper from "./HeaderWrapper";
 
 const AppShellComp = () => {
   const [opened, { toggle }] = useDisclosure();
@@ -20,7 +21,7 @@ const AppShellComp = () => {
     >
       <AppShell.Header>
         <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-        <CartDrawer />
+        <HeaderWrapper />
       </AppShell.Header>
       <AppShell.Navbar>
         Navbar

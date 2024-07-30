@@ -7,6 +7,7 @@ import {
   useState,
 } from "react";
 import { SessionContext } from "../contexts/SessionContext";
+import { notifications } from "@mantine/notifications";
 
 export const WebSocketContext = createContext();
 
@@ -73,6 +74,10 @@ const WebSocketProvider = ({ children }) => {
       const message = JSON.parse(event.data);
       console.log("SENDER ID: ", message["senderId"]);
       const senderId = message["senderId"];
+      notifications.show({
+        title: "New message",
+        message: "Please check the customer service tab"
+      })
 
       // if the current sender Id does not have a key yet, set key to empty array
       setMessages((prevState) => {

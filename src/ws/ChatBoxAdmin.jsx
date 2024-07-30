@@ -18,18 +18,17 @@ const ChatBoxAdmin = ({ recipientId, messagesReceived }) => {
   const { sendMessage, resolveMessage } = useContext(WebSocketContext);
   const [buttonLoading, setButtonLoading] = useState(false);
 
-  //const [isResolved, setIsResolved] = useState(messagesReceived.find((obj) => ("resolved" in obj)))
-
   const [isResolved, setIsResolved] = useState(() => {
     // use function to find if conversation has resolved prop, and what its value is
     const resolvedMessage = messagesReceived.find((obj) => "resolved" in obj);
     return resolvedMessage ? resolvedMessage.resolved : false;
   });
-  
-  
+
   // update state whenever 'messages' state changes
   useEffect(() => {
     const resolvedMessage = messagesReceived.find((obj) => "resolved" in obj);
+
+    // if 'resolved' object is found -> set state to its value, else set to false
     setIsResolved(resolvedMessage ? resolvedMessage.resolved : false);
   }, [messagesReceived]);
 
@@ -44,20 +43,18 @@ const ChatBoxAdmin = ({ recipientId, messagesReceived }) => {
     },
   });
 
+  // add 'resolved' prop to chat, use function from wsContext
   const handleResolve = (value) => {
-    console.log("checked value: ", value)
-    resolveMessage(recipientId, value)
-  }
-
-  /*
-  useEffect(() => {
-    setIsResolved(messagesReceived.find((obj) => ("resolved" in obj))) 
-  }, [messagesReceived])*/
+    console.log("checked value: ", value);
+    resolveMessage(recipientId, value);
+  };
 
   // send message to specific userId
   const handleSendMessage = (values) => {
     setButtonLoading(true);
     const { adminMessage } = values;
+
+    // send message through websocket, verify if msg was sent
     const sent = sendMessage(recipientId, adminMessage);
     sent
       ? form.reset()
@@ -70,22 +67,17 @@ const ChatBoxAdmin = ({ recipientId, messagesReceived }) => {
     }, 500);
   };
 
-  useEffect(() => {
-    console.log("MESSAGES: ", messagesReceived);
-    const result = messagesReceived.find((obj) => ("resolved" in obj))
-    console.log("result: ",result)
-  }, [messagesReceived]);
-
   return (
     <>
       <Paper withBorder p={"md"}>
         <Group>
           <Title order={4}>Support</Title>
           <Chip checked={isResolved} onChange={handleResolve}>
-            {isResolved ?
-            <Text span>Resolved</Text> :
-            <Text span>Resolve</Text>
-            }
+            {isResolved ? (
+              <Text span>Resolved</Text>
+            ) : (
+              <Text span>Resolve</Text>
+            )}
           </Chip>
         </Group>
 

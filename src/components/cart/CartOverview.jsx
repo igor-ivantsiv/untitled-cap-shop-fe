@@ -2,9 +2,8 @@ import { useContext, useEffect, useState } from "react";
 import useCartHelpers from "./cartHelpers";
 import { SessionContext } from "../../contexts/SessionContext";
 import CartProduct from "./CartProduct";
-import { Button, Group, NumberFormatter, Stack, Text } from "@mantine/core";
-import { IconCashRegister } from "@tabler/icons-react";
-import { Link } from "react-router-dom";
+import { Group, NumberFormatter, Stack, Text } from "@mantine/core";
+
 
 // cartContent: [{quantity: 1, variantId: {_id, productId, price, etc}, _id: "id"}]
 
@@ -24,6 +23,7 @@ const CartOverview = () => {
     displayCart();
   }, []);
 
+  // log fetched cart for debugging
   useEffect(() => {
     console.log("Cart fetched: ", fetchedCart);
   }, [fetchedCart]);
@@ -36,7 +36,7 @@ const CartOverview = () => {
     }
   }, [fetchedCart]);
 
-  // pass down to component to reflect quantity change in total price
+  // pass function down to component to reflect quantity change in total price
   const onQuantityChange = (id, newQuantity) => {
     setCartContent((prevState) =>
       prevState.map((item) =>
