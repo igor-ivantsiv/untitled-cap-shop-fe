@@ -19,6 +19,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { SessionContext } from "./contexts/SessionContext";
 import { notifications } from "@mantine/notifications";
 import CheckoutPage from "./pages/user/CheckoutPage";
+import CustomerServicePage from "./pages/admin/CustomerServicePage";
 
 function App() {
   const { handleLogout, currentUser } = useContext(SessionContext);
@@ -64,7 +65,6 @@ function App() {
 
   return (
     <>
-      
       <Routes>
         <Route path="/" element={<Homepage />} />
 
@@ -114,6 +114,14 @@ function App() {
           element={
             <AdminRoute>
               <ManageProductsPage />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="admin/customer-service"
+          element={
+            <AdminRoute>
+              <CustomerServicePage />
             </AdminRoute>
           }
         />

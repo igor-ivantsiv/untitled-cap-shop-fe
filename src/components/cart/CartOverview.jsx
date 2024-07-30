@@ -54,7 +54,7 @@ const CartOverview = () => {
       );
       setTotalPrice(total);
     };
-    displayTotalPrice()
+    displayTotalPrice();
   }, [cartContent]);
 
   // filter item out of array on delete
@@ -82,14 +82,6 @@ const CartOverview = () => {
               decimalScale={2}
             />
           </Group>
-
-          <Button
-            component={Link}
-            to={"/checkout"}
-            rightSection={<IconCashRegister />}
-          >
-            Checkout
-          </Button>
         </Stack>
       ) : (
         <Text fs="italic">Nothing here yet...</Text>

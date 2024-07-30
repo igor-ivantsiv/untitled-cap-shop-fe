@@ -26,6 +26,7 @@ const Navbar = () => {
       <>
         <Link to="/admin/orders">Manage orders</Link>
         <Link to="/admin/products">Manage products</Link>
+        <Link to="admin/customer-service">Customer service</Link>
       </>
       }
       {isAuthenticated && <Button onClick={handleLogout}>Log out</Button>}
