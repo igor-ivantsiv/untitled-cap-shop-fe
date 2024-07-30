@@ -1,0 +1,133 @@
+h3 {
+  font-size: 20px;
+}
+.headerDiv {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.ordersHeader {
+  margin-bottom: 10px;
+}
+.tableContentStyles {
+  text-align: center;
+}
+.tableHeaders {
+  text-align: center;
+}
+.expandableContentDiv {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  text-align: left;
+  gap: 60px;
+}
+.expandableRow {
+  padding: 0 15px;
+}
+.idStyle {
+  color: darkgrey;
+  font-size: 12px;
+  font-style: italic;
+}
+.flexOnlyDiv {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.dataLabel {
+  font-weight: bold;
+}
+.editButtonDiv {
+  margin: 15px;
+}
+.deleteButtonsDiv {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 15px;
+}
+.formTitle {
+  font-size: 20px;
+  font-weight: bolder;
+}
+.newProductModalButtons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+.orderRowFormatting {
+  padding: 10px 6px;
+}
+.pill {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  color: white;
+  font-size: 14px;
+  text-align: center;
+}
+.manageOrderButtons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 15px;
+}
+.itemsTable {
+  margin-bottom: 15px;
+}
+.shipOrderButtons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 15px;
+}
+.cancelOrderButtons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 15px;
+  }
+
+@media screen and (max-width: 768px) {
+  .tableStyles {
+    text-align: center;
+  }
+  .expandableContentDiv {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .hideOnMobile {
+    display: none;
+  }
+  .stockContent {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin: 5px 0;
+  }
+  .editButtonDiv {
+    display: flex;
+    justify-content: center;
+  }
+  .gridDiv {
+    display: grid;
+    grid-template: 1fr 1fr / 1fr 1fr;
+  }
+  .formButtonDiv {
+    display: flex;
+    justify-content: space-between;
+    margin: 25px 0px 15px 0px;
+  }
+  .newProductFormDiv {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .truncatedColumn {
+    white-space: normal;
+    word-wrap: break-word;
+    word-break: break-all;
+    max-width: 130px;
+  }
+}
