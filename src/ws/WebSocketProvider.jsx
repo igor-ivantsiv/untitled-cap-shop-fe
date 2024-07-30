@@ -3,6 +3,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import { SessionContext } from "../contexts/SessionContext";
@@ -14,7 +15,14 @@ const WebSocketProvider = ({ children }) => {
     useContext(SessionContext);
 
   const [ws, setWs] = useState(null);
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState({});
+  const reconnectAttempts = useRef(0);
+  const reconnectTimeout = useRef(null);
+  const isAuthenticatedRef = useRef(isAuthenticated)
+
+  useEffect(() => {
+    isAuthenticatedRef.current = isAuthenticated
+  }, [isAuthenticated])
 
   // retrieve user cart if there was a disconnect (refill cart in db)
   const retrieveCart = async (userId, storedCart) => {
@@ -28,7 +36,11 @@ const WebSocketProvider = ({ children }) => {
     console.log("WS CART RETRIEVED: ", retrievedUserCart);
   };
 
-  useEffect(() => {
+  // turned the ws connection into a callback function
+  const connect = useCallback(() => {
+
+    // clear the reconnect timeout when function is called
+    clearTimeout(reconnectTimeout.current);
     if (!isAuthenticated || !currentUser) {
       return;
     }
@@ -39,6 +51,9 @@ const WebSocketProvider = ({ children }) => {
 
     socket.onopen = () => {
       console.log("CONNECTED TO WS");
+
+      // set reconnect attempts to 0
+      reconnectAttempts.current = 0;
 
       // check session storage if there was a cart
       const userCartStr = sessionStorage.getItem("cartContent");
@@ -70,14 +85,52 @@ const WebSocketProvider = ({ children }) => {
 
     socket.onclose = () => {
       console.log("DISCONNECTED FROM WS");
+
+      // only attempt reconnect if user is authenticated, and try only 5 times
+      if (reconnectAttempts.current < 5 && isAuthenticatedRef.current) {
+        console.log("WS ATTEMPTING RECONNECT");
+
+        // attempt after 5 seconds
+        reconnectTimeout.current = setTimeout(() => {
+          // attempt reconnect only when user is still authenticated after timeout
+          if (isAuthenticatedRef.current) {
+            reconnectAttempts.current += 1;
+            connect();
+          }
+        }, 5000);
+      }
+    };
+
+    socket.onerror = (error) => {
+      console.error("WS ERROR: ", error);
+      socket.close();
     };
 
     setWs(socket);
+  }, [currentUser, isAuthenticated]);
+
+  useEffect(() => {
+    // if user is authenticated -> connect
+    if (isAuthenticated) {
+      connect();
+    } else {
+      // clear timeout if user is not authenticated 
+      // (maybe not necessary)
+      // close ws 
+      clearTimeout(reconnectTimeout.current);
+      if (ws) {
+        ws.close();
+      }
+    }
 
     return () => {
-      socket.close();
+      if (ws) {
+        ws.close();
+      }
+      clearTimeout(reconnectTimeout.current)
     };
   }, [currentUser, isAuthenticated]);
+
 
   // send message to specified recipient
   const sendMessage = useCallback(
@@ -108,7 +161,7 @@ const WebSocketProvider = ({ children }) => {
 
   useEffect(() => {
     if (!currentUser) {
-      setMessages([]);
+      setMessages({});
     }
   }, [currentUser]);
 
