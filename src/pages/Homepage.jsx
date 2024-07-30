@@ -16,10 +16,6 @@ const Homepage = () => {
       <ChatBox />
     }
       
-
-      {isAdmin && 
-        <ChatBoxWrapper />
-      }
     </>
   );
 };

@@ -135,6 +135,7 @@ const SessionContextProvider = ({ children }) => {
         isAuthenticated,
         isLoading,
         setToken,
+        token,
         fetchWithToken,
         handleLogout,
         currentUser,

@@ -11,7 +11,7 @@ import { SessionContext } from "../contexts/SessionContext";
 export const WebSocketContext = createContext();
 
 const WebSocketProvider = ({ children }) => {
-  const { isAuthenticated, currentUser, fetchWithToken } =
+  const { isAuthenticated, currentUser, fetchWithToken, token } =
     useContext(SessionContext);
 
   const [ws, setWs] = useState(null);
@@ -41,12 +41,12 @@ const WebSocketProvider = ({ children }) => {
 
     // clear the reconnect timeout when function is called
     clearTimeout(reconnectTimeout.current);
-    if (!isAuthenticated || !currentUser) {
+    if (!isAuthenticated || !currentUser || !token) {
       return;
     }
     console.log("CURRENT USER: ", currentUser);
     const socket = new WebSocket(
-      `${import.meta.env.VITE_WS_URL}userId=${currentUser}`
+      `${import.meta.env.VITE_WS_URL}userId=${currentUser}&token=${token}`
     );
 
     socket.onopen = () => {
