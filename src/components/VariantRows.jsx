@@ -13,7 +13,7 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconArrowBack, IconEdit, IconTrash } from "@tabler/icons-react";
-import { Form } from "@mantine/form";
+import styles from "../styles/Dashboard.module.css";
 
 const VariantRows = ({ variant }) => {
   // CONTEXTS
@@ -31,6 +31,8 @@ const VariantRows = ({ variant }) => {
   const [variantFormData, setVariantFormData] = useState({});
   const [productFormData, setProductFormData] = useState({});
   const [stockFormData, setStockFormData] = useState({});
+  const [colSpan, setColSpan] = useState(7);
+
 
   //FUNCTIONS
 
@@ -110,7 +112,7 @@ const VariantRows = ({ variant }) => {
         "PUT",
         stockFormData
       );
-      setShowContent(true)
+      setShowContent(true);
       setShouldRefetch((prevState) => !prevState);
     } catch (error) {
       console.log(error);
@@ -122,7 +124,7 @@ const VariantRows = ({ variant }) => {
       const deletedVariant = await fetchWithToken(
         `/products/variants/${variant._id}`,
         "DELETE",
-     {}
+        {}
       );
       close();
       setShouldRefetch((prevState) => !prevState);
@@ -175,6 +177,24 @@ const VariantRows = ({ variant }) => {
       category: variant.productId.category,
     });
     getStock();
+    const updateColSpan = () => {
+      if (window.innerWidth < 768) {
+        setColSpan(5); 
+      } else {
+        setColSpan(7); 
+      }
+    };
+
+    // Initial check
+    updateColSpan();
+
+    // Event listener for window resize
+    window.addEventListener('resize', updateColSpan);
+
+    // Clean up event listener on unmount
+    return () => {
+      window.removeEventListener('resize', updateColSpan);
+    };
   }, []);
 
   return (
@@ -184,11 +204,13 @@ const VariantRows = ({ variant }) => {
         <Table.Td>
           <Image src={variant.imageUrl} height={20} alt="product" />
         </Table.Td>
-        <Table.Td>{variant.productId.category}</Table.Td>
+        <Table.Td className={styles.hideOnMobile}>
+          {variant.productId.category}
+        </Table.Td>
         <Table.Td>{variant.productId.name}</Table.Td>
         <Table.Td>{variant.color}</Table.Td>
         <Table.Td>{stocks.virtualStock}</Table.Td>
-        <Table.Td>{stocks.realStock}</Table.Td>
+        <Table.Td className={styles.hideOnMobile}>{stocks.realStock}</Table.Td>
         <Table.Td>
           <Switch
             checked={checked}
@@ -200,42 +222,55 @@ const VariantRows = ({ variant }) => {
       </Table.Tr>
       {showContent ? (
         <Table.Tr>
-          <Table.Td colSpan="6">
+          <Table.Td colSpan={colSpan} className={styles.expandableRow}>
             <Collapse
               in={opened}
               transitionDuration={300}
               transitionTimingFunction="linear"
             >
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <div className={styles.expandableContentDiv}>
                 <div>
-                  <h4>Product data</h4>
-                  <p>Product Id: {variant.productId._id}</p>
-                  <p>Name: {variant.productId.name}</p>
-                  <p>Category: {variant.productId.category}</p>
-                  <p>Description: {variant.productId.description}</p>
-                  <p>Material: {variant.productId.material}</p>
+                  <div className={styles.flexOnlyDiv}>
+                    <h3>Product</h3>
+                    <p className={styles.idStyle}>{variant.productId._id}</p>
+                  </div>
+                  <div className={styles.gridDiv}>
+                  <p><span className={styles.dataLabel}>Name:</span> {variant.productId.name}</p>
+                  <p><span className={styles.dataLabel}>Category:</span> {variant.productId.category}</p>
+                  <p><span className={styles.dataLabel}>Material: </span>{variant.productId.material}</p>
+                  </div>
+                  <p><span className={styles.dataLabel}>Description:</span> {variant.productId.description}</p>
+
                 </div>
                 <div>
-                  <h4>Variant data</h4>
-                  <p>Variant Id: {variant._id}</p>
-                  <p>Color: {variant.color}</p>
-                  <p>Size: {variant.size}</p>
-                  <p>Price: $ {(variant.price / 100).toFixed(2)}</p>
-                  <p>Image: {variant.imageUrl}</p>
+                <div className={styles.flexOnlyDiv}>
+                    <h3>Variant</h3>
+                    <p className={styles.idStyle}>{variant._id}</p>
+                  </div>
+                  <div className={styles.gridDiv}>
+                  <p><span className={styles.dataLabel}>Color:</span> {variant.color}</p>
+                  <p><span className={styles.dataLabel}>Size:</span> {variant.size}</p>
+                  <p><span className={styles.dataLabel}>Price:</span> ${(variant.price / 100).toFixed(2)}</p>
+                  </div>
                 </div>
                 <div>
-                  <h4>Stock</h4>
-                  <p>Real stock: {stocks.realStock}</p>
-                  <p>Virtual stock: {stocks.virtualStock}</p>
+                  <h3>Stock</h3>
+                  <div className={styles.stockContent}>
+                  <p><span className={styles.dataLabel}>Real stock:</span> {stocks.realStock}</p>
+                  <p><span className={styles.dataLabel}>Virtual stock:</span> {stocks.virtualStock}</p>
+                  </div>
+                  <div className={styles.editButtonDiv}>
                   <Button
                     color="yellow"
                     size="compact-md"
                     radius="sm"
                     rightSection={<IconEdit size={20} />}
                     onClick={() => setShowContent(false)}
+              
                   >
                     Edit
                   </Button>
+                  </div>
                 </div>
               </div>
             </Collapse>
@@ -244,7 +279,7 @@ const VariantRows = ({ variant }) => {
         </Table.Tr>
       ) : (
         <Table.Tr>
-          <Table.Td colSpan="6">
+          <Table.Td colSpan="6" className={styles.expandableRow}>
             <Collapse
               in={opened}
               transitionDuration={300}
@@ -252,10 +287,13 @@ const VariantRows = ({ variant }) => {
             >
               <form onSubmit={handleSubmit}>
                 <div
-                  style={{ display: "flex", justifyContent: "space-between" }}
+                  className={styles.expandableContentDiv}
                 >
                   <div>
-                    <h4>Product data</h4>
+                  <div className={styles.flexOnlyDiv}>
+                    <h3>Product</h3>
+                    <p className={styles.idStyle}>{variant.productId._id}</p>
+                  </div>
                     <TextInput
                       disabled
                       label="Product Id"
@@ -273,21 +311,24 @@ const VariantRows = ({ variant }) => {
                       value={productFormData.category}
                       onChange={handleInput}
                     />
-                                        <TextInput
-                      label="Description"
-                      name="description"
-                      value={productFormData.description}
-                      onChange={handleInput}
-                    />
                     <TextInput
                       label="Material"
                       name="material"
                       value={productFormData.material}
                       onChange={handleInput}
                     />
+                                        <TextInput
+                      label="Description"
+                      name="description"
+                      value={productFormData.description}
+                      onChange={handleInput}
+                    />
                   </div>
                   <div>
-                    <h4>Variant data</h4>
+                  <div className={styles.flexOnlyDiv}>
+                    <h3>Variant</h3>
+                    <p className={styles.idStyle}>{variant._id}</p>
+                  </div>
                     <TextInput
                       disabled
                       label="Variant Id"
@@ -319,7 +360,7 @@ const VariantRows = ({ variant }) => {
                     />
                   </div>
                   <div>
-                    <h4>Stock</h4>
+                    <h3>Stock</h3>
                     <NumberInput
                       label="RealStock"
                       name="real stock"
@@ -332,6 +373,7 @@ const VariantRows = ({ variant }) => {
                       label="Virtual stock"
                       placeholder={stockFormData.virtualStock}
                     />
+                    <div className={styles.formButtonDiv}>
                     <Button
                       color="yellow"
                       size="compact-md"
@@ -351,40 +393,46 @@ const VariantRows = ({ variant }) => {
                       Update
                     </Button>
                     <Button
-                  color="red"
-                  size="compact-md"
-                  radius="sm"
-                  rightSection={<IconTrash size={20} />}
-                  onClick={open}
-                >
-                  Delete
-                </Button>
+                      color="red"
+                      size="compact-md"
+                      radius="sm"
+                      rightSection={<IconTrash size={20} />}
+                      onClick={open}
+                    >
+                      Delete
+                    </Button>
+                    </div>
                   </div>
                 </div>
               </form>
-              <Modal opened={openedWarn} onClose={close} title = ""withCloseButton={false}>
-              <h3>Are you sure you want to delete this variant?</h3>
-              <div className="warnButtons">
-              <Button
-                color="yellow"
-                size="compact-sm"
-                radius="sm"
-                rightSection={<IconArrowBack size={20} />}
-                onClick={close}
+              <Modal
+                opened={openedWarn}
+                onClose={close}
+                title=""
+                withCloseButton={false}
               >
-                Back
-              </Button>
-              <Button
-                color="red"
-                size="compact-sm"
-                radius="sm"
-                rightSection={<IconTrash size={20} />}
-                onClick={() => handleDelete()}
-              >
-                Delete
-              </Button>
-              </div>
-            </Modal>
+                <h3>Are you sure you want to delete this variant?</h3>
+                <div className={styles.deleteButtonsDiv}>
+                  <Button
+                    color="yellow"
+                    size="compact-sm"
+                    radius="sm"
+                    rightSection={<IconArrowBack size={20} />}
+                    onClick={close}
+                  >
+                    Back
+                  </Button>
+                  <Button
+                    color="red"
+                    size="compact-sm"
+                    radius="sm"
+                    rightSection={<IconTrash size={20} />}
+                    onClick={() => handleDelete()}
+                  >
+                    Delete
+                  </Button>
+                </div>
+              </Modal>
             </Collapse>
           </Table.Td>
         </Table.Tr>

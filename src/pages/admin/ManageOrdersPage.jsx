@@ -4,6 +4,8 @@ import { Table } from '@mantine/core';
 import { SessionContext } from "../../contexts/SessionContext";
 import TableRowItem from "../../components/TableRowItem";
 import { useRefetchContext } from "../../contexts/RefetchContext";
+import styles from "../../styles/Dashboard.module.css";
+
 
 const ManageOrdersPage = () => {
   const [orders, setOrders] = useState([]);
@@ -30,19 +32,21 @@ const ManageOrdersPage = () => {
   }, []);
 
     return <>
-    <h1>Orders</h1>
-    <Table>
+    <h1 className={styles.ordersHeader}>Orders</h1>
+    <Table         withTableBorder
+        verticalSpacing="sm"
+        className={styles.tableContentStyles}>
       <Table.Thead>
         <Table.Tr>
-          <Table.Th>Order Id</Table.Th>
-          <Table.Th>Status</Table.Th>
-          <Table.Th>Name</Table.Th>
-          <Table.Th>Total paid</Table.Th>
-          <Table.Th>Created at</Table.Th>
-          <Table.Th>Shipped at</Table.Th>
-          <Table.Th>Tracking Id</Table.Th>
-          <Table.Th>Cancelled at</Table.Th>
-          <Table.Th>Cancellation reason</Table.Th>
+          <Table.Th className={styles.tableHeaders}>Order Id</Table.Th>
+          <Table.Th className={styles.tableHeaders}>Status</Table.Th>
+          <Table.Th className={styles.tableHeaders}>Name</Table.Th>
+          <Table.Th className={`${styles.tableHeaders} ${styles.hideOnMobile}`}>Total</Table.Th>
+          <Table.Th className={styles.tableHeaders}>Created at</Table.Th>
+          <Table.Th  className={`${styles.tableHeaders} ${styles.hideOnMobile}`}>Shipped at</Table.Th>
+          <Table.Th  className={`${styles.tableHeaders} ${styles.hideOnMobile}`}>Tracking Id</Table.Th>
+          <Table.Th  className={`${styles.tableHeaders} ${styles.hideOnMobile}`}>Cancelled at</Table.Th>
+          <Table.Th  className={`${styles.tableHeaders} ${styles.hideOnMobile}`}>Cancellation reason</Table.Th>
         </Table.Tr>
       </Table.Thead>
       <Table.Tbody>{orders.map((eachOrder) => {
