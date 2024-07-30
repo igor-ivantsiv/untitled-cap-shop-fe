@@ -14,11 +14,24 @@ import {
 import { isNotEmpty, useForm } from "@mantine/form";
 
 // work in progress
-const ChatBoxAdmin = ({ recipientId, messagesReceived, clearResolved }) => {
-  const { ws, sendMessage } = useContext(WebSocketContext);
+const ChatBoxAdmin = ({ recipientId, messagesReceived }) => {
+  const { sendMessage, resolveMessage } = useContext(WebSocketContext);
   const [buttonLoading, setButtonLoading] = useState(false);
 
-  const [checked, setChecked] = useState(false);
+  //const [isResolved, setIsResolved] = useState(messagesReceived.find((obj) => ("resolved" in obj)))
+
+  const [isResolved, setIsResolved] = useState(() => {
+    // use function to find if conversation has resolved prop, and what its value is
+    const resolvedMessage = messagesReceived.find((obj) => "resolved" in obj);
+    return resolvedMessage ? resolvedMessage.resolved : false;
+  });
+  
+  
+  // update state whenever 'messages' state changes
+  useEffect(() => {
+    const resolvedMessage = messagesReceived.find((obj) => "resolved" in obj);
+    setIsResolved(resolvedMessage ? resolvedMessage.resolved : false);
+  }, [messagesReceived]);
 
   const form = useForm({
     mode: "uncontrolled",
@@ -30,6 +43,16 @@ const ChatBoxAdmin = ({ recipientId, messagesReceived, clearResolved }) => {
       adminMessage: isNotEmpty("Please include a message"),
     },
   });
+
+  const handleResolve = (value) => {
+    console.log("checked value: ", value)
+    resolveMessage(recipientId, value)
+  }
+
+  /*
+  useEffect(() => {
+    setIsResolved(messagesReceived.find((obj) => ("resolved" in obj))) 
+  }, [messagesReceived])*/
 
   // send message to specific userId
   const handleSendMessage = (values) => {
@@ -49,6 +72,8 @@ const ChatBoxAdmin = ({ recipientId, messagesReceived, clearResolved }) => {
 
   useEffect(() => {
     console.log("MESSAGES: ", messagesReceived);
+    const result = messagesReceived.find((obj) => ("resolved" in obj))
+    console.log("result: ",result)
   }, [messagesReceived]);
 
   return (
@@ -56,8 +81,8 @@ const ChatBoxAdmin = ({ recipientId, messagesReceived, clearResolved }) => {
       <Paper withBorder p={"md"}>
         <Group>
           <Title order={4}>Support</Title>
-          <Chip checked={checked} onChange={() => setChecked((v) => !v)}>
-            {checked ?
+          <Chip checked={isResolved} onChange={handleResolve}>
+            {isResolved ?
             <Text span>Resolved</Text> :
             <Text span>Resolve</Text>
             }

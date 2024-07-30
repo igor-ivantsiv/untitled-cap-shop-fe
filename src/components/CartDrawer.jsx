@@ -15,18 +15,10 @@ import { useRefetchContext } from "../contexts/RefetchContext";
 const CartDrawer = () => {
   const [cartOpened, cartHandler] = useDisclosure(false);
   const { isAuthenticated } = useContext(SessionContext);
-  const [cartArray, setCartArray] = useState([]);
-  const { cartState } = useContext(CartContext);
-  const { shouldRefetch } = useRefetchContext();
 
-  useEffect(() => {
-    const storedCart = sessionStorage.getItem("cartContent");
-    if (storedCart) {
-      console.log("stored cart: ", storedCart);
-      setCartArray(JSON.parse(storedCart));
-    }
-    console.log("cartState: ", cartState)
-  }, [cartState, cartOpened]);
+  const { cartState } = useContext(CartContext);
+
+
 
   return (
     <>

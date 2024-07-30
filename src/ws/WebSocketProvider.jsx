@@ -18,11 +18,11 @@ const WebSocketProvider = ({ children }) => {
   const [messages, setMessages] = useState({});
   const reconnectAttempts = useRef(0);
   const reconnectTimeout = useRef(null);
-  const isAuthenticatedRef = useRef(isAuthenticated)
+  const isAuthenticatedRef = useRef(isAuthenticated);
 
   useEffect(() => {
-    isAuthenticatedRef.current = isAuthenticated
-  }, [isAuthenticated])
+    isAuthenticatedRef.current = isAuthenticated;
+  }, [isAuthenticated]);
 
   // retrieve user cart if there was a disconnect (refill cart in db)
   const retrieveCart = async (userId, storedCart) => {
@@ -38,7 +38,6 @@ const WebSocketProvider = ({ children }) => {
 
   // turned the ws connection into a callback function
   const connect = useCallback(() => {
-
     // clear the reconnect timeout when function is called
     clearTimeout(reconnectTimeout.current);
     if (!isAuthenticated || !currentUser || !token) {
@@ -66,6 +65,8 @@ const WebSocketProvider = ({ children }) => {
       }
     };
 
+    // messages: {recipientId: [{type: "CHAT", recipientId: "_id", content: "the message"}]}
+    // recipientId is the same as senderId because there is only 1 to 1 communications
     // parse message, add to messages
     socket.onmessage = (event) => {
       console.log("WS MESSAGE: ", event.data);
@@ -107,16 +108,16 @@ const WebSocketProvider = ({ children }) => {
     };
 
     setWs(socket);
-  }, [currentUser, isAuthenticated]);
+  }, [currentUser, isAuthenticated, token]);
 
   useEffect(() => {
     // if user is authenticated -> connect
     if (isAuthenticated) {
       connect();
     } else {
-      // clear timeout if user is not authenticated 
+      // clear timeout if user is not authenticated
       // (maybe not necessary)
-      // close ws 
+      // close ws
       clearTimeout(reconnectTimeout.current);
       if (ws) {
         ws.close();
@@ -127,10 +128,9 @@ const WebSocketProvider = ({ children }) => {
       if (ws) {
         ws.close();
       }
-      clearTimeout(reconnectTimeout.current)
+      clearTimeout(reconnectTimeout.current);
     };
   }, [currentUser, isAuthenticated]);
-
 
   // send message to specified recipient
   const sendMessage = useCallback(
@@ -159,6 +159,29 @@ const WebSocketProvider = ({ children }) => {
     [ws]
   );
 
+  /*
+  const resolveMessage = useCallback((recipientId, resolved) => {
+    setMessages((prevState) => ({
+      ...prevState,
+      [recipientId]: [...prevState[recipientId], { resolved }],
+    }));
+  }, [setMessages]);*/
+
+  const resolveMessage = useCallback(
+    (recipientId, resolved) => {
+      const recipientMessages = [...messages[recipientId]];
+      const resolvedProp = recipientMessages.find((obj) => "resolved" in obj);
+      const updatedMessages = recipientMessages.filter(
+        (obj) => obj !== resolvedProp
+      );
+      setMessages((prevState) => ({
+        ...prevState,
+        [recipientId]: [...updatedMessages, { resolved }],
+      }));
+    },
+    [setMessages, messages]
+  );
+
   useEffect(() => {
     if (!currentUser) {
       setMessages({});
@@ -166,7 +189,9 @@ const WebSocketProvider = ({ children }) => {
   }, [currentUser]);
 
   return (
-    <WebSocketContext.Provider value={{ ws, messages, sendMessage }}>
+    <WebSocketContext.Provider
+      value={{ ws, messages, sendMessage, resolveMessage, setMessages }}
+    >
       {children}
     </WebSocketContext.Provider>
   );
