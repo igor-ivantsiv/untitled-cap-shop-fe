@@ -1,7 +1,6 @@
 import { Button, Drawer } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 
-
 import classes from "../styles/Cart.module.css";
 import { IconCashRegister, IconShoppingBag } from "@tabler/icons-react";
 import { useContext, useEffect, useState } from "react";
@@ -11,14 +10,9 @@ import CartOverview from "./cart/CartOverview";
 import { Link } from "react-router-dom";
 import { CartContext } from "./cart/CartContext";
 
-
-const CartDrawer = () => {
-  const [cartOpened, cartHandler] = useDisclosure(false);
+const CartDrawer = ({ cartOpened, cartHandler }) => {
   const { isAuthenticated } = useContext(SessionContext);
-
   const { cartState } = useContext(CartContext);
-
-
 
   return (
     <>
@@ -41,10 +35,6 @@ const CartDrawer = () => {
           <LoginForm />
         )}
       </Drawer>
-
-      <Button onClick={cartHandler.open}>
-        <IconShoppingBag />
-      </Button>
     </>
   );
 };
