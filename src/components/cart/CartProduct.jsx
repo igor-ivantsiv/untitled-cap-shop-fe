@@ -131,7 +131,7 @@ const CartProduct = ({ product, onDelete, onQuantityChange }) => {
   };
 
   return (
-    <Grid align="flex-start" justify="center">
+    <Grid align="center" justify="center" mb={10}>
       <Grid.Col span={3}>
         <Image src={product.variantId.imageUrl} />
       </Grid.Col>
@@ -169,7 +169,7 @@ const CartProduct = ({ product, onDelete, onQuantityChange }) => {
       </Grid.Col>
       <Grid.Col span={2}>
         <NumberFormatter
-          prefix="$"
+          prefix="€"
           value={(product.variantId.price * currentQuantity) / 100}
           decimalScale={2}
         />

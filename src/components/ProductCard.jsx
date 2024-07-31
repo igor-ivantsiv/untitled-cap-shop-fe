@@ -8,7 +8,7 @@ const ProductCard = ({ image, name, price, productId }) => {
 */
   return (
     <>
-      <Card component={Link} to={`/products/${productId}`}>
+      <Card p={"lg"} component={Link} to={`/products/${productId}`}>
         <Card.Section>
           <Image
             src={image}
@@ -16,9 +16,9 @@ const ProductCard = ({ image, name, price, productId }) => {
             fallbackSrc="https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg"
           />
         </Card.Section>
-        <Group>
-          <Text>{name}</Text>
-          <NumberFormatter prefix="$" value={price / 100} decimalScale={2} />
+        <Group justify="center" gap={"lg"}>
+          <Text fw={500}>{name}</Text>
+          <NumberFormatter prefix="€" value={price / 100} decimalScale={2} />
         </Group>
       </Card>
     </>

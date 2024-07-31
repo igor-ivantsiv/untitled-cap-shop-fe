@@ -22,6 +22,7 @@ import useCartHelpers from "../../components/cart/cartHelpers";
 
 import DetailsAccordion from "../../components/DetailsAccordion";
 import DetailsColor from "../../components/DetailsColor";
+import { IconArrowBack, IconShoppingCart } from "@tabler/icons-react";
 
 const ProductDetailsPage = () => {
   const { variantId } = useParams();
@@ -207,19 +208,24 @@ const ProductDetailsPage = () => {
       </Paper>
       <DetailsAccordion />
       <Group justify="center">
-        <Button component={Link} to={"/products"}>
-          Back
+        <Button
+          component={Link}
+          to={"/products"}
+          rightSection={<IconArrowBack />}
+        >
+          <Text fw={500}>Back</Text>
         </Button>
         <Button
+          rightSection={<IconShoppingCart />}
           onClick={addToCart}
           loading={buttonLoading}
           loaderProps={{ type: "dots" }}
           disabled={stockUnavailable}
         >
           {stockUnavailable ? (
-            <Text>Unavailable</Text>
+            <Text fw={500}>Unavailable</Text>
           ) : (
-            <Text>Add to cart</Text>
+            <Text fw={500}>Add to cart</Text>
           )}
         </Button>
       </Group>

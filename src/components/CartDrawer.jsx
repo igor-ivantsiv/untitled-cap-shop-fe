@@ -1,4 +1,4 @@
-import { Button, Drawer } from "@mantine/core";
+import { Button, Center, Divider, Drawer, Title } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 
 import classes from "../styles/Cart.module.css";
@@ -19,16 +19,23 @@ const CartDrawer = ({ cartOpened, cartHandler }) => {
       <Drawer position="right" opened={cartOpened} onClose={cartHandler.close}>
         {isAuthenticated ? (
           <>
-            <h1>Shopping cart</h1>
+            <Center>
+              <Title mb={10} order={2}>
+                Your shopping cart
+              </Title>
+            </Center>
+            <Divider m={30} />
             <CartOverview />
             {cartState.length > 0 && (
-              <Button
-                component={Link}
-                to={"/checkout"}
-                rightSection={<IconCashRegister />}
-              >
-                Checkout
-              </Button>
+              <Center>
+                <Button
+                  component={Link}
+                  to={"/checkout"}
+                  rightSection={<IconCashRegister />}
+                >
+                  Checkout
+                </Button>
+              </Center>
             )}
           </>
         ) : (

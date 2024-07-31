@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import useCartHelpers from "./cartHelpers";
 import { SessionContext } from "../../contexts/SessionContext";
 import CartProduct from "./CartProduct";
-import { Group, NumberFormatter, Stack, Text } from "@mantine/core";
+import { Divider, Group, NumberFormatter, Stack, Text } from "@mantine/core";
 
 
 // cartContent: [{quantity: 1, variantId: {_id, productId, price, etc}, _id: "id"}]
@@ -73,8 +73,9 @@ const CartOverview = () => {
         />
       ))}
       {cartContent.length > 0 ? (
-        <Stack>
-          <Group>
+        <>
+        <Divider m={20} />
+          <Group justify="flex-end" mr={20}>
             <Text>Total: </Text>
             <NumberFormatter
               prefix="$"
@@ -82,7 +83,7 @@ const CartOverview = () => {
               decimalScale={2}
             />
           </Group>
-        </Stack>
+          </>
       ) : (
         <Text fs="italic">Nothing here yet...</Text>
       )}
