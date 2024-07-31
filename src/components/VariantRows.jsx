@@ -61,6 +61,7 @@ const VariantRows = ({ variant }) => {
   };
 
   const handleChange = (event) => {
+
     setChecked(event.currentTarget.checked);
     handleActivate();
   };

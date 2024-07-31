@@ -36,7 +36,7 @@ const ManageProductsPage = () => {
 
   const getVariants = async () => {
     try {
-      const fetchedVariants = await fetchWithToken("/products/variants");
+      const fetchedVariants = await fetchWithToken("/products/all-variants");
       setVariants(fetchedVariants);
     } catch (error) {
       console.log(error);
