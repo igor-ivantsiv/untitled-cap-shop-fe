@@ -1,4 +1,4 @@
-import { AppShell, Burger, Button, HoverCard, Text } from "@mantine/core";
+import { ActionIcon, AppShell, Burger, Button, HoverCard, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import App from "../App";
 import Navbar from "./TESTNavbar";
@@ -6,24 +6,51 @@ import { Group } from "@mantine/core";
 import CartDrawer from "./CartDrawer";
 import ChatBox from "../ws/ChatBox";
 import classes from "../styles/HeaderWrapper.module.css";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { SessionContext } from "../contexts/SessionContext";
 import styles from "../styles/Navbar.module.css";
-import { IconMessage, IconShoppingBag } from "@tabler/icons-react";
+import { IconLayoutSidebarLeftCollapse, IconLayoutSidebarLeftExpand, IconMessage, IconShoppingBag, IconShoppingCart } from "@tabler/icons-react";
 
 const AppShellComp = () => {
   const [opened, { toggle: toggleBurger }] = useDisclosure();
   const [openedChat, { toggle: toggleChat, close: closeChat }] =
     useDisclosure(false);
+    const [navbarSmall, setNavbarSmall] = useState(false);
 
   const { isAdmin, isAuthenticated } = useContext(SessionContext);
   const [cartOpened, cartHandler] = useDisclosure(false);
+
+  const navbarWidth = navbarSmall ? 62 : 240;
+
+  const footerPaddingLeft = navbarSmall ? "62px" : "240px";
+
+  const isMobile = window.innerWidth < 768;
+
+  useEffect(() => {
+    const updateNavbarState = () => {
+      if (window.innerWidth < 768) {
+        setNavbarSmall(false);
+      }
+    };
+
+    // Initial check
+    updateNavbarState();
+
+    // Event listener for window resize
+    window.addEventListener("resize", updateNavbarState);
+
+    // Clean up event listener on unmount
+    return () => {
+      window.removeEventListener("resize", updateNavbarState);
+    };
+  }, []);
+
 
   return (
     <AppShell
       header={{ height: 60 }}
       navbar={{
-        width: 150,
+        width: navbarWidth,
         breakpoint: "sm",
         collapsed: { mobile: !opened },
       }}
@@ -57,7 +84,7 @@ const AppShellComp = () => {
               </HoverCard>
             )}
             <Button size="xs" onClick={cartHandler.open}>
-              <IconShoppingBag size={24} />
+              <IconShoppingCart size={24} />
             </Button>
           </div>
         </div>
@@ -71,10 +98,37 @@ const AppShellComp = () => {
         <CartDrawer cartOpened={cartOpened} cartHandler={cartHandler} />
       </AppShell.Header>
       <AppShell.Navbar>
-        <Navbar toggleBurger={toggleBurger} />
+      <div className="divNavbar">
+      {navbarSmall ? (
+            <ActionIcon
+              size={32}
+              variant="default"
+              aria-label="ActionIcon with size as a number"
+              radius="xl"
+              onClick={() => setNavbarSmall(false)}
+              className={`${styles.mobileHidden} ${styles.collapseIcon}`}
+            >
+              <IconLayoutSidebarLeftExpand />
+            </ActionIcon>
+          ) : (
+            <ActionIcon
+              size={32}
+              variant="default"
+              aria-label="ActionIcon with size as a number"
+              radius="xl"
+              onClick={() => setNavbarSmall(true)}
+              className={`${styles.mobileHidden} ${styles.collapseIcon}`}
+            >
+              <IconLayoutSidebarLeftCollapse />
+            </ActionIcon>
+          )}
+        <Navbar toggleBurger={toggleBurger} navbarSmall={navbarSmall} />
+        </div>
       </AppShell.Navbar>
       <AppShell.Main>
+        <div style ={{margin: "0px 10px"}}>
         <App />
+        </div>
       </AppShell.Main>
       <AppShell.Footer>Footer</AppShell.Footer>
     </AppShell>

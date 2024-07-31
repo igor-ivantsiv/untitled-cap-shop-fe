@@ -7,16 +7,14 @@ import {
 import { IconArrowBack, IconCashRegister } from "@tabler/icons-react";
 import { Button } from "@mantine/core";
 import { SessionContext } from "../contexts/SessionContext";
-import { CartContext } from "../contexts/CartContext";
 import { useNavigate } from "react-router-dom";
 import styles from "../styles/Checkout.module.css";
-
+import useCartHelpers from "./cart/cartHelpers";
 
 const PaymentDetails = ({
   setShowPaymentForm,
   shippingData,
   declarePurchaseIntent,
-  paymentIntent,
   cartPayload,
   cancelPurchaseIntent,
 }) => {
@@ -24,11 +22,10 @@ const PaymentDetails = ({
   const elements = useElements();
   const [message, setMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [oldIntentCancelled, setOldIntentCancelled] = useState(false);
-  const [newIntentCreated, setNewIntentCreated] = useState(false);
 
-  const { fetchWithToken } = useContext(SessionContext);
-  const navigate = useNavigate()
+  const { fetchWithToken, currentUser } = useContext(SessionContext);
+  const { emptyCartAfterSale } = useCartHelpers();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!stripe) {
@@ -70,7 +67,7 @@ const PaymentDetails = ({
 
     setIsLoading(true);
 
-    const {error: submitError} = await elements.submit();
+    const { error: submitError } = await elements.submit();
     if (submitError) {
       handleError(submitError);
       return;
@@ -110,7 +107,9 @@ const PaymentDetails = ({
         items: newCart,
         paymentIntent: newlyDeclaredPaymentIntent, // Ensure this is updated correctly
       });
-
+      // cleanup cart
+      const cartCleanup = await emptyCartAfterSale(currentUser);
+      console.log(cartCleanup)
       // Confirm the payment with Stripe
       const { error } = await stripe.confirmPayment({
         elements,
@@ -135,7 +134,7 @@ const PaymentDetails = ({
       setMessage(`Error: ${error.message}`);
     } finally {
       setIsLoading(false);
-      navigate("/checkout/success")
+      navigate("/checkout/success");
     }
   };
 
@@ -145,32 +144,39 @@ const PaymentDetails = ({
 
   return (
     <form id="payment-form" onSubmit={handleSubmit}>
-      <PaymentElement id="payment-element" options={paymentElementOptions} className={styles.paymentElement}/>
+      <PaymentElement
+        id="payment-element"
+        options={paymentElementOptions}
+        className={styles.paymentElement}
+      />
       <div className={styles.checkoutButtons}>
-      <Button
-        color="yellow"
-        size="compact-md"
-        radius="sm"
-        rightSection={<IconArrowBack size={20} />}
-        onClick={() => setShowPaymentForm(false)}
-      >
-        Back
-      </Button>
-      <Button
-        disabled={isLoading || !stripe || !elements}
-        type="submit"
-        color="blue"
-        size="compact-md"
-        radius="sm"
-        rightSection={<IconCashRegister size={20} />}
-      >
-        <span id="button-text">
-          {isLoading ? <div className="spinner" id="spinner"></div> : "Pay now"}
-        </span>
-      </Button>
+        <Button
+          color="yellow"
+          size="compact-md"
+          radius="sm"
+          rightSection={<IconArrowBack size={20} />}
+          onClick={() => setShowPaymentForm(false)}
+        >
+          Back
+        </Button>
+        <Button
+          disabled={isLoading || !stripe || !elements}
+          type="submit"
+          color="blue"
+          size="compact-md"
+          radius="sm"
+          rightSection={<IconCashRegister size={20} />}
+        >
+          <span id="button-text">
+            {isLoading ? (
+              <div className="spinner" id="spinner"></div>
+            ) : (
+              "Pay now"
+            )}
+          </span>
+        </Button>
       </div>
       {message && <div id="payment-message">{message}</div>}
-      
     </form>
   );
 };
