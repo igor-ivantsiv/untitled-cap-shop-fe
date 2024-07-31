@@ -2,13 +2,13 @@ import { Button, TextInput } from "@mantine/core";
 import { IconArrowBack, IconArrowForward } from "@tabler/icons-react";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useRefetchContext } from "../../contexts/RefetchContext";
 import { SessionContext } from "../../contexts/SessionContext";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import PaymentDetails from "../../components/PaymentDetails";
 import CartOverview from "../../components/cart/CartOverview";
 import { useRef } from "react";
+import styles from "../../styles/Checkout.module.css";
 
 
 const stripePromise = loadStripe(
@@ -89,6 +89,10 @@ const CheckoutPage = () => {
 
   const appearance = {
     theme: "stripe",
+    variables: {
+      colorBackground: '#2E2E2E',
+      colorText: '#C9C9C9'
+    },
   };
   const options = {
     clientSecret,
@@ -125,13 +129,19 @@ const CheckoutPage = () => {
   return (
     <>
       <h1>Checkout</h1>
-      <div style={{ display: "flex" }}>
-        <div style={{ width: "75%" }}>
+      <div className={styles.checkoutContentDiv}>
+      <div className={styles.orderOverviewDiv}>
+          <h2 >Order overview</h2>
+          <CartOverview />
+        </div>
+      <div className={styles.checkoutFormDiv}>
+        <div>
           {!showPaymentForm ? (
             <>
-              <h2>Shipping details</h2>
+              <h2 className={styles.checkoutHeaders}>Shipping details</h2>
               <form onSubmit={handleSubmit}>
                 <TextInput
+                  size="md"
                   name="firstName"
                   label="First Name"
                   value={shippingData.firstName}
@@ -139,6 +149,7 @@ const CheckoutPage = () => {
                   required
                 />
                 <TextInput
+                  size="md"
                   name="lastName"
                   label="Last Name"
                   value={shippingData.lastName}
@@ -146,6 +157,7 @@ const CheckoutPage = () => {
                   required
                 />
                 <TextInput
+                size="md"
                   name="streetHouseNumber"
                   label="Street and house number"
                   value={shippingData.streetHouseNumber}
@@ -153,6 +165,7 @@ const CheckoutPage = () => {
                   required
                 />
                 <TextInput
+                  size="md"
                   name="city"
                   label="City"
                   value={shippingData.city}
@@ -160,12 +173,14 @@ const CheckoutPage = () => {
                   required
                 />
                 <TextInput
+                  size="md"
                   name="zipCode"
                   label="ZIP code"
                   value={shippingData.zipCode}
                   onChange={handleInput}
                   required
                 />
+                <div className={styles.checkoutButtons}>
                 <Button
                   color="yellow"
                   size="compact-md"
@@ -186,11 +201,12 @@ const CheckoutPage = () => {
                 >
                   Next
                 </Button>
+                </div>
               </form>
             </>
           ) : (
             <>
-              <h3>Payment details</h3>
+              <h2 className={styles.checkoutHeaders}>Payment details</h2>
 
               <div className="App">
                 {clientSecret && (
@@ -209,9 +225,6 @@ const CheckoutPage = () => {
             </>
           )}
         </div>
-        <div>
-          <h2>Items</h2>
-          <CartOverview />
         </div>
       </div>
     </>

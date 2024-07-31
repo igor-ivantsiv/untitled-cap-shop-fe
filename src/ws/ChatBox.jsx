@@ -5,15 +5,13 @@ import { Button, Dialog, ScrollArea, Text, TextInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { SessionContext } from "../contexts/SessionContext";
 
-const ChatBox = () => {
+const ChatBox = ({openedChat, toggleChat, closeChat}) => {
   const { ws, messages, sendMessage } = useContext(WebSocketContext);
   const { currentUser } = useContext(SessionContext)
   const recipientId = useRef("");
   const [receivedMessages, setReceivedMessages] = useState([]);
 
   const [buttonLoading, setButtonLoading] = useState(false);
-
-  const [opened, { toggle, close }] = useDisclosure(false);
 
   const form = useForm({
     mode: "uncontrolled",
@@ -72,12 +70,9 @@ const ChatBox = () => {
     }
   }, [messages, currentUser]);
 
-  
-
   return (
     <>
-      <Button onClick={toggle}>Ask for help</Button>
-      <Dialog opened={opened} withCloseButton onClose={close}>
+      <Dialog opened={openedChat} withCloseButton onClose={closeChat}>
         <ScrollArea.Autosize type="auto" mah={200} pt={15}>
           {receivedMessages.map((msg, index) => (
             <div key={index}>

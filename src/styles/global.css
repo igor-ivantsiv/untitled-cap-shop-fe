@@ -42,3 +42,9 @@ h6 {
 a {
   text-decoration: none;
 }
+
+.special-elite-regular {
+  font-family: "Special Elite", system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
