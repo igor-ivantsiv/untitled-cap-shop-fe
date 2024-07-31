@@ -8,9 +8,6 @@ import {
   Input,
   NativeSelect,
   CloseButton,
-  ScrollArea,
-  Chip,
-  TextInput,
 } from "@mantine/core";
 import { IconPackageExport, IconPackageOff } from "@tabler/icons-react";
 import { useContext, useEffect, useState } from "react";
@@ -174,7 +171,7 @@ const TableRowItem = ({ order }) => {
             transitionDuration={300}
             transitionTimingFunction="linear"
           >
-            <div className={styles.expandableContentDiv}>
+            <div className={styles.expandableOrdersContentDiv}>
               <div>
               <div className={styles.flexOnlyDiv}>
                     <h3>Cusomter</h3>
@@ -194,8 +191,6 @@ const TableRowItem = ({ order }) => {
                 >
                   Ship
                 </Button>
-                
-             
                 <Button
                   color="orange"
                   size="compact-md"
@@ -311,13 +306,13 @@ const TableRowItem = ({ order }) => {
         className={`${styles.tableContentStyles} ${styles.itemsTable}`}>
                 <Table.Thead>
                   <Table.Tr>
-                    <Table.Th>Image</Table.Th>
-                    <Table.Th>Product</Table.Th>
-                    <Table.Th className={styles.hideOnMobile}>Variant</Table.Th>
-                    <Table.Th className={styles.hideOnMobile}>Size</Table.Th>
-                    <Table.Th>Color</Table.Th>
-                    <Table.Th>Quantity</Table.Th>
-                    <Table.Th>Price</Table.Th>
+                    <Table.Th className={styles.tableHeaders}>Image</Table.Th>
+                    <Table.Th className={styles.tableHeaders}>Product</Table.Th>
+                    <Table.Th className={`${styles.hideOnMobile} ${styles.tableHeaders}`}>Variant</Table.Th>
+                    <Table.Th className={`${styles.hideOnMobile} ${styles.tableHeaders}`}>Size</Table.Th>
+                    <Table.Th className={styles.tableHeaders}>Color</Table.Th>
+                    <Table.Th className={styles.tableHeaders}>Quantity</Table.Th>
+                    <Table.Th className={styles.tableHeaders}>Price</Table.Th>
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody >
@@ -344,8 +339,8 @@ const TableRowItem = ({ order }) => {
                 <Table.Tfoot>
                   <Table.Tr>
                     <Table.Th colSpan={colSpan}></Table.Th>
-                    <Table.Th  className={styles.orderRowFormatting}>Total</Table.Th>
-                    <Table.Th  className={styles.orderRowFormatting}>
+                    <Table.Th  className={`${styles.orderRowFormatting} ${styles.tableHeaders}`}>Total</Table.Th>
+                    <Table.Th  className={`${styles.orderRowFormatting} ${styles.tableHeaders}`}>
                       ${(order.totalSalesPrice / 100).toFixed(2)}
                     </Table.Th>
                   </Table.Tr>

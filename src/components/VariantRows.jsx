@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { useRefetchContext } from "../contexts/RefetchContext";
 import { SessionContext } from "../contexts/SessionContext";
 import {
+  AspectRatio,
   Button,
   Collapse,
   Image,
@@ -201,8 +202,10 @@ const VariantRows = ({ variant }) => {
     <>
       {/*   TABLE ROW   */}
       <Table.Tr onClick={toggle}>
-        <Table.Td>
-          <Image src={variant.imageUrl} height={20} alt="product" />
+        <Table.Td className={styles.productRowFormatting}>
+        <AspectRatio ratio={1080 / 720} maw={50} mx="auto">
+          <Image src={variant.imageUrl} height={50}alt="product" />
+          </AspectRatio>
         </Table.Td>
         <Table.Td className={styles.hideOnMobile}>
           {variant.productId.category}
@@ -211,13 +214,15 @@ const VariantRows = ({ variant }) => {
         <Table.Td>{variant.color}</Table.Td>
         <Table.Td>{stocks.virtualStock}</Table.Td>
         <Table.Td className={styles.hideOnMobile}>{stocks.realStock}</Table.Td>
-        <Table.Td>
+        <Table.Td >
+          <div style={{display:"flex", justifyContent:"center"}}>
           <Switch
             checked={checked}
             onChange={handleChange}
             styles={(theme) => switchStyles(theme, { checked })}
           />
-        </Table.Td>
+          </div>
+        </Table.Td> 
         {/*   EXPANDABLE CONTENT - DATA  */}
       </Table.Tr>
       {showContent ? (

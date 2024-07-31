@@ -9,6 +9,8 @@ import { Button } from "@mantine/core";
 import { SessionContext } from "../contexts/SessionContext";
 import { CartContext } from "../contexts/CartContext";
 import { useNavigate } from "react-router-dom";
+import styles from "../styles/Checkout.module.css";
+
 
 const PaymentDetails = ({
   setShowPaymentForm,
@@ -143,7 +145,17 @@ const PaymentDetails = ({
 
   return (
     <form id="payment-form" onSubmit={handleSubmit}>
-      <PaymentElement id="payment-element" options={paymentElementOptions} />
+      <PaymentElement id="payment-element" options={paymentElementOptions} className={styles.paymentElement}/>
+      <div className={styles.checkoutButtons}>
+      <Button
+        color="yellow"
+        size="compact-md"
+        radius="sm"
+        rightSection={<IconArrowBack size={20} />}
+        onClick={() => setShowPaymentForm(false)}
+      >
+        Back
+      </Button>
       <Button
         disabled={isLoading || !stripe || !elements}
         type="submit"
@@ -156,16 +168,9 @@ const PaymentDetails = ({
           {isLoading ? <div className="spinner" id="spinner"></div> : "Pay now"}
         </span>
       </Button>
-      <Button
-        color="yellow"
-        size="compact-md"
-        radius="sm"
-        rightSection={<IconArrowBack size={20} />}
-        onClick={() => setShowPaymentForm(false)}
-      >
-        Back
-      </Button>
+      </div>
       {message && <div id="payment-message">{message}</div>}
+      
     </form>
   );
 };

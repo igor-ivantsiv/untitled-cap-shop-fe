@@ -24,7 +24,6 @@ const AppShellComp = () => {
         <HeaderWrapper />
       </AppShell.Header>
       <AppShell.Navbar>
-        Navbar
         <Navbar />
       </AppShell.Navbar>
       <AppShell.Main>

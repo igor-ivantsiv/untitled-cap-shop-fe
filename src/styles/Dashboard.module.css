@@ -21,7 +21,16 @@ h3 {
   grid-template-columns: 1fr 1fr 1fr;
   text-align: left;
   gap: 60px;
+  margin-top: 10px;
+  margin-bottom: 15px;
 }
+.expandableOrdersContentDiv {
+    display: flex;
+    justify-content: space-between;
+    text-align: left;
+    gap: 60px;
+    margin-top: 10px;
+  }
 .expandableRow {
   padding: 0 15px;
 }
@@ -39,7 +48,7 @@ h3 {
   font-weight: bold;
 }
 .editButtonDiv {
-  margin: 15px;
+  margin: 15px 0;
 }
 .deleteButtonsDiv {
   display: flex;
@@ -69,9 +78,9 @@ h3 {
 }
 .manageOrderButtons {
   display: flex;
-  justify-content: center;
+  justify-content: start;
   gap: 15px;
-  margin-top: 15px;
+  margin-top: 20px;
 }
 .itemsTable {
   margin-bottom: 15px;
@@ -87,6 +96,14 @@ h3 {
     justify-content: center;
     gap: 15px;
     margin-top: 15px;
+  }
+.productRowFormatting{
+    padding: 0px 10px;
+}
+.formButtonDiv {
+    display: flex;
+    justify-content: space-between;
+    margin: 25px 0px 15px 0px;
   }
 
 @media screen and (max-width: 768px) {
@@ -114,11 +131,6 @@ h3 {
     display: grid;
     grid-template: 1fr 1fr / 1fr 1fr;
   }
-  .formButtonDiv {
-    display: flex;
-    justify-content: space-between;
-    margin: 25px 0px 15px 0px;
-  }
   .newProductFormDiv {
     display: flex;
     flex-direction: column;
@@ -129,5 +141,11 @@ h3 {
     word-wrap: break-word;
     word-break: break-all;
     max-width: 130px;
+  }
+  .manageOrderButtons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 15px;
   }
 }
