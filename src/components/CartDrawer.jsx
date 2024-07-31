@@ -27,7 +27,7 @@ const CartDrawer = ({ cartOpened, cartHandler }) => {
             <Divider m={30} />
             <CartOverview />
             {cartState.length > 0 && (
-              <Center>
+              <Center mt={20}>
                 <Button
                   component={Link}
                   to={"/checkout"}
