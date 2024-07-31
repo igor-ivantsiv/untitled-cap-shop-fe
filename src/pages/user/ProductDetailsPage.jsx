@@ -1,6 +1,8 @@
 import {
   Button,
   Center,
+  ColorSwatch,
+  Divider,
   Flex,
   Group,
   Image,
@@ -8,23 +10,22 @@ import {
   Paper,
   Stack,
   Text,
+  Title,
 } from "@mantine/core";
 import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import VariantsList from "../../components/VariantsList";
 import DetailsSkeleton from "../../components/DetailsSkeleton";
-import { CartContext } from "../../contexts/CartContext";
 import { SessionContext } from "../../contexts/SessionContext";
 import { notifications } from "@mantine/notifications";
 import useCartHelpers from "../../components/cart/cartHelpers";
 
+import DetailsAccordion from "../../components/DetailsAccordion";
+import DetailsColor from "../../components/DetailsColor";
+
 const ProductDetailsPage = () => {
   const { variantId } = useParams();
 
-  /*
-  const { cartDispatch, updateVirtualStock, cartState } =
-    useContext(CartContext);
-    */
   const { isAuthenticated, currentUser } = useContext(SessionContext);
 
   const [product, setProduct] = useState({});
@@ -116,50 +117,6 @@ const ProductDetailsPage = () => {
     }
   }, [product, variants]);
 
-  /*
-  // on click -> set btn loading state, await api response
-  const addToCart = async () => {
-    // if not authenticated, redirect
-    if (!isAuthenticated) {
-      notifications.show({
-        title: "Hold up!",
-        message: "Please login or register to continue shopping!",
-      });
-      return navigate("/login");
-    }
-    setButtonLoading(true);
-    const response = await updateVirtualStock(
-      `/stocks/reservation/${product._id}`,
-      "PUT",
-      { quantity: 1 }
-    );
-
-    setTimeout(() => {
-      setButtonLoading(false);
-    }, 500);
-    console.log("response on details page: ", response);
-    // on success -> update cart (btn will be disabled when stock reaches 0)
-    // (!) UPDATE: unavailable means last item has now been reserver ->
-    // still add to cart, disable button after
-    if (response === "success" || response === "unavailable") {
-      cartDispatch({
-        type: "add_item",
-        payload: {
-          id: product._id,
-          quantity: 1,
-          salesPrice: product.price,
-          productId: product.productId._id,
-        },
-      });
-      if (response === "unavailable") {
-        setStockUnavailable(true);
-      }
-    } else {
-      console.log("problem updating virtual stock on details page");
-    }
-  };
-*/
-
   const { addItem } = useCartHelpers();
 
   const addToCart = async () => {
@@ -196,7 +153,10 @@ const ProductDetailsPage = () => {
 
   return (
     <>
-      <h1>Product details</h1>
+      {product.productId && (
+        <Title order={1}>{product.productId.category}</Title>
+      )}
+
       <Paper>
         <Flex
           justify="center"
@@ -207,22 +167,37 @@ const ProductDetailsPage = () => {
             <DetailsSkeleton />
           ) : (
             <>
-              <Image src={product.imageUrl} maw={{ base: 400, md: 600 }} />
+              <Image src={product.imageUrl} maw={{ base: 400, md: 500 }} />
               <Stack>
                 {product.productId && (
                   <>
-                    <Text>{product.productId.name}</Text>
-                    <Text>{product.productId.description}</Text>
-                    <Text>{product.size}</Text>
-                    <Text>{product.productId.material}</Text>
+                    <Title order={2}>{product.productId.name}</Title>
+
+                    <Text fs={"italic"}>{product.productId.description}</Text>
+                    <Group>
+                      <Text span fw={500}>
+                        Size:
+                      </Text>
+                      <Text>{product.size}</Text>
+                    </Group>
+                    <Group>
+                      <Text span fw={500}>
+                        Material:
+                      </Text>
+                      <Text>{product.productId.material}</Text>
+                      <DetailsColor color={product.color} />
+                    </Group>
                   </>
                 )}
+
                 <NumberFormatter
-                  prefix="$"
+                  prefix="€"
                   value={product.price / 100}
                   decimalScale={2}
                 />
-                <Center>
+                <Divider />
+                <Text size="xs">Colors:</Text>
+                <Center mb={"md"}>
                   {variants && <VariantsList variants={variants} />}
                 </Center>
               </Stack>
@@ -230,6 +205,7 @@ const ProductDetailsPage = () => {
           )}
         </Flex>
       </Paper>
+      <DetailsAccordion />
       <Group justify="center">
         <Button component={Link} to={"/products"}>
           Back

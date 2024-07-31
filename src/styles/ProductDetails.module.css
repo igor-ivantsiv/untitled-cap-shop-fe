@@ -1,0 +1,27 @@
+.red {
+    color: #9c191d;
+}
+
+.light-blue {
+    color: #4e93cc;
+}
+
+.dark-blue {
+    color: #1d1f63
+}
+
+.green {
+    color: #2e5737
+}
+
+.black {
+    color: #0f0f0f
+}
+
+.grey {
+    color: #736f6f
+}
+
+.container {
+    margin: 2rem 0;
+}

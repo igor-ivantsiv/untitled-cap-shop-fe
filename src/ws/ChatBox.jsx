@@ -1,13 +1,20 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { WebSocketContext } from "./WebSocketProvider";
 import { isNotEmpty, useForm } from "@mantine/form";
-import { Button, Dialog, ScrollArea, Text, TextInput } from "@mantine/core";
+import {
+  Button,
+  Dialog,
+  HoverCard,
+  ScrollArea,
+  Text,
+  TextInput,
+} from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { SessionContext } from "../contexts/SessionContext";
 
 const ChatBox = () => {
-  const { ws, messages, sendMessage } = useContext(WebSocketContext);
-  const { currentUser } = useContext(SessionContext)
+  const { messages, sendMessage } = useContext(WebSocketContext);
+  const { currentUser } = useContext(SessionContext);
   const recipientId = useRef("");
   const [receivedMessages, setReceivedMessages] = useState([]);
 
@@ -30,13 +37,13 @@ const ChatBox = () => {
   const handleSendMessage = (values) => {
     setButtonLoading(true);
     const { userMessage } = values;
-    const sent = sendMessage(import.meta.env.VITE_SUPPORT_ID, userMessage)
+    const sent = sendMessage(import.meta.env.VITE_SUPPORT_ID, userMessage);
     sent
       ? form.reset()
       : form.setErrors({
           userMessage: "Couldn't send message, please try again later",
         });
-    
+
     setTimeout(() => {
       setButtonLoading(false);
     }, 500);
@@ -68,15 +75,25 @@ const ChatBox = () => {
       setReceivedMessages(firstPair[1]);
     }
     return () => {
-      setReceivedMessages([])
-    }
+      setReceivedMessages([]);
+    };
   }, [messages, currentUser]);
-
-  
 
   return (
     <>
-      <Button onClick={toggle}>Ask for help</Button>
+      <HoverCard>
+        <HoverCard.Target>
+          <Button onClick={toggle}>Ask for help</Button>
+        </HoverCard.Target>
+        <HoverCard.Dropdown>
+          <Text size="sm" w={200}>
+            Click to open a conversation with the customer service team. We will
+            attempt to respond as soon as possible, and do our best to assist
+            you in any matter.
+          </Text>
+        </HoverCard.Dropdown>
+      </HoverCard>
+
       <Dialog opened={opened} withCloseButton onClose={close}>
         <ScrollArea.Autosize type="auto" mah={200} pt={15}>
           {receivedMessages.map((msg, index) => (
