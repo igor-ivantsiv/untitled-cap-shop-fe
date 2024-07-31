@@ -25,3 +25,25 @@
 .container {
     margin: 2rem 0;
 }
+
+.imageContainer {
+    width: 100%;
+    max-width: 800px;
+}
+
+.detailsContainer {
+    width: 100%
+}
+
+@media (min-width: 768px) {
+
+
+    .imageContainer {
+        width: 60%;
+        max-width: 800px;
+    }
+    
+    .detailsContainer {
+        width: 40%
+    }
+  }

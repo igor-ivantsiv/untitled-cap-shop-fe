@@ -1,4 +1,5 @@
 import {
+  AspectRatio,
   Button,
   Center,
   ColorSwatch,
@@ -23,6 +24,7 @@ import useCartHelpers from "../../components/cart/cartHelpers";
 import DetailsAccordion from "../../components/DetailsAccordion";
 import DetailsColor from "../../components/DetailsColor";
 import { IconArrowBack, IconShoppingCart } from "@tabler/icons-react";
+import classes from "../../styles/ProductDetails.module.css"
 
 const ProductDetailsPage = () => {
   const { variantId } = useParams();
@@ -155,10 +157,10 @@ const ProductDetailsPage = () => {
   return (
     <>
       {product.productId && (
-        <Title order={1}>{product.productId.category}</Title>
+        <Title order={1} mb={30}>{product.productId.category}</Title>
       )}
 
-      <Paper>
+      
         <Flex
           justify="center"
           gap="md"
@@ -168,13 +170,15 @@ const ProductDetailsPage = () => {
             <DetailsSkeleton />
           ) : (
             <>
-              <Image src={product.imageUrl} maw={{ base: 400, md: 500 }} />
-              <Stack>
+            <div className={classes.imageContainer}>
+              <Image src={product.imageUrl} />
+              </div>
+              <Stack className={classes.detailsContainer}>
                 {product.productId && (
                   <>
                     <Title order={2}>{product.productId.name}</Title>
 
-                    <Text fs={"italic"}>{product.productId.description}</Text>
+                    <Text maw={{md: 500}} fs={"italic"}>{product.productId.description}</Text>
                     <Group>
                       <Text span fw={500}>
                         Size:
@@ -196,7 +200,7 @@ const ProductDetailsPage = () => {
                   value={product.price / 100}
                   decimalScale={2}
                 />
-                <Divider />
+                <Divider m={10}/>
                 <Text size="xs">Colors:</Text>
                 <Center mb={"md"}>
                   {variants && <VariantsList variants={variants} />}
@@ -205,7 +209,7 @@ const ProductDetailsPage = () => {
             </>
           )}
         </Flex>
-      </Paper>
+
       <DetailsAccordion />
       <Group justify="center">
         <Button

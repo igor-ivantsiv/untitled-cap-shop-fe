@@ -7,7 +7,7 @@ const CustomerServicePage = () => {
   const { messages } = useContext(WebSocketContext);
   return (
     <>
-      <Title order={1}>Customer service</Title>
+      <Title order={1} mb={30}>Customer service</Title>
       {
         Object.keys(messages).length > 0 ?
         <ChatBoxWrapper /> :

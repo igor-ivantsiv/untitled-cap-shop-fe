@@ -95,6 +95,7 @@ const WebSocketProvider = ({ children }) => {
       // only attempt reconnect if user is authenticated, and try only 5 times
       if (reconnectAttempts.current < 5 && isAuthenticatedRef.current) {
         console.log("WS ATTEMPTING RECONNECT");
+        console.log("RECONNECT ATTEMPT: ", reconnectAttempts.current)
 
         // attempt after 5 seconds
         reconnectTimeout.current = setTimeout(() => {
@@ -140,7 +141,7 @@ const WebSocketProvider = ({ children }) => {
   // send message to specified recipient
   const sendMessage = useCallback(
     (recipientId, content) => {
-      if (ws) {
+      if (ws && ws.readyState === WebSocket.OPEN) {
         const message = { type: "CHAT", recipientId, content };
         ws.send(JSON.stringify(message));
 
@@ -164,21 +165,22 @@ const WebSocketProvider = ({ children }) => {
     [ws]
   );
 
-  /*
-  const resolveMessage = useCallback((recipientId, resolved) => {
-    setMessages((prevState) => ({
-      ...prevState,
-      [recipientId]: [...prevState[recipientId], { resolved }],
-    }));
-  }, [setMessages]);*/
-
+  // add a 'resolved' object to array of messages
   const resolveMessage = useCallback(
     (recipientId, resolved) => {
+
+      // find correct array of messages
       const recipientMessages = [...messages[recipientId]];
+
+      // find if array already contains a 'resolved' obj
       const resolvedProp = recipientMessages.find((obj) => "resolved" in obj);
+
+      // filter object out of array
       const updatedMessages = recipientMessages.filter(
         (obj) => obj !== resolvedProp
       );
+
+      // update current array to include resolved object
       setMessages((prevState) => ({
         ...prevState,
         [recipientId]: [...updatedMessages, { resolved }],

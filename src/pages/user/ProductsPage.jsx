@@ -4,7 +4,7 @@ import ProductsList from "../../components/ProductsList";
 const ProductsPage = () => {
   return (
     <>
-      <Title mb={20} order={1}>
+      <Title mb={30} order={1}>
         Product collection
       </Title>
       <Center>

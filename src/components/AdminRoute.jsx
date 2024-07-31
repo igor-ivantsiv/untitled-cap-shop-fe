@@ -1,12 +1,13 @@
 import { useContext } from "react";
 import { SessionContext } from "../contexts/SessionContext";
 import { Navigate } from "react-router-dom";
+import { Loader } from "@mantine/core";
 
 const AdminRoute = ({ children }) => {
   const { isAdmin, isLoading } = useContext(SessionContext);
 
   if (isLoading) {
-    return <h1>Loading...</h1>
+    return <Loader size={"xl"} type="dots" />;
   }
 
   if (!isAdmin) {

@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { WebSocketContext } from "./WebSocketProvider";
 import {
   Button,
+  Center,
   Chip,
   Divider,
   Group,
@@ -99,6 +100,7 @@ const ChatBoxAdmin = ({ recipientId, messagesReceived }) => {
             aria-label="Send message"
             mb={"sm"}
           />
+          <Center>
           <Button
             type="submit"
             loading={buttonLoading}
@@ -106,6 +108,7 @@ const ChatBoxAdmin = ({ recipientId, messagesReceived }) => {
           >
             Send
           </Button>
+          </Center>
         </form>
       </Paper>
     </>

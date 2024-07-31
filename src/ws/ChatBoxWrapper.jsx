@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { WebSocketContext } from "./WebSocketProvider";
 import ChatBoxAdmin from "./ChatBoxAdmin";
-import { Button, SimpleGrid } from "@mantine/core";
+import { Button, Center, SimpleGrid, Title } from "@mantine/core";
 
 const ChatBoxWrapper = () => {
   const { messages, setMessages } = useContext(WebSocketContext);
@@ -44,11 +44,13 @@ const ChatBoxWrapper = () => {
   // generate seperate chatbox for each unique sender id
   return (
     <>
-      <h2>Admin chat</h2>
+      <Title order={3} mb={10}></Title>
       {chats.length > 0 && (
-        <Button mb={"sm"} onClick={clearResolved}>
-          Clear Resolved
-        </Button>
+        <Center>
+          <Button mb={20} onClick={clearResolved}>
+            Clear Resolved
+          </Button>
+        </Center>
       )}
       <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }}>
         {chats.map((sender) => (
