@@ -9,10 +9,9 @@ import {
   Text,
   TextInput,
 } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
 import { SessionContext } from "../contexts/SessionContext";
 
-const ChatBox = () => {
+const ChatBox = ({openedChat, toggleChat, closeChat}) => {
   const { messages, sendMessage } = useContext(WebSocketContext);
   const { currentUser } = useContext(SessionContext);
   const recipientId = useRef("");

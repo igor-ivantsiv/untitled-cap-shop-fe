@@ -58,7 +58,7 @@ const Navbar = ({ toggleBurger }) => {
         <p className={styles.menuText} >Manage products</p>
       </div>
       </Link>
-        <Link className={location.pathname === "/admin" ? styles.active : ""} onClick={()=>toggleBurger()} to="/admin">
+        <Link className={location.pathname === "/admin/customer-service" ? styles.active : ""} onClick={()=>toggleBurger()} to="/admin/customer-service">
       <div className={styles.menuItem}>
       <IconMessage size={30} className="navbarIcon" />
         <p className={styles.menuText} >Customer service</p>
