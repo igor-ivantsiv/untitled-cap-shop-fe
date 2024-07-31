@@ -113,7 +113,7 @@ const ProductDetailsPage = () => {
 
   // check if page is still loading
   useEffect(() => {
-    if (product.productId && variants.length > 1) {
+    if (product.productId && variants.length > 0) {
       setPageLoading(false);
     }
   }, [product, variants]);
