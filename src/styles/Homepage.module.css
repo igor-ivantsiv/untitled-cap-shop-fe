@@ -1,0 +1,64 @@
+.hero {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+.heroImage {
+  z-index: 10;
+  height: 70%;
+}
+.heroTitle {
+  font-family: "Special Elite", system-ui;
+  font-size: 40px;
+  
+}
+.heroText {
+    font-family: "Special Elite", system-ui;
+    font-size: 24px;
+  }
+.heroTitleDiv {
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.5); /* Optional: semi-transparent background for better text readability */
+    border-radius: 10px; /* Optional: rounded corners */
+    position: absolute;
+    top: 20%;
+    left: 30%;
+   
+  }
+.heroButton {
+    position: absolute;
+    top: 55%;
+    left: 50%;
+  }
+  .contentSection{
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+  .lastSection{
+    text-align: center;
+  }
+
+@media screen and (max-width: 768px) {
+  .mobileHidden {
+    display: none;
+  }
+  .heroImage {
+    height: 500px;
+    
+  }
+  .heroTitleDiv {
+    top: 25%;
+    left: 40px;
+  }
+  .heroButton {
+    top: 55%;
+    left: 105px;
+  }
+  .heroTitle {
+    font-size: 30px;
+    
+  }
+}
