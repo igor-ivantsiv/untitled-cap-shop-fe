@@ -9,7 +9,8 @@ import classes from "../styles/HeaderWrapper.module.css";
 import { useContext, useEffect, useState } from "react";
 import { SessionContext } from "../contexts/SessionContext";
 import styles from "../styles/Navbar.module.css";
-import { IconLayoutSidebarLeftCollapse, IconLayoutSidebarLeftExpand, IconMessage, IconShoppingBag, IconShoppingCart } from "@tabler/icons-react";
+import { IconBrandGithub, IconLayoutSidebarLeftCollapse, IconLayoutSidebarLeftExpand, IconMessage, IconShoppingBag, IconShoppingCart } from "@tabler/icons-react";
+import { Link } from "react-router-dom";
 
 const AppShellComp = () => {
   const [opened, { toggle: toggleBurger }] = useDisclosure();
@@ -53,6 +54,7 @@ const AppShellComp = () => {
         width: navbarWidth,
         breakpoint: "sm",
         collapsed: { mobile: !opened },
+
       }}
       footer={{ height: 50 }}
       padding="md"
@@ -97,7 +99,7 @@ const AppShellComp = () => {
 
         <CartDrawer cartOpened={cartOpened} cartHandler={cartHandler} />
       </AppShell.Header>
-      <AppShell.Navbar>
+      <AppShell.Navbar className={styles.navbar}>
       <div className="divNavbar">
       {navbarSmall ? (
             <ActionIcon
@@ -130,7 +132,40 @@ const AppShellComp = () => {
         <App />
         </div>
       </AppShell.Main>
-      <AppShell.Footer>Footer</AppShell.Footer>
+      <AppShell.Footer p="xs" className={styles.footer}>
+      <footer>
+      <div className={`${styles.footerContentDiv} ${styles.footerMobile}`} >
+      <Text size="sm" className="footer-link">
+            <a style={{color: "white",   display: "inline-flex",
+                  alignItems: "center",}}  href="https://github.com/tdot123-1" target="_blank">
+            <IconBrandGithub size={18} color="white" /> Thomas 
+            </a>
+          </Text>
+          <Text size="sm" className={styles.footerLink}>
+            <a style={{color: "white",   display: "inline-flex",
+                  alignItems: "center",}}  href="https://github.com/igor-ivantsiv/" target="_blank">
+            <IconBrandGithub size={18} color="white" /> Igor 
+            </a>
+          </Text>
+          <a 
+          
+          target="_blank"
+          href="https://github.com/igor-ivantsiv/untitled-cap-shop-fe"
+        >
+          <Text style={{color: "white",   display: "inline-flex",
+                  alignItems: "center",}} size="sm" className="footer-link">
+          <IconBrandGithub size={18} color="white" /> GitHub repository
+          </Text>
+          
+        </a>
+          <Link to={"/about"}>
+          <Text size="sm" className="footer-link">About us</Text>
+          </Link>
+          <Text size="sm" className="footer-link">Made by Thomas & Igor ©</Text>
+
+      </div>
+      </footer>
+      </AppShell.Footer>
     </AppShell>
   );
 };
