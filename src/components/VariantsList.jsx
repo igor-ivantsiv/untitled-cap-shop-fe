@@ -9,6 +9,7 @@ const VariantsList = ({ variants }) => {
           {variants.map((variant) => (
             <Paper
               w={100}
+              p={5}
               withBorder
               component={Link}
               to={`/products/${variant._id}`}

@@ -1,13 +1,20 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { WebSocketContext } from "./WebSocketProvider";
 import { isNotEmpty, useForm } from "@mantine/form";
-import { Button, Dialog, ScrollArea, Text, TextInput } from "@mantine/core";
+import {
+  Button,
+  Dialog,
+  HoverCard,
+  ScrollArea,
+  Text,
+  TextInput,
+} from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { SessionContext } from "../contexts/SessionContext";
 
-const ChatBox = ({openedChat, toggleChat, closeChat}) => {
-  const { ws, messages, sendMessage } = useContext(WebSocketContext);
-  const { currentUser } = useContext(SessionContext)
+const ChatBox = () => {
+  const { messages, sendMessage } = useContext(WebSocketContext);
+  const { currentUser } = useContext(SessionContext);
   const recipientId = useRef("");
   const [receivedMessages, setReceivedMessages] = useState([]);
 
@@ -28,13 +35,13 @@ const ChatBox = ({openedChat, toggleChat, closeChat}) => {
   const handleSendMessage = (values) => {
     setButtonLoading(true);
     const { userMessage } = values;
-    const sent = sendMessage(import.meta.env.VITE_SUPPORT_ID, userMessage)
+    const sent = sendMessage(import.meta.env.VITE_SUPPORT_ID, userMessage);
     sent
       ? form.reset()
       : form.setErrors({
           userMessage: "Couldn't send message, please try again later",
         });
-    
+
     setTimeout(() => {
       setButtonLoading(false);
     }, 500);
@@ -66,8 +73,8 @@ const ChatBox = ({openedChat, toggleChat, closeChat}) => {
       setReceivedMessages(firstPair[1]);
     }
     return () => {
-      setReceivedMessages([])
-    }
+      setReceivedMessages([]);
+    };
   }, [messages, currentUser]);
 
   return (
