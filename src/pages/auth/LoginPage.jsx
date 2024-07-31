@@ -1,13 +1,12 @@
-import { useContext } from "react";
+import { Title } from "@mantine/core";
 import LoginForm from "../../components/LoginForm";
-import { SessionContext } from "../../contexts/SessionContext";
 
 const LoginPage = () => {
-  // add loading state
-
   return (
     <>
-      <h1>Login</h1>
+      <Title order={1} mb={30}>
+        Login
+      </Title>
       <LoginForm />
     </>
   );

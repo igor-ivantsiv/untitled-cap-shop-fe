@@ -136,7 +136,7 @@ const CartProduct = ({ product, onDelete, onQuantityChange }) => {
         <Image src={product.variantId.imageUrl} />
       </Grid.Col>
       <Grid.Col span={3}>
-        <Text>{product.variantId.category}</Text>
+        <Text>{product.variantId.productId.name}</Text>
       </Grid.Col>
       <Grid.Col span={3}>
         <Group>

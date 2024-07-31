@@ -1,8 +1,16 @@
-import { Button, PasswordInput, TextInput } from "@mantine/core";
+import {
+  Button,
+  Center,
+  Flex,
+  PasswordInput,
+  Stack,
+  TextInput,
+} from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SessionContext } from "../contexts/SessionContext";
+import classes from "../styles/AuthForm.module.css";
 
 const LoginForm = () => {
   const { setToken } = useContext(SessionContext);
@@ -58,7 +66,7 @@ const LoginForm = () => {
         throw new Error("Something went wrong");
       }
     } catch (error) {
-      setIsLoading(false)
+      setIsLoading(false);
       console.error(error);
       form.setErrors({
         username: "Something went wrong, please try again",
@@ -69,25 +77,31 @@ const LoginForm = () => {
 
   return (
     <>
-      <form autoComplete="off" onSubmit={form.onSubmit(handleSubmit)}>
-        <TextInput
-          label="Username"
-          {...form.getInputProps("username")}
-          key={form.key("username")}
-        />
-        <PasswordInput
-          label="Password"
-          {...form.getInputProps("password")}
-          key={form.key("password")}
-        />
-        <Button
-          type="submit"
-          loading={isLoading}
-          loaderProps={{ type: "dots" }}
-        >
-          Login
-        </Button>
-      </form>
+      <div className={classes.container}>
+        <form autoComplete="off" onSubmit={form.onSubmit(handleSubmit)}>
+          <Stack gap={"lg"} w={{ sm: 400  }}>
+            <TextInput
+              label="Username"
+              {...form.getInputProps("username")}
+              key={form.key("username")}
+            />
+            <PasswordInput
+              label="Password"
+              {...form.getInputProps("password")}
+              key={form.key("password")}
+            />
+            <Center>
+              <Button
+                type="submit"
+                loading={isLoading}
+                loaderProps={{ type: "dots" }}
+              >
+                Login
+              </Button>
+            </Center>
+          </Stack>
+        </form>
+      </div>
     </>
   );
 };

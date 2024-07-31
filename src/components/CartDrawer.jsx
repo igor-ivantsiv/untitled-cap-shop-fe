@@ -32,6 +32,7 @@ const CartDrawer = ({ cartOpened, cartHandler }) => {
                   component={Link}
                   to={"/checkout"}
                   rightSection={<IconCashRegister />}
+                  onClick={() => (cartHandler.close())}
                 >
                   Checkout
                 </Button>

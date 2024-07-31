@@ -1,8 +1,9 @@
-import { Button, PasswordInput, TextInput } from "@mantine/core";
+import { Button, Center, PasswordInput, Stack, TextInput } from "@mantine/core";
 import { hasLength, isEmail, matchesField, useForm } from "@mantine/form";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { notifications } from "@mantine/notifications";
+import classes from "../styles/AuthForm.module.css";
 
 const RegisterForm = () => {
   const navigate = useNavigate();
@@ -104,35 +105,41 @@ const RegisterForm = () => {
 
   return (
     <>
-      <form autoComplete="off" onSubmit={form.onSubmit(handleSubmit)}>
-        <TextInput
-          label="Username"
-          {...form.getInputProps("username")}
-          key={form.key("username")}
-        />
-        <TextInput
-          label="Email"
-          {...form.getInputProps("email")}
-          key={form.key("email")}
-        />
-        <PasswordInput
-          label="Password"
-          {...form.getInputProps("password")}
-          key={form.key("password")}
-        />
-        <PasswordInput
-          label="Confirm password"
-          {...form.getInputProps("confirmPassword")}
-          key={form.key("confirmPassword")}
-        />
-        <Button
-          type="submit"
-          loading={isLoading}
-          loaderProps={{ type: "dots" }}
-        >
-          Register
-        </Button>
-      </form>
+      <div className={classes.container}>
+        <form autoComplete="off" onSubmit={form.onSubmit(handleSubmit)}>
+          <Stack gap={"lg"} w={{ sm: 500, md: 400 }}>
+            <TextInput
+              label="Username"
+              {...form.getInputProps("username")}
+              key={form.key("username")}
+            />
+            <TextInput
+              label="Email"
+              {...form.getInputProps("email")}
+              key={form.key("email")}
+            />
+            <PasswordInput
+              label="Password"
+              {...form.getInputProps("password")}
+              key={form.key("password")}
+            />
+            <PasswordInput
+              label="Confirm password"
+              {...form.getInputProps("confirmPassword")}
+              key={form.key("confirmPassword")}
+            />
+            <Center>
+              <Button
+                type="submit"
+                loading={isLoading}
+                loaderProps={{ type: "dots" }}
+              >
+                Register
+              </Button>
+            </Center>
+          </Stack>
+        </form>
+      </div>
     </>
   );
 };

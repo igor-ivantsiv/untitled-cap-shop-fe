@@ -1,14 +1,15 @@
+import { Title } from "@mantine/core";
 import RegisterForm from "../../components/RegisterForm";
 
 const RegisterPage = () => {
-  
-// add loading state
   return (
     <>
-      <h1>Register</h1>
+      <Title order={1} mb={30}>
+        Register
+      </Title>
       <RegisterForm />
     </>
   );
 };
 
-export default RegisterPage
+export default RegisterPage;
