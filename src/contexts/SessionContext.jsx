@@ -56,7 +56,7 @@ const SessionContextProvider = ({ children }) => {
         setToken(tokenToVerify);
         setIsAuthenticated(true);
         const data = await response.json();
-        console.log("verified token: ", data);
+        //console.log("verified token: ", data);
         setCurrentUser(data.userId);
         if (data.role === "admin") {
           setIsAdmin(true);
