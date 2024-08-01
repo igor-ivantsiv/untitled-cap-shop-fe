@@ -10,6 +10,7 @@ import {
   IconLogin2,
   IconLogout2,
   IconMessage,
+  IconUserHeart,
   IconUserPlus,
 } from "@tabler/icons-react";
 import styles from "../styles/Navbar.module.css";
@@ -45,32 +46,6 @@ const Navbar = ({ toggleBurger, navbarSmall }) => {
                 <IconBrandRedhat size={30} className="navbarIcon" />
               </div>
             </Link>
-            {!isAuthenticated && (
-              <>
-                <Link
-                  className={
-                    location.pathname === "/register" ? styles.active : ""
-                  }
-                  onClick={() => toggleBurger()}
-                  to="/register"
-                >
-                  <div className={styles.menuItem}>
-                    <IconUserPlus size={30} className="navbarIcon" />
-                  </div>
-                </Link>
-                <Link
-                  className={
-                    location.pathname === "/login" ? styles.active : ""
-                  }
-                  onClick={() => toggleBurger()}
-                  to="/login"
-                >
-                  <div className={styles.menuItem}>
-                    <IconLogin2 size={30} className="navbarIcon" />
-                  </div>
-                </Link>
-              </>
-            )}
             {isAdmin && (
               <>
                 <Link
@@ -110,6 +85,42 @@ const Navbar = ({ toggleBurger, navbarSmall }) => {
                 </Link>
               </>
             )}
+            <Link
+              className={location.pathname === "/about" ? styles.active : ""}
+              onClick={() => toggleBurger()}
+              to="/about"
+            >
+              <div className={styles.menuItem}>
+                <IconUserHeart size={30} className="navbarIcon" />
+              </div>
+            </Link>
+            {!isAuthenticated && (
+              <>
+                <Link
+                  className={
+                    location.pathname === "/register" ? styles.active : ""
+                  }
+                  onClick={() => toggleBurger()}
+                  to="/register"
+                >
+                  <div className={styles.menuItem}>
+                    <IconUserPlus size={30} className="navbarIcon" />
+                  </div>
+                </Link>
+                <Link
+                  className={
+                    location.pathname === "/login" ? styles.active : ""
+                  }
+                  onClick={() => toggleBurger()}
+                  to="/login"
+                >
+                  <div className={styles.menuItem}>
+                    <IconLogin2 size={30} className="navbarIcon" />
+                  </div>
+                </Link>
+              </>
+            )}
+
           </>
         ) : (
           <>
@@ -133,34 +144,6 @@ const Navbar = ({ toggleBurger, navbarSmall }) => {
                 <p className={styles.menuText}>Collection</p>
               </div>
             </Link>
-            {!isAuthenticated && (
-              <>
-                <Link
-                  className={
-                    location.pathname === "/register" ? styles.active : ""
-                  }
-                  onClick={() => toggleBurger()}
-                  to="/register"
-                >
-                  <div className={styles.menuItem}>
-                    <IconUserPlus size={30} className="navbarIcon" />
-                    <p className={styles.menuText}>Register</p>
-                  </div>
-                </Link>
-                <Link
-                  className={
-                    location.pathname === "/login" ? styles.active : ""
-                  }
-                  onClick={() => toggleBurger()}
-                  to="/login"
-                >
-                  <div className={styles.menuItem}>
-                    <IconLogin2 size={30} className="navbarIcon" />
-                    <p className={styles.menuText}>Login</p>
-                  </div>
-                </Link>
-              </>
-            )}
             {isAdmin && (
               <>
                 <Link
@@ -203,6 +186,45 @@ const Navbar = ({ toggleBurger, navbarSmall }) => {
                 </Link>
               </>
             )}
+            <Link
+              className={location.pathname === "/about" ? styles.active : ""}
+              onClick={() => toggleBurger()}
+              to="/about"
+            >
+              <div className={styles.menuItem}>
+                <IconUserHeart size={30} className="navbarIcon" />
+                <p className={styles.menuText}>About us</p>
+              </div>
+            </Link>
+            {!isAuthenticated && (
+              <>
+                <Link
+                  className={
+                    location.pathname === "/register" ? styles.active : ""
+                  }
+                  onClick={() => toggleBurger()}
+                  to="/register"
+                >
+                  <div className={styles.menuItem}>
+                    <IconUserPlus size={30} className="navbarIcon" />
+                    <p className={styles.menuText}>Register</p>
+                  </div>
+                </Link>
+                <Link
+                  className={
+                    location.pathname === "/login" ? styles.active : ""
+                  }
+                  onClick={() => toggleBurger()}
+                  to="/login"
+                >
+                  <div className={styles.menuItem}>
+                    <IconLogin2 size={30} className="navbarIcon" />
+                    <p className={styles.menuText}>Login</p>
+                  </div>
+                </Link>
+              </>
+            )}
+           
             {isAuthenticated && (
               <Button
                 leftSection={<IconLogout2 size={26} />}

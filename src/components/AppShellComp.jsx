@@ -21,7 +21,7 @@ const AppShellComp = () => {
   const { isAdmin, isAuthenticated } = useContext(SessionContext);
   const [cartOpened, cartHandler] = useDisclosure(false);
 
-  const navbarWidth = navbarSmall ? 62 : 240;
+  const navbarWidth = navbarSmall ? 62 : 260;
 
   const footerPaddingLeft = navbarSmall ? "62px" : "240px";
 

@@ -110,6 +110,11 @@ h3 {
   .tableStyles {
     text-align: center;
   }
+  .expandableOrdersContentDiv {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
   .expandableContentDiv {
     display: flex;
     flex-direction: column;

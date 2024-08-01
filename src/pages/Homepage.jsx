@@ -44,7 +44,7 @@ const Homepage = () => {
       <img src="https://copperandbrass.de/wp-content/uploads/2021/03/Flexfit-Trucker-Cap-Multicam-Black-Cap-Military-Tarnmuster-Shop.jpg" alt="caps" />
     </section>
     <section className={`${styles.contentSection} ${styles.lastSection}`}>
-      <h2>Which Style is yours?</h2>
+      <h2 className={styles.lastHeader}>Which Style is yours?</h2>
       <Link to="/products" >
         <Button
       variant="gradient"

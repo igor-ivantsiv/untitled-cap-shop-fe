@@ -20,6 +20,7 @@ import { SessionContext } from "./contexts/SessionContext";
 import { notifications } from "@mantine/notifications";
 import CheckoutPage from "./pages/user/CheckoutPage";
 import CustomerServicePage from "./pages/admin/CustomerServicePage";
+import AboutPage from "./pages/AboutPage";
 
 function App() {
   const { handleLogout, currentUser } = useContext(SessionContext);
@@ -143,6 +144,7 @@ function App() {
             </AdminRoute>
           }
         />
+        <Route path="/about" element={<AboutPage/> } />
 
         <Route path="*" element={<NotFoundPage />} />
       </Routes>

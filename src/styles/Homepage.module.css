@@ -40,6 +40,10 @@
   .lastSection{
     text-align: center;
   }
+  .lastHeader{
+    margin-top: 30px;;
+    font-size: 36px
+  }
 
 @media screen and (max-width: 768px) {
   .mobileHidden {
