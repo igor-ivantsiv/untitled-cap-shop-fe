@@ -29,7 +29,7 @@ const Homepage = () => {
       <h3>Baseball Caps: A Sporting Icon</h3>
       <p>Baseball caps have their origins in sports, specifically baseball in the late 1800s. Originally designed to protect players' eyes from the sun, they have evolved into a ubiquitous fashion item.</p>
       <p>Untitled. Caps are revolutionizing the world of headwear by introducing high-performance baseball caps that are both stylish and functional.</p>
-      <img src="https://cdn.shopify.com/s/files/1/0754/9295/0356/files/mattgrey_480x480.webp?v=1698516008" alt="baseball" />
+      <img className={styles.contentImage} src="https://cdn.shopify.com/s/files/1/0754/9295/0356/files/mattgrey_480x480.webp?v=1698516008" alt="baseball" />
     </section>
     <section className={styles.contentSection}>
       <h3>Snapback Caps: The symbol of streetwear</h3>
