@@ -7,6 +7,33 @@
 .checkoutHeaders{
     margin: 10px 0px
 }
+.successSection{
+  margin: 10px auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.successHeader {
+  margin-top: 100px;
+  text-align: center;
+  font-size: 36px;
+
+}
+.successText{
+  font-size: 18px;
+  text-align: center;
+}
+
+.successIconDiv{
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+}
+.successButtonDiv{
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+}
 @media screen and (min-width: 768px) {
   .checkoutContentDiv {
     display: flex;
