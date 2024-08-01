@@ -51,7 +51,7 @@ const LoginForm = () => {
       if (response.status === 200 || response.status === 403) {
         const data = await response.json();
         setIsLoading(false);
-        console.log(data);
+        //console.log(data);
         if (response.status === 403) {
           form.setErrors({
             username: data.message,

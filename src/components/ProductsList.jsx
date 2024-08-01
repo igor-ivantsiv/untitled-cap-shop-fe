@@ -10,7 +10,7 @@ const ProductsList = () => {
   // fetch all products
   useEffect(() => {
     const fetchProducts = async () => {
-      console.log("fetching products...");
+      //console.log("fetching products...");
       try {
         const response = await fetch(
           `${import.meta.env.VITE_API_URL}/api/products/variants`
@@ -21,7 +21,7 @@ const ProductsList = () => {
         }
 
         const data = await response.json();
-        console.log(data);
+        //console.log(data);
 
         setProducts(data);
       } catch (error) {
