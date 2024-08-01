@@ -32,6 +32,7 @@ a {
 .menuText {
   font-size: 20px;
   font-weight: 400;
+  font-family: "Special Elite", system-ui;
 }
 .navbarMenu {
   margin-left: 15px;

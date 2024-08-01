@@ -1,0 +1,23 @@
+.developerTeamCardContent{
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+    align-items: center;
+}
+.mainContentHeader{
+    font-family: "Special Elite", system-ui;
+}
+
+.developerTeamIconDiv{
+    min-width: 50px;
+}
+
+@media screen and (max-width: 768px) {
+    .developerTeamCardContent{
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        justify-content: space-between;
+        align-items: center;
+    }  
+}
