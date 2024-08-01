@@ -17,21 +17,25 @@ import { useRefetchContext } from "../contexts/RefetchContext";
 import styles from "../styles/Dashboard.module.css";
 
 const TableRowItem = ({ order }) => {
+  // CONTEXTS
   const { fetchWithToken } = useContext(SessionContext);
   const { setShouldRefetch } = useRefetchContext();
 
+  //USESTATES
   const [shipModalOpen, setShipModalOpen] = useState(false);
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
+  const [colSpan, setColSpan] = useState(5);
+  const [opened, { toggle }] = useDisclosure(false);
+
+  //USEFORMS
   const shipForm = useForm({
     initialValues: { trackingId: "" },
   });
   const cancelForm = useForm({
     initialValues: { cancellationReason: "" },
   });
-  const [colSpan, setColSpan] = useState(5);
 
-  const [opened, { toggle }] = useDisclosure(false);
-
+//FUNTIONS
   const toggleShipModal = () => {
     setShipModalOpen(!shipModalOpen);
   };
@@ -45,37 +49,14 @@ const TableRowItem = ({ order }) => {
       const updatedOrder = await fetchWithToken(
         `/orders/shipment/${orderId}`,
         "PUT",
-        { trackingId: values.trackingId } // Directly assigned without template string
+        { trackingId: values.trackingId } 
       );
-
-      console.log("Updated Order:", updatedOrder); // Debugging log
       setShipModalOpen(false);
       setShouldRefetch((prevState) => !prevState);
     } catch (error) {
       console.log(error);
     }
   };
-
-  useEffect(() => {
-    const updateColSpan = () => {
-      if (window.innerWidth < 768) {
-        setColSpan(3); 
-      } else {
-        setColSpan(5); 
-      }
-    };
-
-    // Initial check
-    updateColSpan();
-
-    // Event listener for window resize
-    window.addEventListener('resize', updateColSpan);
-
-    // Clean up event listener on unmount
-    return () => {
-      window.removeEventListener('resize', updateColSpan);
-    };
-  }, []);
 
   const handleCancelSubmit = async (values, orderId) => {
     try {
@@ -84,13 +65,28 @@ const TableRowItem = ({ order }) => {
         "PUT",
         { cancellationReason: `${values.cancellationReason}` }
       );
-      console.log(updatedOrder);
       setCancelModalOpen(false);
       setShouldRefetch((prevState) => !prevState);
     } catch (error) {
       console.log(error);
     }
   };
+
+  //USEEFFECTS
+  useEffect(() => {
+    const updateColSpan = () => {
+      if (window.innerWidth < 768) {
+        setColSpan(3); 
+      } else {
+        setColSpan(5); 
+      }
+    };
+    updateColSpan();
+    window.addEventListener('resize', updateColSpan);
+    return () => {
+      window.removeEventListener('resize', updateColSpan);
+    };
+  }, []);
 
   return (
     <>

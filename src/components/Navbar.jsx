@@ -16,9 +16,10 @@ import {
 import styles from "../styles/Navbar.module.css";
 
 const Navbar = ({ toggleBurger, navbarSmall }) => {
-  const { isAuthenticated, handleLogout, isAdmin, currentUser } =
-    useContext(SessionContext);
+  //CONTEXTS
+  const { isAuthenticated, handleLogout, isAdmin } = useContext(SessionContext);
 
+  //FUNCTIONS
   const logoutHandler = () => {
     handleLogout();
     toggleBurger();
@@ -120,7 +121,6 @@ const Navbar = ({ toggleBurger, navbarSmall }) => {
                 </Link>
               </>
             )}
-
           </>
         ) : (
           <>
@@ -224,7 +224,7 @@ const Navbar = ({ toggleBurger, navbarSmall }) => {
                 </Link>
               </>
             )}
-           
+
             {isAuthenticated && (
               <Button
                 leftSection={<IconLogout2 size={26} />}

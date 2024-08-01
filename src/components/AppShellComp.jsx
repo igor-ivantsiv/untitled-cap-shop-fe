@@ -1,51 +1,47 @@
 import { ActionIcon, AppShell, Burger, Button, HoverCard, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import App from "../App";
-import Navbar from "./TESTNavbar";
-import { Group } from "@mantine/core";
+import Navbar from "./Navbar";
 import CartDrawer from "./CartDrawer";
 import ChatBox from "../ws/ChatBox";
-import classes from "../styles/HeaderWrapper.module.css";
 import { useContext, useEffect, useState } from "react";
 import { SessionContext } from "../contexts/SessionContext";
 import styles from "../styles/Navbar.module.css";
-import { IconBrandGithub, IconLayoutSidebarLeftCollapse, IconLayoutSidebarLeftExpand, IconMessage, IconShoppingBag, IconShoppingCart } from "@tabler/icons-react";
+import { IconBrandGithub, IconLayoutSidebarLeftCollapse, IconLayoutSidebarLeftExpand, IconMessage, IconShoppingCart } from "@tabler/icons-react";
 import { Link } from "react-router-dom";
 
 const AppShellComp = () => {
+//CONTEXTS
+  const { isAdmin, isAuthenticated } = useContext(SessionContext);
+
+  //USESTATES
   const [opened, { toggle: toggleBurger }] = useDisclosure();
   const [openedChat, { toggle: toggleChat, close: closeChat }] =
     useDisclosure(false);
     const [navbarSmall, setNavbarSmall] = useState(false);
-
-  const { isAdmin, isAuthenticated } = useContext(SessionContext);
   const [cartOpened, cartHandler] = useDisclosure(false);
 
   const navbarWidth = navbarSmall ? 62 : 260;
 
+  /*
   const footerPaddingLeft = navbarSmall ? "62px" : "240px";
 
   const isMobile = window.innerWidth < 768;
+  */
 
+  //USEEFFECTS
   useEffect(() => {
     const updateNavbarState = () => {
       if (window.innerWidth < 768) {
         setNavbarSmall(false);
       }
     };
-
-    // Initial check
     updateNavbarState();
-
-    // Event listener for window resize
     window.addEventListener("resize", updateNavbarState);
-
-    // Clean up event listener on unmount
     return () => {
       window.removeEventListener("resize", updateNavbarState);
     };
   }, []);
-
 
   return (
     <AppShell
