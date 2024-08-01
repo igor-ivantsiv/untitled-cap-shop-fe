@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import useCartHelpers from "./cartHelpers";
 import { SessionContext } from "../../contexts/SessionContext";
 import CartProduct from "./CartProduct";
-import { Divider, Group, NumberFormatter, Stack, Text } from "@mantine/core";
+import { Divider, Group, NumberFormatter, Text } from "@mantine/core";
 
 
 // cartContent: [{quantity: 1, variantId: {_id, productId, price, etc}, _id: "id"}]
@@ -23,16 +23,18 @@ const CartOverview = () => {
     displayCart();
   }, []);
 
+  /*
   // log fetched cart for debugging
   useEffect(() => {
     console.log("Cart fetched: ", fetchedCart);
   }, [fetchedCart]);
+  */
 
   // set array of content when cart has been fetched
   useEffect(() => {
     if (fetchedCart) {
       setCartContent(fetchedCart.content);
-      console.log("Cart content set: ", cartContent);
+      //console.log("Cart content set: ", cartContent);
     }
   }, [fetchedCart]);
 

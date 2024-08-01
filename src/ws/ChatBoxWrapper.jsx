@@ -26,10 +26,10 @@ const ChatBoxWrapper = () => {
       // get all messages with current userId
       const currentChat = data[userId];
 
-      // check if any object in array of msgs contains 'resolved: true' prop
+      // check if any object in array of msgs contains 'resolved: true' object
       const isResolved = currentChat.some((msg) => msg.resolved === true);
 
-      // if no resolved prop found, add to accumulator
+      // if no resolved obj found, add to accumulator
       if (!isResolved) {
         acc[userId] = currentChat;
       }

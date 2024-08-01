@@ -21,6 +21,7 @@ const WebSocketProvider = ({ children }) => {
   const reconnectTimeout = useRef(null);
   const isAuthenticatedRef = useRef(isAuthenticated);
 
+  // store a ref to isAuthenticated state to have most up to date info
   useEffect(() => {
     isAuthenticatedRef.current = isAuthenticated;
   }, [isAuthenticated]);
@@ -34,7 +35,7 @@ const WebSocketProvider = ({ children }) => {
         cartContent: storedCart,
       }
     );
-    console.log("WS CART RETRIEVED: ", retrievedUserCart);
+    //console.log("WS CART RETRIEVED: ", retrievedUserCart);
   };
 
   // turned the ws connection into a callback function
@@ -44,7 +45,7 @@ const WebSocketProvider = ({ children }) => {
     if (!isAuthenticated || !currentUser || !token) {
       return;
     }
-    console.log("CURRENT USER: ", currentUser);
+    //console.log("CURRENT USER: ", currentUser);
     const socket = new WebSocket(
       `${import.meta.env.VITE_WS_URL}userId=${currentUser}&token=${token}`
     );
@@ -58,7 +59,7 @@ const WebSocketProvider = ({ children }) => {
       // check session storage if there was a cart
       const userCartStr = sessionStorage.getItem("cartContent");
       const userCart = JSON.parse(userCartStr);
-      console.log("WS STORED CART: ", userCart);
+      //console.log("WS STORED CART: ", userCart);
 
       // set cart back in db if found in session storage (restoring cart)
       if (userCart && userCart.length > 0) {
@@ -70,9 +71,9 @@ const WebSocketProvider = ({ children }) => {
     // recipientId is the same as senderId because there is only 1 to 1 communications
     // parse message, add to messages
     socket.onmessage = (event) => {
-      console.log("WS MESSAGE: ", event.data);
+      //console.log("WS MESSAGE: ", event.data);
       const message = JSON.parse(event.data);
-      console.log("SENDER ID: ", message["senderId"]);
+      //console.log("SENDER ID: ", message["senderId"]);
       const senderId = message["senderId"];
       notifications.show({
         title: "New message",

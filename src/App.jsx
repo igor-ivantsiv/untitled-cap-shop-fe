@@ -28,7 +28,7 @@ function App() {
   const isLoggedOutRef = useRef(false);
 
   useEffect(() => {
-    // if app is not visible for 20ms -> logout user to empty cart and free up items
+    // if app is not visible for 1h -> logout user to empty cart and free up items
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
         // clear timeout id

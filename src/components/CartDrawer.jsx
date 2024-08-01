@@ -1,9 +1,6 @@
-import { Button, Center, Divider, Drawer, Title } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-
-import classes from "../styles/Cart.module.css";
-import { IconCashRegister, IconShoppingBag } from "@tabler/icons-react";
-import { useContext, useEffect, useState } from "react";
+import { Button, Center, Divider, Drawer } from "@mantine/core";
+import { IconCashRegister } from "@tabler/icons-react";
+import { useContext } from "react";
 import { SessionContext } from "../contexts/SessionContext";
 import LoginForm from "./LoginForm";
 import CartOverview from "./cart/CartOverview";
@@ -20,9 +17,7 @@ const CartDrawer = ({ cartOpened, cartHandler }) => {
         {isAuthenticated ? (
           <>
             <Center>
-              <Title mb={10} order={2}>
-                Your shopping cart
-              </Title>
+              <h2>Your Shopping Cart</h2>
             </Center>
             <Divider m={30} />
             <CartOverview />
@@ -32,7 +27,7 @@ const CartDrawer = ({ cartOpened, cartHandler }) => {
                   component={Link}
                   to={"/checkout"}
                   rightSection={<IconCashRegister />}
-                  onClick={() => (cartHandler.close())}
+                  onClick={() => cartHandler.close()}
                 >
                   Checkout
                 </Button>

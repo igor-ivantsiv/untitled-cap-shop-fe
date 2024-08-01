@@ -31,11 +31,11 @@ const LoginForm = () => {
   });
 
   const handleSubmit = async (values) => {
-    console.log("Form: ", values);
+    //console.log("Form: ", values);
     setIsLoading(true);
     const { password, username } = values;
     const payload = { password, username };
-    console.log("payload: ", payload);
+    //console.log("payload: ", payload);
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/auth/login`,

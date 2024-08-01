@@ -48,6 +48,7 @@ const ChatBox = ({openedChat, toggleChat, closeChat}) => {
 
   // logs to understand data structure
   useEffect(() => {
+    /*
     console.log("MESSAGES chatBox: ", messages);
     console.log("Object keys: ", Object.keys(messages));
     const messagesPerSender = Object.keys(messages);
@@ -58,12 +59,13 @@ const ChatBox = ({openedChat, toggleChat, closeChat}) => {
     }
     console.log("object entries: ", Object.entries(messages));
     console.log("object entries[0]: ", Object.entries(messages)[0]);
+    */
 
     // user can only receive messages from one id (admin)
     // meaning the first entry should be the id of sender and the list of messages sent
     const firstPair = Object.entries(messages)[0];
     if (firstPair) {
-      console.log("object messages: ", firstPair[1]);
+      //console.log("object messages: ", firstPair[1]);
 
       // store recipientId in reference (currently not used)
       recipientId.current = firstPair[0];

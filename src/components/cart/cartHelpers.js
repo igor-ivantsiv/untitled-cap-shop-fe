@@ -24,7 +24,7 @@ const useCartHelpers = () => {
 
       // return 1 for succes, 0 for failure
       if (data) {
-        console.log("CART FETCHED -fetchCart: ", data);
+        //console.log("CART FETCHED -fetchCart: ", data);
         setter(data);
         return 1;
       }
@@ -62,7 +62,7 @@ const useCartHelpers = () => {
 
       // return 1 if all went well
       if (cartData) {
-        console.log("ADDED ITEM -useAddItem: ", cartData);
+        //console.log("ADDED ITEM -useAddItem: ", cartData);
         cartDispatch({
           type: "SET_CART",
           cart: cartData,
@@ -99,7 +99,7 @@ const useCartHelpers = () => {
 
       // return 1 for succes, 0 for failure
       if (data) {
-        console.log("DECREASED ITEM -decreaseItem: ", data);
+        //console.log("DECREASED ITEM -decreaseItem: ", data);
         cartDispatch({
           type: "SET_CART",
           cart: data,
@@ -130,7 +130,7 @@ const useCartHelpers = () => {
 
       // return 1 for succes, 0 for failure
       if (data) {
-        console.log("REMOVED ITEM -removeItem: ", data);
+        //console.log("REMOVED ITEM -removeItem: ", data);
         cartDispatch({
           type: "SET_CART",
           cart: data,
@@ -157,7 +157,7 @@ const useCartHelpers = () => {
 
       // if success, set front end copy, return 1
       if (data) {
-        console.log("CART EMPTY -emptyCartAfterSale", data);
+        //console.log("CART EMPTY -emptyCartAfterSale", data);
         cartDispatch({
           type: "SET_CART",
           cart: data,
@@ -185,7 +185,7 @@ const useCartHelpers = () => {
 
       // if success, set front end copy, return 1
       if (data) {
-        console.log("CART EMPTY -emptyCart", data);
+        //console.log("CART EMPTY -emptyCart", data);
         cartDispatch({
           type: "SET_CART",
           cart: data,

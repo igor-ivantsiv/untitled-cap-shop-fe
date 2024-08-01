@@ -50,7 +50,6 @@ const ProductDetailsPage = () => {
         }
 
         const data = await response.json();
-        console.log("CURRENT PRODUCT: ", data);
 
         setProduct(data);
       } catch (error) {
@@ -82,7 +81,7 @@ const ProductDetailsPage = () => {
       }
     };
     fetchStock();
-  }, [variantId, buttonLoading /*cartState*/]);
+  }, [variantId, buttonLoading]);
 
   // fetch other variants of current product
   useEffect(() => {
@@ -117,9 +116,12 @@ const ProductDetailsPage = () => {
     }
   }, [product, variants]);
 
+  // add item to cart
   const { addItem } = useCartHelpers();
 
   const addToCart = async () => {
+
+    // only allow if user is logged in
     if (!isAuthenticated) {
       notifications.show({
         title: "Hold up!",
@@ -128,6 +130,7 @@ const ProductDetailsPage = () => {
       return navigate("/login");
     }
 
+    // attempt to add an item to cart
     setButtonLoading(true);
     const success = await addItem(currentUser, product._id);
     if (success === 1) {

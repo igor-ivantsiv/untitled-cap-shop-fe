@@ -46,7 +46,6 @@ const ChatBoxAdmin = ({ recipientId, messagesReceived }) => {
 
   // add 'resolved' prop to chat, use function from wsContext
   const handleResolve = (value) => {
-    console.log("checked value: ", value);
     resolveMessage(recipientId, value);
   };
 

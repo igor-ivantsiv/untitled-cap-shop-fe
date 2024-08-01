@@ -2,10 +2,7 @@ import { AspectRatio, Card, Group, Image, NumberFormatter, Text } from "@mantine
 import { Link } from "react-router-dom";
 
 const ProductCard = ({ image, name, price, productId }) => {
-  /* temporary placeholder
 
-    "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg";
-*/
   return (
     <>
       <Card p={"lg"} component={Link} to={`/products/${productId}`}>
@@ -14,7 +11,7 @@ const ProductCard = ({ image, name, price, productId }) => {
           <Image
             src={image}
             alt={name}
-            fallbackSrc="https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Glossary.svg"
+            fallbackSrc="https://placehold.co/232x155"
           />
           </AspectRatio>
         </Card.Section>

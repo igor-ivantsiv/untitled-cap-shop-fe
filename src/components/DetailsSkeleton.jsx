@@ -1,8 +1,8 @@
 import { Flex, Group, Skeleton, Stack } from "@mantine/core";
 
 const DetailsSkeleton = () => {
-    // temporary skeleton
-    // works well on mobile -> add responsiveness to bigger screens
+    
+  
   return (
     <>
       <Flex miw={{ base: 200, md: 500 }} h={{ base: 300, md: 400 }}>

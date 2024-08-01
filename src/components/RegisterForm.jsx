@@ -43,9 +43,11 @@ const RegisterForm = () => {
         const cartData = await cartResponse.json();
 
         // if user already has a cart -> log, but shouldn't be a problem
+        /*
         cartResponse.status === 409
           ? console.log("CART CREATION FAILED: ", cartData.message)
           : console.log("CART CREATION SUCCES: ", cartData);
+          */
       }
     } catch (error) {
       console.error("CART CREATION FAILED: ", error);
@@ -72,7 +74,7 @@ const RegisterForm = () => {
       // check for response status
       if (response.status === 201 || response.status === 409) {
         const data = await response.json();
-        console.log(data);
+        //console.log(data);
 
         // display message if username not available
         if (response.status === 409) {
