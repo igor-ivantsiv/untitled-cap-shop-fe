@@ -54,7 +54,6 @@ const VariantRows = ({ variant }) => {
         "PUT",
         { active: !checked }
       );
-      console.log(activateToggle);
     } catch (error) {
       console.log(error);
     }
@@ -68,8 +67,6 @@ const VariantRows = ({ variant }) => {
 
   const handleInput = (event) => {
     const { name, value } = event.currentTarget;
-
-    // Update the respective form data state based on the name
     if (name in productFormData) {
       setProductFormData((prevData) => ({
         ...prevData,
@@ -84,7 +81,7 @@ const VariantRows = ({ variant }) => {
   };
 
   const handleStockChange = (value) => {
-    const realStockValue = value; // value is already a number (or null if empty input)
+    const realStockValue = value; 
 
     if (realStockValue !== null && realStockValue >= 0) {
       const realVirtualDiff = stocks.virtualStock - stocks.realStock;
@@ -186,14 +183,8 @@ const VariantRows = ({ variant }) => {
         setColSpan(7); 
       }
     };
-
-    // Initial check
     updateColSpan();
-
-    // Event listener for window resize
     window.addEventListener('resize', updateColSpan);
-
-    // Clean up event listener on unmount
     return () => {
       window.removeEventListener('resize', updateColSpan);
     };

@@ -8,12 +8,14 @@ import styles from "../../styles/Dashboard.module.css";
 
 
 const ManageOrdersPage = () => {
-  const [orders, setOrders] = useState([]);
-
+//CONTEXTS
   const { fetchWithToken } = useContext(SessionContext)
-
   const { shouldRefetch } = useRefetchContext();
 
+//USESTATES
+  const [orders, setOrders] = useState([]);
+
+//FUNCTIONS
   const getOrders = async () => {
     try {
       const fetchedOrders = await fetchWithToken("/orders");
@@ -23,6 +25,7 @@ const ManageOrdersPage = () => {
     }
   }
 
+  //USEEFFECTS
   useEffect(() => {
     getOrders();
   }, [shouldRefetch]);

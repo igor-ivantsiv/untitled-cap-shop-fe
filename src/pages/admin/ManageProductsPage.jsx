@@ -4,8 +4,6 @@ import { useRefetchContext } from "../../contexts/RefetchContext";
 import {
   Button,
   Modal,
-  NumberInput,
-  ScrollArea,
   Table,
   TextInput,
 } from "@mantine/core";
@@ -15,6 +13,10 @@ import { useDisclosure } from "@mantine/hooks";
 import styles from "../../styles/Dashboard.module.css";
 
 const ManageProductsPage = () => {
+  //CONTEXTS
+  const { fetchWithToken } = useContext(SessionContext);
+  const { shouldRefetch, setShouldRefetch } = useRefetchContext();
+//USEEFFECTS
   const [variants, setVariants] = useState([]);
   const [addData, setAddData] = useState({
     name: "",
@@ -30,10 +32,7 @@ const ManageProductsPage = () => {
   const [modalWidth, setModalWidth] = useState("75%");
   const [opened, { open, close }] = useDisclosure(false);
 
-  const { fetchWithToken } = useContext(SessionContext);
-
-  const { shouldRefetch, setShouldRefetch } = useRefetchContext();
-
+//FUNCTIONS
   const getVariants = async () => {
     try {
       const fetchedVariants = await fetchWithToken("/products/all-variants");
@@ -62,6 +61,7 @@ const ManageProductsPage = () => {
     }
   };
 
+//USEEFFECTS
   useEffect(() => {
     getVariants();
     setAddData({
@@ -86,14 +86,8 @@ const ManageProductsPage = () => {
         setModalWidth("75%");
       }
     };
-
-    // Initial check
     updateModalWidth();
-
-    // Event listener for window resize
     window.addEventListener("resize", updateModalWidth);
-
-    // Clean up event listener on unmount
     return () => {
       window.removeEventListener("resize", updateModalWidth);
     };
