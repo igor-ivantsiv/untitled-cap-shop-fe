@@ -1,17 +1,13 @@
 import {
-  AspectRatio,
   Button,
   Center,
-  ColorSwatch,
   Divider,
   Flex,
   Group,
   Image,
   NumberFormatter,
-  Paper,
   Stack,
   Text,
-  Title,
 } from "@mantine/core";
 import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -24,7 +20,8 @@ import useCartHelpers from "../../components/cart/cartHelpers";
 import DetailsAccordion from "../../components/DetailsAccordion";
 import DetailsColor from "../../components/DetailsColor";
 import { IconArrowBack, IconShoppingCart } from "@tabler/icons-react";
-import classes from "../../styles/ProductDetails.module.css"
+import classes from "../../styles/ProductDetails.module.css";
+import headers from "../../styles/Headers.module.css";
 
 const ProductDetailsPage = () => {
   const { variantId } = useParams();
@@ -157,58 +154,55 @@ const ProductDetailsPage = () => {
   return (
     <>
       {product.productId && (
-        <Title order={1} mb={30}>{product.productId.category}</Title>
+        <h1 className={headers.header1}>{product.productId.category}</h1>
       )}
 
-      
-        <Flex
-          justify="center"
-          gap="md"
-          direction={{ base: "column", sm: "row" }}
-        >
-          {pageLoading ? (
-            <DetailsSkeleton />
-          ) : (
-            <>
+      <Flex justify="center" gap="md" direction={{ base: "column", sm: "row" }}>
+        {pageLoading ? (
+          <DetailsSkeleton />
+        ) : (
+          <>
             <div className={classes.imageContainer}>
               <Image src={product.imageUrl} />
-              </div>
-              <Stack className={classes.detailsContainer}>
-                {product.productId && (
-                  <>
-                    <Title order={2}>{product.productId.name}</Title>
+            </div>
+            <Stack className={classes.detailsContainer}>
+              {product.productId && (
+                <>
+                  <h2>{product.productId.name}</h2>
 
-                    <Text maw={{md: 500}} fs={"italic"}>{product.productId.description}</Text>
-                    <Group>
-                      <Text span fw={500}>
-                        Size:
-                      </Text>
-                      <Text>{product.size}</Text>
-                    </Group>
-                    <Group>
-                      <Text span fw={500}>
-                        Material:
-                      </Text>
-                      <Text>{product.productId.material}</Text>
-                      <DetailsColor color={product.color} />
-                    </Group>
-                  </>
-                )}
+                  <Text maw={{ md: 500 }} fs={"italic"}>
+                    {product.productId.description}
+                  </Text>
+                  <Group>
+                    <Text span fw={500}>
+                      Size:
+                    </Text>
+                    <Text>{product.size}</Text>
+                  </Group>
+                  <Group>
+                    <Text span fw={500}>
+                      Material:
+                    </Text>
+                    <Text>{product.productId.material}</Text>
+                    <DetailsColor color={product.color} />
+                  </Group>
+                </>
+              )}
 
-                <NumberFormatter
-                  prefix="€"
-                  value={product.price / 100}
-                  decimalScale={2}
-                />
-                <Divider m={10}/>
-                <Text size="xs">Colors:</Text>
-                <Center mb={"md"}>
-                  {variants && <VariantsList variants={variants} />}
-                </Center>
-              </Stack>
-            </>
-          )}
-        </Flex>
+              <NumberFormatter
+                prefix="€"
+                value={product.price / 100}
+                decimalScale={2}
+              />
+              <Divider m={10} />
+              <Text size="xs">Colors:</Text>
+              <Center mb={"md"}>
+                {variants && <VariantsList variants={variants} />}
+              </Center>
+            </Stack>
+          </>
+        )}
+      </Flex>
 
       <DetailsAccordion />
       <Group justify="center">

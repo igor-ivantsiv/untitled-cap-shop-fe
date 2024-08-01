@@ -1,12 +1,10 @@
-import { Title } from "@mantine/core";
 import RegisterForm from "../../components/RegisterForm";
+import classes from "../../styles/Headers.module.css";
 
 const RegisterPage = () => {
   return (
     <>
-      <Title order={1} mb={30}>
-        Register
-      </Title>
+      <h1 className={classes.header1}>Register</h1>
       <RegisterForm />
     </>
   );
