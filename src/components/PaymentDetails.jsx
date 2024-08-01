@@ -88,7 +88,7 @@ const PaymentDetails = ({
       const { error } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          return_url: "http://localhost:5173/checkout/success",
+          return_url: `${import.meta.env.VITE_REDIRECT_URL}`,
         },
         clientSecret: newlyDeclaredClientSecret,
       });
