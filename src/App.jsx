@@ -3,19 +3,15 @@ import Homepage from "./pages/Homepage";
 import RegisterPage from "./pages/auth/RegisterPage";
 import LoginPage from "./pages/auth/LoginPage";
 import PrivateRoute from "./components/PrivateRoute";
-import TestProfile from "./pages/TestProfile";
 import AdminRoute from "./components/AdminRoute";
-import TestAdminPage from "./pages/TestAdminPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import ProductsPage from "./pages/user/ProductsPage";
 
-import UserProfilePage from "./pages/user/UserProfilePage";
 import ManageOrdersPage from "./pages/admin/ManageOrdersPage";
 import ManageProductsPage from "./pages/admin/ManageProductsPage";
 import ProductDetailsPage from "./pages/user/ProductDetailsPage";
 import OrderSuccess from "./pages/user/OrderSuccess";
-import WebSocketProvider from "./ws/WebSocketProvider";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { SessionContext } from "./contexts/SessionContext";
 import { notifications } from "@mantine/notifications";
 import CheckoutPage from "./pages/user/CheckoutPage";
@@ -84,14 +80,7 @@ function App() {
             </PrivateRoute>
           }
         />
-        <Route
-          path="profile/:userId"
-          element={
-            <PrivateRoute>
-              <UserProfilePage />
-            </PrivateRoute>
-          }
-        />
+        
         <Route
           path="/checkout/success"
           element={
@@ -123,24 +112,6 @@ function App() {
           element={
             <AdminRoute>
               <CustomerServicePage />
-            </AdminRoute>
-          }
-        />
-
-        {/* TEST ROUTES */}
-        <Route
-          path="/users/:userId"
-          element={
-            <PrivateRoute>
-              <TestProfile />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/admin"
-          element={
-            <AdminRoute>
-              <TestAdminPage />
             </AdminRoute>
           }
         />

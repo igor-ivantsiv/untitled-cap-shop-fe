@@ -1,4 +1,4 @@
-import { Flex, Group, Skeleton, Stack } from "@mantine/core";
+import { Flex, Skeleton, Stack } from "@mantine/core";
 
 const DetailsSkeleton = () => {
     
